@@ -1,135 +1,135 @@
 interface ScriptEntity {
     /**
-     * Retorna o Balão de fala atual da entidade.
+     * @description Retorna o Balão de fala atual da entidade.
      * @returns {number}
      */
     getBubbleId(): number;
 
     /**
-     * Retorna o ID da entidade.
+     * @description Retorna o ID da entidade.
      * @returns {number}
      */
     getId(): number;
 
     /**
-     * Retorna o nome da Entidade atual.
+     * @description Retorna o nome da Entidade atual.
      * @returns {string}
      */
     getUsername(): string;
 
     /**
-     * Retorna a posição X atual da entidade.
+     * @description Retorna a posição X atual da entidade.
      * @returns {number}
      */
     getX(): number;
 
     /**
-     * Retorna a posição Y atual da entidade.
+     * @description Retorna a posição Y atual da entidade.
      * @returns {number}
      */
     getY(): number;
 
     /**
-     * Retorna a atual posição Z da entidade.
+     * @description Retorna a atual posição Z da entidade.
      * @returns {number}
      */
     getZ(): number;
 
     /**
-     * Retorna a atual rotação da entidade.
+     * @description Retorna a atual rotação da entidade.
      * @returns {number}
      */
     getR(): number;
 
     /**
-     * Retorna o tipo da entidade.
+     * @description Retorna o tipo da entidade.
      * @returns {string}
      */
     getType(): string;
 
     /**
-     * Retorna o rank da entidade.
+     * @description Retorna o rank da entidade.
      * @returns {number}
      */
     getRank(): number;
 
     /**
-     * Retorna a missão da entidade.
+     * @description Retorna a missão da entidade.
      * @returns {string}
      */
     getMotto(): string;
 
     /**
-     * Retorna o genero da entidade
+     * @description Retorna o genero da entidade
      * @returns {"M" | "F"}
      */
     getGender(): "M" | "F";
 
     /**
-     * Retorna o código do atual visual da entidade.
+     * @description Retorna o código do atual visual da entidade.
      * *Não aplicável a Pets*
      * @returns {string}
      */
     getFigure(): string;
 
     /**
-     * Retorna o código do efeito atual da entidade.
+     * @description Retorna o código do efeito atual da entidade.
      * @returns {number}
      */
     getEffect(): number;
 
     /**
-     * Retorna o código do atual item de mão que a entidade está segurando.
+     * @description Retorna o código do atual item de mão que a entidade está segurando.
      * @returns {number}
      */
     getHandItem(): number;
 
     /**
-     * Retorna a atual dança da entidade.
+     * @description Retorna a atual dança da entidade.
      * @returns {0 | 1 | 2 | 3 | 4}
      */
     getDance(): 0 | 1 | 2 | 3 | 4;
 
     /**
-     * Retorna objeto com status atual da conquista
+     * @description Retorna objeto com status atual da conquista
      * @param {string} achievement
      * @return {ScriptAchievementProgress}
      */
     getAchievementProgress(achievement: string): ScriptAchievementProgress;
 
     /**
-     * Retorna a quantidade de *Diamantes* da entidade.
+     * @description Retorna a quantidade de *Diamantes* da entidade.
      * @returns {number}
      */
     getDiamonds(): number;
 
     /**
-     * Retorna a quantidade de *Duckets* da entidade.
+     * @description Retorna a quantidade de *Duckets* da entidade.
      * @returns {number}
      */
     getDuckets(): number;
 
     /**
-     * Retorna a quantidade de *Moedas* da entidade.
+     * @description Retorna a quantidade de *Moedas* da entidade.
      * @returns {number}
     */
     getCredits(): number;
 
     /**
-     * Retorna o total de *Ponto de Conquista* da entidade. 
+     * @description Retorna o total de *Ponto de Conquista* da entidade. 
      * @returns {number}
      */
     getAchievementPoints(): number;
 
     /**
-     * Retorna a distancia atual entre esta entidade e a posição fornecida.
+     * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
      * @param {IScriptReachable} e - Posição a ser comparada.
      * @returns {number}
      */
     distanceTo(e: IScriptReachable): number;
 
     /**
-     * Retorna a distancia atual entre esta entidade e a posição fornecida.
+     * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
      * @param {number} x - Posição X a ser comparada.
      * @param {number} y - Posição Y a ser comparada.
      * @param {number} z - Posição Z a ser comparada.
@@ -138,64 +138,64 @@ interface ScriptEntity {
     distanceTo(x: number, y: number, z: number): number;
 
     /**
-     * Retorna se a entidade é um usuário.
+     * @description Retorna se a entidade é um usuário.
      * @returns {boolean}
      */
     isPlayer(): boolean;
 
     /**
-     * Retorna se entidade é um Bot.
+     * @description Retorna se entidade é um Bot.
      * @returns {boolean}
      */
     isBot(): boolean;
 
     /**
-     * Retorna se a entidade é um Pet.
+     * @description Retorna se a entidade é um Pet.
      * @returns {boolean}
      */
     isPet(): boolean;
 
     /**
-     * Retorna se a entidade está ausente.
+     * @description Retorna se a entidade está ausente.
      * @returns {boolean}
      */
     isIdle(): boolean;
 
     /**
-     * Retorna se esta entidade é igual a entidade fornecida.
+     * @description Retorna se esta entidade é igual a entidade fornecida.
      * @param {ScriptEntity} entity - Entidade que será comparada.
      * @returns {boolean}
      */
     equals(entity: ScriptEntity): boolean;
 
     /**
-     * Retorna se esta entidade está sobre a mobilia fornecida.
+     * @description Retorna se esta entidade está sobre a mobilia fornecida.
      * @param {IScriptReachable} furni
      * @returns {boolean}
      */
     in(furni: IScriptReachable): boolean;
 
     /**
-     * Retorna se a entidade está em alguma das mobilias fornecidas.
+     * @description Retorna se a entidade está em alguma das mobilias fornecidas.
      * @param {IScriptReachable[]} furnis - Lista de mobilias a serem comparadas.
      * @returns {boolean}
      */
     inAny(furnis: IScriptReachable[]): boolean;
 
     /**
-     * Retorna se a entidade pode se mover.
+     * @description Retorna se a entidade pode se mover.
      * @returns {boolean}
      */
     canWalk(): boolean;
 
     /**
-     * Retorna se a entidade está se movendo.
+     * @description Retorna se a entidade está se movendo.
      * @returns {boolean}
      */
     isWalking(): boolean;
 
     /**
-     * Retorna se a entidade possui o emblema no inventário do usuário.
+     * @description Retorna se a entidade possui o emblema no inventário do usuário.
      * *Emblema não precisa estar equipado como favorito.*
      * @param {string} badge - Código do emblema a ser verificado.
      * @returns {boolean}
@@ -203,14 +203,14 @@ interface ScriptEntity {
     hasBadge(badge: string): boolean;
 
     /**
-     * Retorna se entidade possui o rank fornecido ou um maior.
+     * @description Retorna se entidade possui o rank fornecido ou um maior.
      * @param {number} rank - Valor do rank a ser comparado.
      * @returns {boolean}
      */
     hasRank(rank: number): boolean;
 
     /**
-     * Retorna se entidade está próxima (tocando) a posição fornecida.
+     * @description Retorna se entidade está próxima (tocando) a posição fornecida.
      * @param {number} x - Posição X a ser comparada.
      * @param {number} y - Posição Y a ser comparada.
      * @param {number} z - Posição Z a ser comparada.
@@ -219,33 +219,33 @@ interface ScriptEntity {
     touching(x: number, y: number, z: number): boolean;
 
     /**
-     * Retorna se entidade está próxima (tocando) a posição fornecida pelo objeto.
+     * @description Retorna se entidade está próxima (tocando) a posição fornecida pelo objeto.
      * @param {IScriptReachable} e
      * @returns {boolean}
      */
     touching(e: IScriptReachable): boolean;
 
     /**
-     * Adiciona pontos a uma conquista do usuário.
+     * @description Adiciona pontos a uma conquista do usuário.
      * @param {string} code - Código da conquista.
      * @param {number} levels - Quantidade de pontos
      */
     progressAchievement(code: string, levels: number): void;
 
     /**
-     * Define o balão de fala da entidade.
+     * @description Define o balão de fala da entidade.
      * @param {number} bubbleId - Id do balão que será definido.
      */
     setBubble(bubbleId: number): void;
 
     /**
-     * Define uma missão a entidade.
+     * @description Define uma missão a entidade.
      * @param {string} motto - Missão que será definida na entidade.
      */
     setMotto(motto: string): void;
 
     /**
-     * Define o visual para entidade.
+     * @description Define o visual para entidade.
      * *Não aplicável a Pets*
      * @param {string} gender - Gênero do visual.
      * @param {string} figure - Código do visual.
@@ -253,37 +253,32 @@ interface ScriptEntity {
     setFigure(gender: string, figure: string): void;
 
     /**
-     * Define um item de mão para entidade segurar.
+     * @description Define um item de mão para entidade segurar.
      * @param {number} item - Código do item de mão.
+     * @param {number} time - Tempo em segundos que a entidade ficará com o item de mão.
      */
-    setHandItem(item: number): void;
+    setHandItem(item: number, time: number): void;
 
     /**
-     * Define um efeito a entidade.
+     * @description Define um efeito a entidade.
      * @param {number} effect - Código do efeito.
      */
     setEffect(effect: number): void;
 
     /**
-     * Define um valor de memória ao usuário.
-     * @param {number} value - Valor da memória.
-     */
-    setMemoryValue(value: number): void;
-
-    /**
-     * Define a entidade pode ser mover.
+     * @description Define a entidade pode ser mover.
      * @param {boolean} can - Se a entidade pode ser mover.
      * @param {boolean} effect - Se a entidade deve receber um efeito de congelado.
      */
     setCanWalk(can: boolean): void;
 
     /**
-     * Define uma dança para a entidade.
-     * 0: Parado.
-     * 1: Hap-Hop
-     * 2: Pogo-Mogo
-     * 3: Duck Funk
-     * 4: Rollie
+     * @description Define uma dança para a entidade.
+     * @argument 0: Parado.
+     * @argument 1: Hap-Hop
+     * @argument 2: Pogo-Mogo
+     * @argument 3: Duck Funk
+     * @argument 4: Rollie
      * @param {0 | 1 | 2 | 3 | 4} danceId - Código da dança
      */
     setDance(danceId: 0 | 1 | 2 | 3 | 4): void;
