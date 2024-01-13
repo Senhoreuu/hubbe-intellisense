@@ -1,13 +1,15 @@
 interface GlobalData {
     /**
      * @description Retorna a instância de um ScriptPlayerData.
-     * @param {Number} id - ID do player.
+     * @param - ID do player.
+     * @returns A instância de um ScriptPlayerData.
      */
     getPlayerDataById(id: number): ScriptPlayerData;
 
     /**
      * @description Retorna a instância de um ScriptPlayerData.
-     * @param {String} username - Nome do player.
+     * @param - Nome do player.
+     * @returns A instância de um ScriptPlayerData.
      */
     getPlayerDataByName(username: string): ScriptPlayerData;
 }

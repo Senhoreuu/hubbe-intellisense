@@ -1,13 +1,11 @@
 declare interface ScriptAchievementProgress {
     /**
-     * Retorna o progresso da conquista
-     * @returns {number}
+     * @returns {number} Retorna o progresso da conquista
      */
     getProgress(): number;
 
     /**
-     * Retorna o level da conquista
-     * @returns {number}
+     * @returns {number} Retorna o level da conquista
      */
     getLevel(): number;
 }

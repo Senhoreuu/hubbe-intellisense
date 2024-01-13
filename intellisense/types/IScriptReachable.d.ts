@@ -1,19 +1,16 @@
 declare interface IScriptReachable {
     /**
-     * Retorna posição X
-     * @returns {Number} x
+     * @returns Retorna posição X
      */
     getX(): number;
 
     /**
-     * Retorna posição Y
-     * @returns {Number} y
+     * @returns Retorna posição Y
      */
     getY(): number;
 
     /**
-     * Retorna posição Z
-     * @returns {Number} z
+     * @returns {Number} Retorna posição Z
     */
     getZ(): number;
 }
