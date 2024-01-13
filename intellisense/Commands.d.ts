@@ -1,4 +1,4 @@
-declare interface Commands {
+interface Commands {
     /**
      * @description Registra um comando para ser executado.
      * @param commandName - Nome do comando a ser registrado.
