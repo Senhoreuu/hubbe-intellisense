@@ -111,3 +111,5 @@ interface Currency {
     */
     giveSeasonalPointsById(id: number, amount: number): void;
 }
+
+declare const Currency: Currency;

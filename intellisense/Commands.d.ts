@@ -12,3 +12,5 @@ interface Commands {
      */
     unregister(commandName: string): void;
 }
+
+declare const Commands: Commands;
