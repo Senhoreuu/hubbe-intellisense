@@ -1,4 +1,11 @@
+type EventsType = 'userJoin' | 'userLeave' | 'stepOn' | 'stepOff' | 'say' | 'interact' | 'furniSelected' | 'tick' | 'load' | 'dispose' | 'playerSelected' | 'serverMessage' | 'floorItemPlaced' | 'floorItemPickedup';
+
 interface Events {
+    on<T extends EventsType>(
+        event: T,
+        callback: (...args: any[]) => void
+    ): void;
+
     /**
      * @description Evento chamado quando uma entidade entra no quarto.
      * @example
