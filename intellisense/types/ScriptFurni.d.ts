@@ -1,63 +1,63 @@
 interface ScriptFurni {
     /**
      * Retorna o ID do Furni.
-     * @returns {number}
+     * @returns
      */
     getId(): number;
 
     /**
      * Retorna o ID do furni da database.
-     * @returns {number}
+     * @returns
      */
     getDefinitionId(): number;
 
     /**
     * Retorna a posição X atual do Furni.
-    * @returns {number}
+    * @returns
     */
     getX(): number;
 
     /**
      * Retorna a posição Y atual do Furni.
-     * @returns {number}
+     * @returns
      */
     getY(): number;
 
     /**
      * Retorna a posição Z (altura) atual do Furni.
-     * @returns {number}
+     * @returns
      */
     getZ(): number;
 
     /**
      * Retorna a atual rotação do Furni.
-     * @returns {number}
+     * @returns
      */
     getR(): number;
 
     /**
      * Retorna atual estado do furni.
-     * @returns {string}
+     * @returns
      */
     getState(): string;
 
     /**
      * Retorna o ID do sprite do furni.
-     * @returns {number}
+     * @returns
      */
     getSprite(): number;
 
     /**
      * Retorna o nome do furni.
      * *O nome que está na database*
-     * @returns {string}
+     * @returns
      */
     getName(): string;
 
     /**
      * Retorna o nome público do furni. 
      * *O nome que todos estão vendo no quarto*
-     * @returns {string}
+     * @returns
      */
     getPublicName(): string;
 
@@ -69,55 +69,55 @@ interface ScriptFurni {
 
     /**
      * Retorna o tipo da interação do furni.
-     * @returns {string}
+     * @returns
      */
     getInteractionType(): string;
 
     /**
      * Retorna quantidade de interações que o furni possui.
-     * @returns {number}
+     * @returns
      */
     getInteractionModesCount(): number;
 
     /**
     * Retorna altura empilhável do furni.
-    * @returns {number}
+    * @returns
     */
     getStackHeight(): number;
 
     /**
      * Retorna a largura do furni.
-     * @returns {number}
+     * @returns
      */
     getItemWidth(): number;
 
     /**
      * Retorna o comprimento do Furni.
-     * @returns {number}
+     * @returns
      */
     getItemLength(): number;
 
     /**
      * Retorna a altura do Furni.
-     * @returns {number}
+     * @returns
      */
     getItemHeight(): number;
 
     /**
      * Retorna se a entidades a cima do furni.
-     * @returns {boolean}
+     * @returns
      */
     hasEntities(): boolean;
 
     /**
      * Retorna se o furni é sentável por uma entidade.
-     * @returns {boolean}
+     * @returns
      */
     canSit(): boolean;
 
     /**
      * Retorna se entidades podem andar sobre o furni.
-     * @returns {boolean}
+     * @returns
      */
     canWalk(): boolean;
 
@@ -150,26 +150,26 @@ interface ScriptFurni {
 
     /**
      * Move o furni até a posição fornecida.
-     * @param {number} x - Posição X para onde o furni será movido.
-     * @param {number} y - Posição y para onde o furni será movido.
-     * @param {number} z - Posição Z para onde o furni será movido.
-     * @param {number} rot - Rotação definida ao furni ao ser movido.
+     * @param x - Posição X para onde o furni será movido.
+     * @param y - Posição y para onde o furni será movido.
+     * @param z - Posição Z para onde o furni será movido.
+     * @param rot - Rotação definida ao furni ao ser movido.
+     * @param force - Se o furni será movido mesmo que tenha entidades sobre ele.
      */
-    move(x: number, y: number, z: number, rot: number): void;
+    move(x: number, y: number, z: number, rot: number, force: boolean): void;
 
     /**
      * Move o furni até a posição fornecida.
      * @param {IScriptReachable} pos - Onde o furni será movido.
-     * @param {number} rotation - Rotação
+     * @param rotation - Rotação
+     * @param force - Se o furni será movido mesmo que tenha entidades sobre ele.
      */
-    move(pos: IScriptReachable, rotation: number): void;
+    move(pos: IScriptReachable, rotation: number, force: boolean): void;
 
     /**
      * Altera o estado do Furni.
-     * @param {string} value - Valor do estado em que o furni será definido.
+     * @param value - Valor do estado em que o furni será definido.
      */
     setState(value: string): void;
 
 }
-
-declare const ScriptFurni: ScriptFurni;

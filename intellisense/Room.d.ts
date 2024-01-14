@@ -148,21 +148,17 @@ interface Room {
     /**
      * @description Altera a cor e estado da luz do quarto.
      * @param activated - Se a luz deve ser desligada ou ligada.
-     * @param r - Valor da cor representando Vermelha. (0 a 255)
-     * @param g - Valor da cor representando Verde. (0 a 255)
-     * @param b - Valor da cor representando Azul. (0 a 255)
+     * @param hex - Cor em hexadecimal que a luz deve ficar.
      * @param intensity - Valor da intensidade que a cor. *(0: Opaco a 255: Transparente)*
      * @param wallOnly - Se a luz deve ficar só nas paredes.
      */
-    setMoodLight(activated: boolean, r: number, g: number, b: number, intensity: number, wallOnly: boolean): void;
+    setMoodLight(activated: boolean, hex: string, intensity: number, wallOnly: boolean): void;
 
     /**
      * @description Altera a cor do plano de fundo do quarto. Formato em HSL.
-     * @param h - Valor da Matiz (0 a 255)
-     * @param s - Valor da Saturação (0 a 255)
-     * @param l - Valor do nivel de claridade da cor. (0 a 255)
+     * @param hex - Cor em hexadecimal que o plano de fundo deve ficar.
      */
-    setBackgroundTonerColor(h: number, s: number, l: number): void;
+    setBackgroundTonerColor(hex: string): void;
 
     /**
      * @description Define a velocidade dos Rollers no quarto.

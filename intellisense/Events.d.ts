@@ -1,11 +1,4 @@
-type EventsType = 'userJoin' | 'userLeave' | 'stepOn' | 'stepOff' | 'say' | 'interact' | 'furniSelected' | 'tick' | 'load' | 'dispose' | 'playerSelected' | 'serverMessage' | 'floorItemPlaced' | 'floorItemPickedup';
-
-interface Events {
-    on<T extends EventsType>(
-        event: T,
-        callback: (...args: any[]) => void
-    ): void;
-
+declare class Events {
     /**
      * @description Evento chamado quando uma entidade entra no quarto.
      * @example
@@ -14,7 +7,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' entrou no quarto!');
      * });
      */
-    on(event: 'userJoin', callback: (user: ScriptEntity) => void): void;
+    static on(event: 'userJoin', callback: (user: ScriptEntity) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade sai do quarto.
@@ -24,7 +17,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' saiu do quarto!');
      * });
      */
-    on(event: 'userLeave', callback: (user: ScriptEntity) => void): void;
+    static on(event: 'userLeave', callback: (user: ScriptEntity) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade pisa em um mobi.
@@ -34,7 +27,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' pisou em ' + furni.getName());
      * });
      */
-    on(event: 'stepOn', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    static on(event: 'stepOn', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade sai de um mobi.
@@ -44,7 +37,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' saiu de ' + furni.getName());
      * });
      */
-    on(event: 'stepOff', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    static on(event: 'stepOff', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade fala algo.
@@ -54,7 +47,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' disse: ' + message);
      * });
      */
-    on(event: 'say', callback: (user: ScriptEntity, message: string) => void): void;
+    static on(event: 'say', callback: (user: ScriptEntity, message: string) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade interage com um mobi dando dois cliques.
@@ -64,7 +57,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' interagiu com ' + furni.getName());
      * });
      */
-    on(event: 'interact', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    static on(event: 'interact', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade interage com um mobi dando um clique.
@@ -74,7 +67,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' clicou em ' + furni.getName());
      * });
      */
-    on(event: 'furniSelected', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    static on(event: 'furniSelected', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado a cada tick. (1 tick = 0.5 segundo)
@@ -84,7 +77,7 @@ interface Events {
      *  Engine.log('tick executado');
      * });
      */
-    on(event: 'tick', callback: () => void): void;
+    static on(event: 'tick', callback: () => void): void;
 
     /**
      * @description Evento chamado quando o quarto é carregado.
@@ -94,7 +87,7 @@ interface Events {
      *  Engine.log('quarto carregado');
      * });
      */
-    on(event: 'load', callback: () => void): void;
+    static on(event: 'load', callback: () => void): void;
 
     /**
      * @description Evento chamado quando o quarto é descarregado.
@@ -104,7 +97,7 @@ interface Events {
      *  Engine.log('quarto descarregado');
      * });
      */
-    on(event: 'dispose', callback: () => void): void;
+    static on(event: 'dispose', callback: () => void): void;
 
     /**
      * @description Evento chamado quando um player é selecionado.
@@ -116,7 +109,7 @@ interface Events {
      *  Engine.log(user.getUsername() + ' clicou em ' + target.getUsername());
      * });
      */
-    on(
+    static on(
         event: 'playerSelected',
         callback: (user: ScriptEntity, target: ScriptEntity) => void
     ): void;
@@ -135,7 +128,7 @@ interface Events {
      *  Engine.log('Dados: ' + data);
      * });
      */
-    on(
+    static on(
         event: 'serverMessage',
         callback: (roomId: number, event: string, data: string) => void
     ): void;
@@ -150,7 +143,7 @@ interface Events {
      *  Engine.log(user.getUsername() + ' colocou ' + furni.getName());
      * });
      */
-    on(
+    static on(
         event: 'floorItemPlaced',
         callback: (user: ScriptEntity, furni: ScriptFurni) => void
     ): void;
@@ -165,7 +158,7 @@ interface Events {
      *  Engine.log(user.getUsername() + ' removeu ' + furni.getName());
      * });
      */
-    on(
+    static on(
         event: 'floorItemPickedup',
         callback: (user: ScriptEntity, furni: ScriptFurni) => void
     ): void;
@@ -186,7 +179,5 @@ interface Events {
      * // Exemplo de uso:
      * Events.sendMessageToRoom(123, 'evento',  JSON.stringify([{ foo: 'bar'}]));
      */
-    sendMessageToRoom(roomId: number, event: string, data: string): void;
+    static sendMessageToRoom(roomId: number, event: string, data: string): void;
 }
-
-declare const Events: Events;

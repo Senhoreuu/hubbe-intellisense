@@ -1,23 +1,21 @@
-interface GlobalStorage {
+declare class GlobalStorage {
     /**
      * @description Consulta um valor correspondente a chave buscada.
     * @param key - Chave da propriedade a ser buscada.
     * @returns {String | null}
     */
-    get(key: string): String | null;
+    static get(key: string): String | null;
 
     /** 
      * @description Defini/Atualiza valor correspondente a chave buscada.
     * @param key - Chave da propriedade a definir.
     * @param value - Novo valor a ser definido.
     */
-    set(key: String, value: String): void;
+    static set(key: String, value: String): void;
 
     /**
      * @description Deleta valor correspondente a chave buscada.
     * @param key - Chave da propriedade a ser deletada.
     */
-    delete(key: String): void;
+    static delete(key: String): void;
 }
-
-declare const GlobalStorage: GlobalStorage;

@@ -122,6 +122,12 @@ interface ScriptEntity {
     getAchievementPoints(): number;
 
     /**
+     * @description Retorna o ID do quarto atual da entidade.
+     * @returns - ID do quarto atual da entidade.
+     */
+    getRoomId(): number;
+
+    /**
      * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
      * @param {IScriptReachable} e - Posição a ser comparada.
      * @returns {number}
@@ -448,5 +454,3 @@ interface ScriptEntity {
 
 
 }
-
-declare const ScriptEntity: ScriptEntity;
