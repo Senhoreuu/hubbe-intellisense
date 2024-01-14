@@ -230,8 +230,8 @@ declare const Currency: Currency;
 type EventsType = 'userJoin' | 'userLeave' | 'stepOn' | 'stepOff' | 'say' | 'interact' | 'furniSelected' | 'tick' | 'load' | 'dispose' | 'playerSelected' | 'serverMessage' | 'floorItemPlaced' | 'floorItemPickedup';
 
 interface Events {
-    on<T extends EventsType>(
-        event: T,
+    on<EventsType>(
+        event: EventsType,
         callback: (...args: any[]) => void
     ): void;
 
@@ -299,7 +299,7 @@ interface Events {
      * @description Evento chamado quando uma entidade interage com um mobi dando um clique.
      * @example
      * // Exemplo de uso:
-     * Events.on('click', (user, furni) => {
+     * Events.on('furniSelected', (user, furni) => {
      *   Engine.log(user.getUsername() + ' clicou em ' + furni.getName());
      * });
      */
