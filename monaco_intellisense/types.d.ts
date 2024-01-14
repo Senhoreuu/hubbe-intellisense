@@ -223,10 +223,10 @@ declare class Currency {
     static giveSeasonalPointsById(id: number, amount: number): void;
 }
 
-type EventsType = 'userJoin' | 'userLeave' | 'stepOn' | 'stepOff' | 'say' | 'interact' | 'furniSelected' | 'tick' | 'load' | 'dispose' | 'playerSelected' | 'serverMessage' | 'floorItemPlaced' | 'floorItemPickedup';
+//type EventsType = 'userJoin' | 'userLeave' | 'stepOn' | 'stepOff' | 'say' | 'interact' | 'furniSelected' | 'tick' | 'load' | 'dispose' | 'playerSelected' | 'serverMessage' | 'floorItemPlaced' | 'floorItemPickedup';
 
 declare class Events {
-    static on(event: EventsType, callback: (...args: any[]) => void): void;    
+    //static on(event: EventsType, callback: (...args: any[]) => void): void;    
 
 
     /**
