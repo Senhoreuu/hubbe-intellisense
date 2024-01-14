@@ -94,24 +94,22 @@ declare interface ScriptPlayerData {
     getLastOnlineTimestamp(): number;
 }
 
-interface Commands {
+declare class Commands {
     /**
      * @description Registra um comando para ser executado.
      * @param commandName - Nome do comando a ser registrado.
      * @param callback - Função a ser executada quando o comando for chamado.
      */
-    register(commandName: string, callback: () => void): void,
+    static register(commandName: string, callback: () => void): void,
 
     /**
      * @description Remove um comando registrado.
      * @param commandName - Nome do comando a ser removido.
      */
-    unregister(commandName: string): void;
+    static unregister(commandName: string): void;
 }
 
-declare const Commands: Commands;
-
-interface Currency {
+declare class Currency {
     /**
      * Adiciona a quantidade de Créditos a carteira do usuário.
      * @param {number} id - Id do usuário que receberá os Créditos.
@@ -124,7 +122,7 @@ interface Currency {
      * // exemplo de uso (subtrair créditos):
      * Currency.giveCreditsById(1, -100);
      */
-    giveCreditsById(id: number, amount: number): void;
+    static giveCreditsById(id: number, amount: number): void;
 
     /**
      * Adiciona a quantidade de Créditos a carteira do usuário.
@@ -138,7 +136,7 @@ interface Currency {
      * // exemplo de uso (subtrair créditos):
      * Currency.giveCreditsByUsername('username', -100);
      */
-    giveCreditsByUsername(username: string, amount: number): void;
+    static giveCreditsByUsername(username: string, amount: number): void;
 
     /**
      * Adiciona a quantidade de Duckets a carteira do usuário.
@@ -152,7 +150,7 @@ interface Currency {
      * // exemplo de uso (subtrair duckets):
      * Currency.giveDucketsById(1, -100);
     */
-    giveDucketsById(id: number, amount: number): void;
+    static giveDucketsById(id: number, amount: number): void;
 
     /**
      * Adiciona a quantidade de Duckets a carteira do usuário.
@@ -166,7 +164,7 @@ interface Currency {
      * // exemplo de uso (subtrair duckets):
      * Currency.giveDucketsByUsername('username', -100);
     */
-    giveDucketsByUsername(username: string, amount: number): void;
+    static giveDucketsByUsername(username: string, amount: number): void;
 
     /**
      * Adiciona a quantidade de Diamantes a carteira do usuário.
@@ -180,7 +178,7 @@ interface Currency {
      * // exemplo de uso (subtrair diamantes):
      * Currency.giveDiamondsById(1, -100);
     */
-    giveDiamondsById(id: number, amount: number): void;
+    static giveDiamondsById(id: number, amount: number): void;
 
     /**
      * Adiciona a quantidade de Diamantes a carteira do usuário.
@@ -194,7 +192,7 @@ interface Currency {
      * // exemplo de uso (subtrair diamantes):
      * Currency.giveDiamondsByUsername('username', -100);
     */
-    giveDiamondsByUsername(username: string, amount: number): void;
+    static giveDiamondsByUsername(username: string, amount: number): void;
 
     /**
      * Adiciona a quantidade de Pontos Sazonais a carteira do usuário.
@@ -208,7 +206,7 @@ interface Currency {
      * // exemplo de uso (subtrair pontos sazonais):
      * Currency.giveSeasonalPointsByUsername('username', -100);
     */
-    giveSeasonalPointsByUsername(username: string, amount: number): void;
+    static giveSeasonalPointsByUsername(username: string, amount: number): void;
 
     /**
      * Adiciona a quantidade de Pontos Sazonais a carteira do usuário.
@@ -222,14 +220,15 @@ interface Currency {
      * // exemplo de uso (subtrair pontos sazonais):
      * Currency.giveSeasonalPointsById(1, -100);
     */
-    giveSeasonalPointsById(id: number, amount: number): void;
+    static giveSeasonalPointsById(id: number, amount: number): void;
 }
-
-declare const Currency: Currency;
 
 type EventsType = 'userJoin' | 'userLeave' | 'stepOn' | 'stepOff' | 'say' | 'interact' | 'furniSelected' | 'tick' | 'load' | 'dispose' | 'playerSelected' | 'serverMessage' | 'floorItemPlaced' | 'floorItemPickedup';
 
-interface Events {
+declare class Events {
+    static on(event: EventsType, callback: (...args: any[]) => void): void;    
+
+
     /**
      * @description Evento chamado quando uma entidade entra no quarto.
      * @example
@@ -238,7 +237,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' entrou no quarto!');
      * });
      */
-    on(event: 'userJoin', callback: (user: ScriptEntity) => void): void;
+    static on(event: 'userJoin', callback: (user: ScriptEntity) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade sai do quarto.
@@ -248,7 +247,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' saiu do quarto!');
      * });
      */
-    on(event: 'userLeave', callback: (user: ScriptEntity) => void): void;
+    static on(event: 'userLeave', callback: (user: ScriptEntity) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade pisa em um mobi.
@@ -258,7 +257,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' pisou em ' + furni.getName());
      * });
      */
-    on(event: 'stepOn', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    static on(event: 'stepOn', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade sai de um mobi.
@@ -268,7 +267,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' saiu de ' + furni.getName());
      * });
      */
-    on(event: 'stepOff', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    static on(event: 'stepOff', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade fala algo.
@@ -278,7 +277,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' disse: ' + message);
      * });
      */
-    on(event: 'say', callback: (user: ScriptEntity, message: string) => void): void;
+    static on(event: 'say', callback: (user: ScriptEntity, message: string) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade interage com um mobi dando dois cliques.
@@ -288,7 +287,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' interagiu com ' + furni.getName());
      * });
      */
-    on(event: 'interact', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    static on(event: 'interact', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade interage com um mobi dando um clique.
@@ -298,7 +297,7 @@ interface Events {
      *   Engine.log(user.getUsername() + ' clicou em ' + furni.getName());
      * });
      */
-    on(event: 'furniSelected', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    static on(event: 'furniSelected', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado a cada tick. (1 tick = 0.5 segundo)
@@ -308,7 +307,7 @@ interface Events {
      *  Engine.log('tick executado');
      * });
      */
-    on(event: 'tick', callback: () => void): void;
+    static on(event: 'tick', callback: () => void): void;
 
     /**
      * @description Evento chamado quando o quarto é carregado.
@@ -318,7 +317,7 @@ interface Events {
      *  Engine.log('quarto carregado');
      * });
      */
-    on(event: 'load', callback: () => void): void;
+    static on(event: 'load', callback: () => void): void;
 
     /**
      * @description Evento chamado quando o quarto é descarregado.
@@ -328,7 +327,7 @@ interface Events {
      *  Engine.log('quarto descarregado');
      * });
      */
-    on(event: 'dispose', callback: () => void): void;
+    static on(event: 'dispose', callback: () => void): void;
 
     /**
      * @description Evento chamado quando um player é selecionado.
@@ -340,7 +339,7 @@ interface Events {
      *  Engine.log(user.getUsername() + ' clicou em ' + target.getUsername());
      * });
      */
-    on(
+    static on(
         event: 'playerSelected',
         callback: (user: ScriptEntity, target: ScriptEntity) => void
     ): void;
@@ -359,7 +358,7 @@ interface Events {
      *  Engine.log('Dados: ' + data);
      * });
      */
-    on(
+    static on(
         event: 'serverMessage',
         callback: (roomId: number, event: string, data: string) => void
     ): void;
@@ -374,7 +373,7 @@ interface Events {
      *  Engine.log(user.getUsername() + ' colocou ' + furni.getName());
      * });
      */
-    on(
+    static on(
         event: 'floorItemPlaced',
         callback: (user: ScriptEntity, furni: ScriptFurni) => void
     ): void;
@@ -389,7 +388,7 @@ interface Events {
      *  Engine.log(user.getUsername() + ' removeu ' + furni.getName());
      * });
      */
-    on(
+    static on(
         event: 'floorItemPickedup',
         callback: (user: ScriptEntity, furni: ScriptFurni) => void
     ): void;
@@ -410,135 +409,125 @@ interface Events {
      * // Exemplo de uso:
      * Events.sendMessageToRoom(123, 'evento',  JSON.stringify([{ foo: 'bar'}]));
      */
-    sendMessageToRoom(roomId: number, event: string, data: string): void;
+    static sendMessageToRoom(roomId: number, event: string, data: string): void;
 }
 
-declare const Events: Events;
-
-interface GlobalData {
+declare class GlobalData {
     /**
      * @description Retorna a instância de um ScriptPlayerData.
      * @param - ID do player.
      * @returns A instância de um ScriptPlayerData.
      */
-    getPlayerDataById(id: number): ScriptPlayerData;
+    static getPlayerDataById(id: number): ScriptPlayerData;
 
     /**
      * @description Retorna a instância de um ScriptPlayerData.
      * @param - Nome do player.
      * @returns A instância de um ScriptPlayerData.
      */
-    getPlayerDataByName(username: string): ScriptPlayerData;
+    static getPlayerDataByName(username: string): ScriptPlayerData;
 }
 
-declare const GlobalData: GlobalData;
-
-interface GlobalStorage {
+declare class GlobalStorage {
     /**
      * @description Consulta um valor correspondente a chave buscada.
     * @param key - Chave da propriedade a ser buscada.
     * @returns {String | null}
     */
-    get(key: string): String | null;
+    static get(key: string): String | null;
 
     /** 
      * @description Defini/Atualiza valor correspondente a chave buscada.
     * @param key - Chave da propriedade a definir.
     * @param value - Novo valor a ser definido.
     */
-    set(key: String, value: String): void;
+    static set(key: String, value: String): void;
 
     /**
      * @description Deleta valor correspondente a chave buscada.
     * @param key - Chave da propriedade a ser deletada.
     */
-    delete(key: String): void;
+    static delete(key: String): void;
 }
 
-declare const GlobalStorage: GlobalStorage;
-
-interface Highscores {
+declare class Highscores {
     /**
      * @description Adiciona pontos ao Placar
      * @param {String | ScriptEntity} player - Nick ou Usuário que receberá os pontos.
      * @param {Number} points - Quantidade de pontos a serem adicionados.
     */
-    add(player: String | ScriptEntity, points: Number): void;
+    static add(player: String | ScriptEntity, points: Number): void;
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
      * @param {String[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
      * @returns {Number}
     */
-    getScore(group: String[] | ScriptEntity[]): number;
+    static getScore(group: String[] | ScriptEntity[]): number;
 
     /**
      * @description Remove pontos do Placar
      * @param {String | ScriptEntity} player - Nick ou Usuário que perderá os pontos.
      * @param {Number} points - Quantidade de pontos a serem removidos.
     */
-    remove(player: String | ScriptEntity, points: Number): void;
+    static remove(player: String | ScriptEntity, points: Number): void;
 
     /**
      * @description Adiciona pontos a todo o Grupo no Placar
      * @param {String[] | ScriptEntity[]} player - Nicks ou Usuários que receberam os pontos.
      * @param {Number} points - Quantidade de pontos a serem adicionados.
     */
-    addGroup(player: String[] | ScriptEntity[], points: Number): void;
+    static addGroup(player: String[] | ScriptEntity[], points: Number): void;
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
      * @param {String[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
      * @returns {Number}
     */
-    getGroupScore(group: String[] | ScriptEntity[]): number;
+    static getGroupScore(group: String[] | ScriptEntity[]): number;
 
     /**
      * @description Remove pontos de todo o Grupo no Placar
      * @param {String | ScriptEntity} player - Nicks ou Usuários que perderam os pontos.
      * @param {Number} points - Quantidade de pontos a serem removidos.
     */
-    removeGroup(player: String | ScriptEntity, points: Number): void;
+    static removeGroup(player: String | ScriptEntity, points: Number): void;
 
     /**
      * @description Limpa todos os usuários do Placar
      * @param {Number | ScriptFurni} scoreboard - ID ou Furni do Placar.
     */
-    clear(scoreboard: Number | ScriptFurni): void;
+    static clear(scoreboard: Number | ScriptFurni): void;
 
     /**
      * @description Limpa todos os usuários do Placar
      * @param {Number | ScriptFurni} scoreboard - ID ou Furni do Placar.
     */
-    reset(scoreboard: Number | ScriptFurni): void;
+    static reset(scoreboard: Number | ScriptFurni): void;
 }
 
-declare const Highscores: Highscores;
-
-interface RoomStorage {
+declare class RoomStorage {
     /**
     * @description Retorna os dados salvos no quarto a partir da chave de busca. 
     * @param {string} key - Chave da propriedade a ser buscada.
     * @returns {string} 
     */
-    get(key: string): string;
+    static get(key: string): string;
 
     /** 
     * @description Define/Atualiza valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a definir.
     * @param {string} value - Novo valor a ser definido.
     */
-    set(key: string, value: string): void;
+    static set(key: string, value: string): void;
 
     /** 
     * @description Deleta valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser deletada.
     * @returns {boolean} - Retorna true caso a chave tenha sido deletada com sucesso.
     */
-    delete(key: string): boolean;
+    static delete(key: string): boolean;
 }
-
-declare const RoomStorage: RoomStorage;
 
 interface ScriptEntity {
     /**
@@ -991,8 +980,6 @@ interface ScriptEntity {
 
 }
 
-declare const ScriptEntity: ScriptEntity;
-
 interface ScriptFurni {
     /**
      * Retorna o ID do Furni.
@@ -1167,8 +1154,6 @@ interface ScriptFurni {
 
 }
 
-declare const ScriptFurni: ScriptFurni;
-
 interface ScriptTile {
     /**
      * @description Retorna posição X do piso.
@@ -1243,7 +1228,6 @@ interface ScriptTile {
     canPlaceItem(): Boolean;
 }
 
-declare const ScriptTile: ScriptTile;
 
 interface Room {
     /**
