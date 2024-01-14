@@ -230,11 +230,6 @@ declare const Currency: Currency;
 type EventsType = 'userJoin' | 'userLeave' | 'stepOn' | 'stepOff' | 'say' | 'interact' | 'furniSelected' | 'tick' | 'load' | 'dispose' | 'playerSelected' | 'serverMessage' | 'floorItemPlaced' | 'floorItemPickedup';
 
 interface Events {
-    on<EventsType>(
-        event: EventsType,
-        callback: (...args: any[]) => void
-    ): void;
-
     /**
      * @description Evento chamado quando uma entidade entra no quarto.
      * @example
