@@ -1,0 +1,82 @@
+[
+    {
+        "label": "userJoin",
+        "insertText": "Events.on('userJoin', (user) => {\n\t// code\n});"
+    },
+    {
+        "label": "userLeave",
+        "insertText": "Events.on('userLeave', (user) => {\n\t// code\n});"
+    },
+    {
+        "label": "stepOn",
+        "insertText": "Events.on('stepOn', (user, furni) => {\n\t// code\n});"
+    },
+    {
+        "label": "stepOff",
+        "insertText": "Events.on('stepOff', (user, furni) => {\n\t// code\n});"
+    },
+    {
+        "label": "say",
+        "insertText": "Events.on('say', (user, message) => {\n\t// code\n});"
+    },
+    {
+        "label": "interact",
+        "insertText": "Events.on('interact', (user, furni) => {\n\t// code\n});"
+    },
+    {
+        "label": "furniSelected",
+        "insertText": "Events.on('furniSelected', (user, furni) => {\n\t// code\n});"
+    },
+    {
+        "label": "tick",
+        "insertText": "Events.on('tick', () => {\n\t// code\n});"
+    },
+    {
+        "label": "load",
+        "insertText": "Events.on('load', () => {\n\t// code\n});"
+    },
+    {
+        "label": "dipose",
+        "insertText": "Events.on('dipose', () => {\n\t// code\n});"
+    },
+    {
+        "label": "playerSelected",
+        "insertText": "Events.on('playerSelected', (user, target) => {\n\t// code\n});"
+    },
+    {
+        "label": "serverMessage",
+        "insertText": "Events.on('serverMessage', (roomId, event, data) => {\n\t// code\n});"
+    },
+    {
+        "label": "floorItemPlaced",
+        "insertText": "Events.on('floorItemPlaced', (user, furni) => {\n\t// code\n});"
+    },
+    {
+        "label": "floorItemPickedup",
+        "insertText": "Events.on('floorItemPickedup', (user, furni) => {\n\t// code\n});"
+    },
+    {
+        "label": "delayWait",
+        "insertText": "Delay.wait(() => {\n\t// code\n}, ticks);"
+    },
+    {
+        "label": "delayInterval",
+        "insertText": "Delay.interval(() => {\n\t// code\n}, ticks);"
+    },
+    {
+        "label": "fakePlayer1",
+        "insertText": "Faker.createFakePlayer('name', x, y, z, r);"
+    },
+    {
+        "label": "fakePlayer2",
+        "insertText": "Faker.createFakePlayer('name', 'motto', 'figure', 'gender', credits, diamonds, duckets, x, y, z, r);"
+    },
+    {
+        "label": "fakeItem",
+        "insertText": "Faker.createFakeItem('baseId', x, y, z, r);"
+    },
+    {
+        "label": "register",
+        "insertText": "Commands.register('command', true, (user, args) => {\n\t// code\n});"
+    }
+]
