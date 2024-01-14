@@ -230,8 +230,8 @@ declare const Currency: Currency;
 type EventsType = 'userJoin' | 'userLeave' | 'stepOn' | 'stepOff' | 'say' | 'interact' | 'furniSelected' | 'tick' | 'load' | 'dispose' | 'playerSelected' | 'serverMessage' | 'floorItemPlaced' | 'floorItemPickedup';
 
 interface Events {
-    on<T extends EventsType>(
-        event: T,
+    on<EventsType>(
+        event: EventsType,
         callback: (...args: any[]) => void
     ): void;
 
