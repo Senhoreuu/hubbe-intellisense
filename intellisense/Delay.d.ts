@@ -1,4 +1,4 @@
-declare class Delay {
+interface Delay {
     /**
      * @example
      * Delay.wait(() => {
@@ -39,8 +39,10 @@ declare class Delay {
      * Delay.wait(() => {
      *      //Executado após 10 segundos.
      * }, Delay.seconds(10))
-     * @static 
+     * @
      * @param sec - Quantidade de segundos a serem convertidos em ticks.
     */
     seconds(sec: number): number;
 }
+
+export const Delay: Delay;

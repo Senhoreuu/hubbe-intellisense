@@ -1,4 +1,4 @@
-declare interface IScriptReachable {
+export interface IScriptReachable {
     /**
      * @returns Retorna posição X
      */

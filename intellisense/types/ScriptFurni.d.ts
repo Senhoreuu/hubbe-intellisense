@@ -1,4 +1,4 @@
-interface ScriptFurni {
+export interface ScriptFurni {
     /**
      * Retorna o ID do Furni.
      * @returns

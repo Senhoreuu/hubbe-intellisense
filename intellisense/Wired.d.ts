@@ -1,4 +1,4 @@
-declare class Wired {
+export interface Wired {
     /**
      * Recebe eventos dos wired de efeito que possuem o eventName.
      * @param eventName - Nome do evento que está no Efeito.
@@ -13,3 +13,5 @@ declare class Wired {
      */
     trigger(wiredName: string, entity: ScriptEntity): void;
 }
+
+export const Wired: Wired;

@@ -1,4 +1,4 @@
-interface WebhookMessage {
+export interface WebhookMessage {
     /**
      * @description Define a mensagem que será enviada junto ao Webhook
      * @param bodyMessage

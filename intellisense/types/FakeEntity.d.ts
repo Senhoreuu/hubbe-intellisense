@@ -1,4 +1,4 @@
-interface FakeEntity {
+export interface FakeEntity {
    /**
     * @description - Adiciona relacionamento a entidade
     * @param entityId - ID da entidade

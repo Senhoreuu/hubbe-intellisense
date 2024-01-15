@@ -1,4 +1,4 @@
-declare class Currency {
+interface Currency {
     /**
      * Adiciona a quantidade de Créditos a carteira do usuário.
      * @param {number} id - Id do usuário que receberá os Créditos.
@@ -11,7 +11,7 @@ declare class Currency {
      * // exemplo de uso (subtrair créditos):
      * Currency.giveCreditsById(1, -100);
      */
-    static giveCreditsById(id: number, amount: number): void;
+    giveCreditsById(id: number, amount: number): void;
 
     /**
      * Adiciona a quantidade de Créditos a carteira do usuário.
@@ -25,7 +25,7 @@ declare class Currency {
      * // exemplo de uso (subtrair créditos):
      * Currency.giveCreditsByUsername('username', -100);
      */
-    static giveCreditsByUsername(username: string, amount: number): void;
+    giveCreditsByUsername(username: string, amount: number): void;
 
     /**
      * Adiciona a quantidade de Duckets a carteira do usuário.
@@ -39,7 +39,7 @@ declare class Currency {
      * // exemplo de uso (subtrair duckets):
      * Currency.giveDucketsById(1, -100);
     */
-    static giveDucketsById(id: number, amount: number): void;
+    giveDucketsById(id: number, amount: number): void;
 
     /**
      * Adiciona a quantidade de Duckets a carteira do usuário.
@@ -53,7 +53,7 @@ declare class Currency {
      * // exemplo de uso (subtrair duckets):
      * Currency.giveDucketsByUsername('username', -100);
     */
-    static giveDucketsByUsername(username: string, amount: number): void;
+    giveDucketsByUsername(username: string, amount: number): void;
 
     /**
      * Adiciona a quantidade de Diamantes a carteira do usuário.
@@ -67,7 +67,7 @@ declare class Currency {
      * // exemplo de uso (subtrair diamantes):
      * Currency.giveDiamondsById(1, -100);
     */
-    static giveDiamondsById(id: number, amount: number): void;
+    giveDiamondsById(id: number, amount: number): void;
 
     /**
      * Adiciona a quantidade de Diamantes a carteira do usuário.
@@ -81,7 +81,7 @@ declare class Currency {
      * // exemplo de uso (subtrair diamantes):
      * Currency.giveDiamondsByUsername('username', -100);
     */
-    static giveDiamondsByUsername(username: string, amount: number): void;
+    giveDiamondsByUsername(username: string, amount: number): void;
 
     /**
      * Adiciona a quantidade de Pontos Sazonais a carteira do usuário.
@@ -95,7 +95,7 @@ declare class Currency {
      * // exemplo de uso (subtrair pontos sazonais):
      * Currency.giveSeasonalPointsByUsername('username', -100);
     */
-    static giveSeasonalPointsByUsername(username: string, amount: number): void;
+    giveSeasonalPointsByUsername(username: string, amount: number): void;
 
     /**
      * Adiciona a quantidade de Pontos Sazonais a carteira do usuário.
@@ -109,5 +109,7 @@ declare class Currency {
      * // exemplo de uso (subtrair pontos sazonais):
      * Currency.giveSeasonalPointsById(1, -100);
     */
-    static giveSeasonalPointsById(id: number, amount: number): void;
+    giveSeasonalPointsById(id: number, amount: number): void;
 }
+
+export const Currency: Currency;

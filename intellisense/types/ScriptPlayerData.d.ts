@@ -1,4 +1,4 @@
-declare interface ScriptPlayerData {
+export interface ScriptPlayerData {
     /**
      * @return Retorna o ID do player.
      */

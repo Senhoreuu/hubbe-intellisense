@@ -1,4 +1,4 @@
-declare interface ScriptAchievementProgress {
+export interface ScriptAchievementProgress {
     /**
      * @returns {number} Retorna o progresso da conquista
      */

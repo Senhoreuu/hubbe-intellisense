@@ -1,4 +1,4 @@
-interface FakeFloorItem {
+export interface FakeFloorItem {
     /**
      * @description Retorna o ID do FakeFurni
      */

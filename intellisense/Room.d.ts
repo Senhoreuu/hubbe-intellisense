@@ -226,4 +226,4 @@ interface Room {
     youtube(link: string): void;
 }
 
-declare const Room: Room;
+export const Room: Room;

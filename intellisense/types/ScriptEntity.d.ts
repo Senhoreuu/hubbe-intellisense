@@ -1,4 +1,4 @@
-interface ScriptEntity {
+export interface ScriptEntity {
     /**
      * @description Retorna o Balão de fala atual da entidade.
      * @returns {number}

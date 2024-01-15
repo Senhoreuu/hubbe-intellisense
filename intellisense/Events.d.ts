@@ -1,4 +1,4 @@
-declare class Events {
+interface Events {
     /**
      * @description Evento chamado quando uma entidade entra no quarto.
      * @example
@@ -7,7 +7,7 @@ declare class Events {
      *   Engine.log(user.getUsername() + ' entrou no quarto!');
      * });
      */
-    static on(event: 'userJoin', callback: (user: ScriptEntity) => void): void;
+    on(event: 'userJoin', callback: (user: ScriptEntity) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade sai do quarto.
@@ -17,7 +17,7 @@ declare class Events {
      *   Engine.log(user.getUsername() + ' saiu do quarto!');
      * });
      */
-    static on(event: 'userLeave', callback: (user: ScriptEntity) => void): void;
+    on(event: 'userLeave', callback: (user: ScriptEntity) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade pisa em um mobi.
@@ -27,7 +27,7 @@ declare class Events {
      *   Engine.log(user.getUsername() + ' pisou em ' + furni.getName());
      * });
      */
-    static on(event: 'stepOn', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    on(event: 'stepOn', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade sai de um mobi.
@@ -37,7 +37,7 @@ declare class Events {
      *   Engine.log(user.getUsername() + ' saiu de ' + furni.getName());
      * });
      */
-    static on(event: 'stepOff', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    on(event: 'stepOff', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade fala algo.
@@ -47,7 +47,7 @@ declare class Events {
      *   Engine.log(user.getUsername() + ' disse: ' + message);
      * });
      */
-    static on(event: 'say', callback: (user: ScriptEntity, message: string) => void): void;
+    on(event: 'say', callback: (user: ScriptEntity, message: string) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade interage com um mobi dando dois cliques.
@@ -57,7 +57,7 @@ declare class Events {
      *   Engine.log(user.getUsername() + ' interagiu com ' + furni.getName());
      * });
      */
-    static on(event: 'interact', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    on(event: 'interact', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade interage com um mobi dando um clique.
@@ -67,7 +67,7 @@ declare class Events {
      *   Engine.log(user.getUsername() + ' clicou em ' + furni.getName());
      * });
      */
-    static on(event: 'furniSelected', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
+    on(event: 'furniSelected', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
      * @description Evento chamado a cada tick. (1 tick = 0.5 segundo)
@@ -77,7 +77,7 @@ declare class Events {
      *  Engine.log('tick executado');
      * });
      */
-    static on(event: 'tick', callback: () => void): void;
+    on(event: 'tick', callback: () => void): void;
 
     /**
      * @description Evento chamado quando o quarto é carregado.
@@ -87,7 +87,7 @@ declare class Events {
      *  Engine.log('quarto carregado');
      * });
      */
-    static on(event: 'load', callback: () => void): void;
+    on(event: 'load', callback: () => void): void;
 
     /**
      * @description Evento chamado quando o quarto é descarregado.
@@ -97,7 +97,7 @@ declare class Events {
      *  Engine.log('quarto descarregado');
      * });
      */
-    static on(event: 'dispose', callback: () => void): void;
+    on(event: 'dispose', callback: () => void): void;
 
     /**
      * @description Evento chamado quando um player é selecionado.
@@ -109,7 +109,7 @@ declare class Events {
      *  Engine.log(user.getUsername() + ' clicou em ' + target.getUsername());
      * });
      */
-    static on(
+    on(
         event: 'playerSelected',
         callback: (user: ScriptEntity, target: ScriptEntity) => void
     ): void;
@@ -128,7 +128,7 @@ declare class Events {
      *  Engine.log('Dados: ' + data);
      * });
      */
-    static on(
+    on(
         event: 'serverMessage',
         callback: (roomId: number, event: string, data: string) => void
     ): void;
@@ -143,7 +143,7 @@ declare class Events {
      *  Engine.log(user.getUsername() + ' colocou ' + furni.getName());
      * });
      */
-    static on(
+    on(
         event: 'floorItemPlaced',
         callback: (user: ScriptEntity, furni: ScriptFurni) => void
     ): void;
@@ -158,7 +158,7 @@ declare class Events {
      *  Engine.log(user.getUsername() + ' removeu ' + furni.getName());
      * });
      */
-    static on(
+    on(
         event: 'floorItemPickedup',
         callback: (user: ScriptEntity, furni: ScriptFurni) => void
     ): void;
@@ -179,5 +179,7 @@ declare class Events {
      * // Exemplo de uso:
      * Events.sendMessageToRoom(123, 'evento',  JSON.stringify([{ foo: 'bar'}]));
      */
-    static sendMessageToRoom(roomId: number, event: string, data: string): void;
+    sendMessageToRoom(roomId: number, event: string, data: string): void;
 }
+
+export const Events: Events;

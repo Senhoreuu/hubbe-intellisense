@@ -1,4 +1,4 @@
-interface ScriptTile {
+export interface ScriptTile {
     /**
      * @description Retorna posição X do piso.
      * @returns {Number}
@@ -71,5 +71,3 @@ interface ScriptTile {
      */
     canPlaceItem(): Boolean;
 }
-
-declare const ScriptTile: ScriptTile;
