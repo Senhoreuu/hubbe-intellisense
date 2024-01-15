@@ -63,7 +63,7 @@ declare class Events {
      * @description Evento chamado quando uma entidade interage com um mobi dando um clique.
      * @example
      * // Exemplo de uso:
-     * Events.on('click', (user, furni) => {
+     * Events.on('furniSelected', (user, furni) => {
      *   Engine.log(user.getUsername() + ' clicou em ' + furni.getName());
      * });
      */
