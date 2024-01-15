@@ -1,3 +1,5 @@
+import { WebhookMessage } from "./types/WebhookMessage";
+
 interface Webhook {
     /**
      * @description Cria um novo Webhook direcionado ao link.

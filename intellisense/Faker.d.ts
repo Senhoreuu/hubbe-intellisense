@@ -1,3 +1,6 @@
+import { FakeEntity } from "./types/FakeEntity";
+import { FakeFloorItem } from "./types/FakeFloorItem";
+
 interface Faker {
     /**
      * @description Cria um FakeItem, uma mobilia similar a original

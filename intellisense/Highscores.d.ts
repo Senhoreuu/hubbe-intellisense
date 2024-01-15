@@ -1,3 +1,6 @@
+import { ScriptEntity } from "./types/ScriptEntity";
+import { ScriptFurni } from "./types/ScriptFurni";
+
 interface Highscores {
     /**
      * @description Adiciona pontos ao Placar

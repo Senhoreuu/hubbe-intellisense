@@ -1,3 +1,7 @@
+import { ScriptEntity } from "./types/ScriptEntity";
+import { ScriptFurni } from "./types/ScriptFurni";
+import { ScriptTile } from "./types/ScriptTile";
+
 interface Room {
     /**
      * @returns Retorna o ID do quarto

@@ -1,3 +1,6 @@
+import { ScriptEntity } from "./types/ScriptEntity";
+import { ScriptFurni } from "./types/ScriptFurni";
+
 interface Events {
     /**
      * @description Evento chamado quando uma entidade entra no quarto.

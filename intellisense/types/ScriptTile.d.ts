@@ -1,3 +1,6 @@
+import { ScriptEntity } from "./ScriptEntity";
+import { ScriptFurni } from "./ScriptFurni";
+
 export interface ScriptTile {
     /**
      * @description Retorna posição X do piso.

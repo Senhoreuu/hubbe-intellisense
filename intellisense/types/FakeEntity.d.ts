@@ -1,3 +1,6 @@
+import { IScriptReachable } from "./IScriptReachable";
+import { ScriptEntity } from "./ScriptEntity";
+
 export interface FakeEntity {
    /**
     * @description - Adiciona relacionamento a entidade

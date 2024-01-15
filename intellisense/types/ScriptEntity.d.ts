@@ -1,3 +1,5 @@
+import { ScriptAchievementProgress } from "./ScriptAchievementProgress";
+import { IScriptReachable } from "./IScriptReachable";
 export interface ScriptEntity {
     /**
      * @description Retorna o Balão de fala atual da entidade.

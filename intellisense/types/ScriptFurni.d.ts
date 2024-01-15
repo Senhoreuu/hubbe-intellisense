@@ -1,3 +1,5 @@
+import { IScriptReachable } from "./IScriptReachable";
+import { ScriptEntity } from "./ScriptEntity";
 export interface ScriptFurni {
     /**
      * Retorna o ID do Furni.

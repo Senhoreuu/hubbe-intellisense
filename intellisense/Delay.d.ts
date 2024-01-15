@@ -1,3 +1,5 @@
+import { DelayTask } from "./types/DelayTask";
+
 interface Delay {
     /**
      * @example

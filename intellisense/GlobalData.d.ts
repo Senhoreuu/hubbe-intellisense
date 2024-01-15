@@ -1,3 +1,6 @@
+import { ScriptEntity } from "./types/ScriptEntity";
+import { ScriptPlayerData } from "./types/ScriptPlayerData";
+
 interface GlobalData {
     /**
      * @description Retorna a instância de um ScriptPlayerData.

@@ -1,3 +1,5 @@
+import { ScriptEntity } from "./types/ScriptEntity";
+
 export interface Wired {
     /**
      * Recebe eventos dos wired de efeito que possuem o eventName.
