@@ -1776,10 +1776,10 @@ declare class Highscores {
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
-     * @param {String[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
+     * @param {String | ScriptEntity} user - Nick ou Usuário que serão consultados.
      * @returns {number} Quantidade de pontos que o grupo tem no Placar
     */
-    static getScore(group: String[] | ScriptEntity[]): number;
+    static getScore(user: String | ScriptEntity): number;
 
     /**
      * @description Remove pontos do Placar
@@ -1862,13 +1862,13 @@ declare class Room {
      * @description Retorna o nome atual do quarto.
      * @returns {number} o nome atual do quarto.
      */
-    static getName(): number;
+    static getName(): string;
 
     /**
      * @description Retorna o nome do dono do quarto
      * @returns {number} o nome do dono do quarto
      */
-    static getOwnerUsername(): number;
+    static getOwnerUsername(): string;
 
     /**
      * @description Retorna o ID do dono do quarto
@@ -1937,13 +1937,13 @@ declare class Room {
      * @param {number} y - Posição y do piso.
      * @returns {ScriptTile} o Piso da posição fornecida.
      */
-    static getTile(x: number, y: number): ScriptTile;
+    static getTile(x: number, y: number): ScriptTile | null;
 
     /**
      * @param {number} id - ID da mobilia a ser buscada.
      * @description Retorna a mobilia correspondente ao ID.
      */
-    static getFurniById(id: number): ScriptFurni;
+    static getFurniById(id: number): ScriptFurni | null;
 
     /**
      * @description Retorna uma lista de mobilias que estão no piso
@@ -2129,7 +2129,7 @@ declare class Faker {
      * });
      *  @return {FakeFloorItem} Retorna o item criado
      */
-    static createFakeItem(baseId: number, x: number, y: number, z: number, r: number): void;
+    static createFakeItem(baseId: number, x: number, y: number, z: number, r: number): FakeFloorItem;
 
     /**
      * @description Cria entidade similar a um player real
@@ -2146,7 +2146,7 @@ declare class Faker {
      * });
      * @returns {FakeEntity} Retorna o player criado
      */
-    static createFakePlayer(name: string, x: number, y: number, z: number, r: number): void;
+    static createFakePlayer(name: string, x: number, y: number, z: number, r: number): FakeEntity;
 
     /**
      * @description Cria entidade similar a um player real
@@ -2169,7 +2169,7 @@ declare class Faker {
      * });
      * @returns {FakeEntity} Retorna o player criado
      */
-    static createFakePlayer(name: string, motto: string, figure: string, gender: string, credits: number, diamonds: number, duckets: number, x: number, y: number, z: number, r: number): void;
+    static createFakePlayer(name: string, motto: string, figure: string, gender: string, credits: number, diamonds: number, duckets: number, x: number, y: number, z: number, r: number): FakeEntity;
 
     /**
      * @description Cria uma entidade similar a um bot real
@@ -2186,7 +2186,7 @@ declare class Faker {
      * });
      * @returns {FakeEntity} Retorna o bot criado
      */
-    static createFakeBot(name: string, x: number, y: number, z: number, r: number): void;
+    static createFakeBot(name: string, x: number, y: number, z: number, r: number): FakeEntity;
 
     /**
      * @description Cria uma entidade similar a um bot real
@@ -2203,7 +2203,7 @@ declare class Faker {
      * });
      * @returns {FakeEntity} Retorna o bot criado
      */
-    static createFakeBot(name: string, motto: string, figure: string, gender: string, x: number, y: number, z: number, r: number): void;
+    static createFakeBot(name: string, motto: string, figure: string, gender: string, x: number, y: number, z: number, r: number): FakeEntity;
 
     /**
      * @description Um array com todos os itens falsos criados
@@ -2216,7 +2216,7 @@ declare class Faker {
      * });
      * @returns {FakeFloorItem[]} Retorna a lista com todos os itens criados
      */
-    static getLoadedFurnis(): void;
+    static getLoadedFurnis(): FakeFloorItem[];
 
     /**
      * @description Remove item determinado
