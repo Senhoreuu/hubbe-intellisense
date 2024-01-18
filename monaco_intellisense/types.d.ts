@@ -1315,10 +1315,10 @@ interface CommandCallback {
     /**
      * @description Função que será executada quando o comando for chamado.
      * @param {ScriptEntity | null;} entity - Entidade que chamou o comando.
-     * @param {string[]} message - Argumentos passados no comando.
+     * @param {string} message - Argumentos passados no comando.
      * @returns {void}
      */
-    (entity: ScriptEntity, message: string[]): void;
+    (entity: ScriptEntity, message: string): void;
 }
 
 
