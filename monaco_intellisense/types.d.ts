@@ -272,6 +272,12 @@ interface ScriptEntity {
     getId(): number;
 
     /**
+     * @description Retorna o ID do jogador.
+     * @returns {number} O ID do jogador.
+     */
+    getPlayerId(): number;
+
+    /**
      * @description Retorna o nome da Entidade atual.
      * @returns {string} O nome da Entidade atual.
      */
@@ -492,6 +498,21 @@ interface ScriptEntity {
     touching(object: IScriptReachable): boolean;
 
     /**
+     * @description Retorna se entidade possui o item fornecido no inventário.
+     * @param {number} spriteId - Código do item a ser verificado.
+     * @returns {boolean} Se entidade possui o item fornecido no inventário.
+     */
+    hasItemBySpriteId(spriteId: number): boolean;
+
+    /**
+     * @description Retorna se entidade possui a quantidade do item fornecido no inventário.
+     * @param {number} spriteId - Código do item a ser verificado.
+     * @param {number} quantity - Quantidade do item a ser verificado.
+     * @returns {boolean} Se entidade possui a quantidade do item fornecido no inventário.
+     */
+    hasItemBySpriteId(spriteId: number, quantity: number): boolean;
+
+    /**
      * @description Adiciona pontos a uma conquista do usuário.
      * @param {string} code - Código da conquista.
      * @param {number} levels - Quantidade de pontos
@@ -562,6 +583,36 @@ interface ScriptEntity {
      * @returns {void}
      */
     giveBadge(badge: string): void;
+
+    /**
+     * @description Adiciona ao inventário da entidade um item.
+     * @param {number} spriteId - Código do item.
+     * @returns {void}
+     */
+    addItemBySpriteId(spriteId: number): void;
+
+    /**
+     * @description Adiciona ao inventário da entidade um ou mais itens.
+     * @param {number} spriteId - Código do item.
+     * @param {number} quantity - Quantidade do item.
+     * @returns {void}
+     */
+    addItemBySpriteId(spriteId: number, quantity: number): void;
+
+    /**
+     * @description Remove um item do inventário da entidade.
+     * @param {number} spriteId - Código do item.
+     * @returns {void}
+     */
+    removeItemBySpriteId(spriteId: number): void;
+
+    /**
+     * @description Remove um ou mais itens do inventário da entidade.
+     * @param {number} spriteId - Código do item.
+     * @param {number} quantity - Quantidade do item.
+     * @returns {void}
+     */
+    removeItemBySpriteId(spriteId: number, quantity: number): void;
 
     /**
      * @description Remove o item de mão da entidade.
