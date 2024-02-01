@@ -225,7 +225,7 @@ interface FakeFloorItem {
      * @description Retorna o atual estado do FakeFurni
      * @returns {string} O atual estado do FakeFurni
      */
-    getState(): string;
+    getCurrentState(): string;
 
     /**
      * @description Retorna altura empilhável do FakeFurni.
@@ -504,7 +504,7 @@ interface ScriptEntity {
      * @param {BubblesID} bubbleId - Id do balão que será definido.
      * @returns {void}
      */
-    setBubble(bubbleId: BubblesID): void;
+    setBubbleId(bubbleId: BubblesID): void;
 
     /**
      * @description Define uma missão a entidade.
@@ -741,6 +741,35 @@ interface ScriptEntity {
      */
     youtube(url: string, force: boolean): void;
 
+    /**
+     * @description Remove a UI especificada da client do usuário.
+     * @param {string} eventName - Nome do evento que está registrado.
+     * @param {string} data - Dados que serão enviados (vazio)
+     * @returns {void}
+     */
+    disposeUI(eventName: string, data: string): void;
+
+    /**
+     * @description Remove todas as UIs da client do usuário.
+     * @returns {void}
+     */
+    disposeUIAll(): void;
+
+    /**
+     * @description Carrega a UI para o usuário.
+     * @param {string} scriptName - Nome da pasta onde o arquivo está localizado.
+     * @param {string} fileName - Nome do arquivo html que contém os dados da UI.
+     * @returns {void}
+     */
+    loadUI(scriptName: string, fileName: string): void;
+
+    /**
+     * @description Envia uma mensagem para a client do usuário.
+     * @param {string} eventName - Nome do evento que está registrado
+     * @param data - Dados que serão enviados
+     * @returns {void}
+     */
+    sendUIMessage(eventName: string, data: string): void;
 
 }
 
@@ -785,7 +814,7 @@ interface ScriptFurni {
      * @description Retorna atual estado do furni.
      * @returns {string} O atual estado do furni.
      */
-    getState(): string;
+    getCurrentState(): string;
 
     /**
      * @description Retorna o ID do sprite do furni.
@@ -2410,4 +2439,16 @@ declare class Wired {
      * @returns {void}
      */
     static trigger(wiredName: string, entity?: ScriptEntity, furni?: ScriptFurni, entities?: ScriptEntity[], furnis?: ScriptFurni[]): void;
+
+    /**
+     * @description Define o valor de um disquete.
+     * @param {string} disqueteName - Nome do disquete.
+     * @param {number} value - Valor a ser definido.
+     * 
+     * @example
+     * // Exemplo de uso:
+     * Wired.setMemoryValue('memoria', 1); // Define o valor do disquete 'memoria' para 1
+     * @returns {void}
+     */
+    static setMemoryValue(disqueteName: string, value: number): void;
 }
