@@ -513,6 +513,13 @@ interface ScriptEntity {
     hasItemBySpriteId(spriteId: number, quantity: number): boolean;
 
     /**
+     * @description Retorna a quantidade do item no inventário da entidade.
+     * @param {number} spriteId - Código do item a ser verificado.
+     * @returns {number} A quantidade do item no inventário da entidade.
+     */
+    getItemCountBySpriteId(spriteId: number): number;
+
+    /**
      * @description Adiciona pontos a uma conquista do usuário.
      * @param {string} code - Código da conquista.
      * @param {number} levels - Quantidade de pontos
