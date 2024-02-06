@@ -781,7 +781,7 @@ interface ScriptEntity {
      * @param {number} roomId - ID do quarto alvo.
      * @returns {void}
      */
-    gotoRoom(roomId: number): void;
+    goToRoom(roomId: number): void;
 
     /**
      * @description Envia uma notificação para o usuário.
@@ -1572,6 +1572,14 @@ declare class Events {
     * @returns {void}
     */
     static on(event: 'userJoin', callback: (user: ScriptEntity) => void): void;
+
+    /**
+     * @description Evento chamado quando a client do usuário envia uma mensagem para o quarto.
+     * @param {string} event
+     * @param callback
+     * @returns {void}
+     */
+    static on(event: 'uiMessage', callback: (user: ScriptEntity, eventName: string, data: string) => void): void;
 
     /**
      * @description Evento chamado quando uma entidade sai do quarto.
@@ -2483,6 +2491,18 @@ declare class Wired {
     static on(eventName: string, callback: WiredCallback): void;
 
     /**
+     * @description Começa o evento da cota.
+     * @param {string} eventName - Nome do evento que vai ser chamado quando o quarto estiver pronto para iniciar o evento.
+     * @param {() => void} callback - Callback executado ao comando ser utilizado.
+     * @example
+     * // Exemplo de uso:
+     * Wired.on('startEvent', () => {
+     * Debug.log('Evento da cota iniciado');
+     * });
+     */
+    static on(eventName: 'startEvent', callback: () => void): void;
+
+    /**
      * @description Ativa um wired ativador.
      * @param {string} wiredName 
      * @param {ScriptEntity} entity - Entidade que ativou o wired.
@@ -2509,4 +2529,10 @@ declare class Wired {
      * @returns {void}
      */
     static setMemoryValue(disqueteName: string, value: number): void;
+
+    /**
+     * @description Ínicia o próximo evento da cota.
+     * @returns {void}
+     */
+    static nextEvent(): void;
 }
