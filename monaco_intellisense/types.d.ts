@@ -63,7 +63,7 @@ interface ScriptTile {
      * @description Retorna o Furni que está mais alto no piso.
      * @returns {ScriptFurni} Furni mais alto no piso.
      */
-    getTopFurni(): ScriptFurni[];
+    getTopFurni(): ScriptFurni;
 
     /**
      * @description Retorna a altura andável no piso.
@@ -257,6 +257,8 @@ interface FakeFloorItem {
      */
     move(x: number, y: number, z: number, r: number, force: boolean): void;
 }
+
+interface BotEntity extends FakeEntity {}
 
 interface ScriptEntity {
     /**
@@ -568,9 +570,10 @@ interface ScriptEntity {
     /**
      * @description Define a entidade pode ser mover.
      * @param {boolean} can - Se a entidade pode ser mover.
+     * @param {boolean} effect - Se a entidade vai receber o efeito de congelado.
      * @returns {void}
      */
-    setCanWalk(can: boolean): void;
+    setCanWalk(can: boolean, effect: boolean): void;
 
     /**
      * @description Define uma dança para a entidade.
@@ -1749,6 +1752,22 @@ declare class Events {
     ): void;
 
     /**
+     * @description Evento chamado quando um bot é selecionado.
+     * @param event - Nome do evento.
+     * @param callback - Função a ser executada quando o evento for chamado.
+     * return {void}
+     * @example
+     * // Exemplo de uso:
+     * Events.on('botSelected', (user, bot) => {
+     *  Engine.log(user.getUsername() + ' clicou em ' + bot.getUsername());
+     * });
+     */
+    static on(
+        event: 'botSelected',
+        callback: (user: ScriptEntity, bot: BotEntity) => void
+    ): void;
+
+    /**
      * @description Envia uma mensagem para o quarto especificado.
      * @param roomId - ID do quarto que receberá a mensagem.
      * @param event - Nome do evento.
@@ -1836,7 +1855,8 @@ declare class GlobalData {
     static isOnlineByUsername(username: string): boolean;
 }
 
-declare class GlobalStorage {
+declare class
+GlobalStorage {
     /**
      * @description Consulta um valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser buscada.
