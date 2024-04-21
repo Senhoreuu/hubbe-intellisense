@@ -1897,6 +1897,13 @@ declare class Highscores {
     static getScore(user: String | ScriptEntity): number;
 
     /**
+     * @description Retorna todos os pontos que tem no Placar
+     * @param {Number} furni - id do placar.
+     * @returns {Map<String, Number>} Quantidade de pontos que o grupo tem no Placar.
+    */
+    static getScoreAll(furni: Number): Map<String, Number>;
+
+    /**
      * @description Remove pontos do Placar
      * @param {String | ScriptEntity} player - Nick ou Usuário que perderá os pontos.
      * @param {number} points - Quantidade de pontos a serem removidos.
