@@ -258,7 +258,7 @@ interface FakeFloorItem {
     move(x: number, y: number, z: number, r: number, force: boolean): void;
 }
 
-interface BotEntity extends FakeEntity {}
+interface BotEntity extends FakeEntity { }
 
 interface ScriptEntity {
     /**
@@ -551,6 +551,9 @@ interface ScriptEntity {
      * @returns {void}
      */
     setFigure(gender: string, figure: string): void;
+
+    /** */
+    payBy
 
     /**
      * @description Define um item de mão para entidade segurar.
@@ -1562,6 +1565,22 @@ declare class Currency {
     * @returns {void}
     */
     static giveSeasonalPointsById(id: number, amount: number): void;
+
+    /**
+    * @description Faz o pagamento de evento ao usuario
+     * @param {number} id - Id do usuário que receberá o pagamento.
+     * @param {number} amount - Quantidade de créditos a ser entregue.
+     * @returns {void}
+     */
+    static payById(id: number, amount: number): void;
+
+    /**
+     * @description Faz o pagamento de evento ao usuario
+     * @param {string} username - Nome do usuário que receberá o pagamento.
+     * @param {number} amount - Quantidade de créditos a ser entregue.
+     * @returns {void}
+     */
+    static payByUsername(username: string, amount: number): void;
 }
 
 declare class Events {
@@ -1855,8 +1874,7 @@ declare class GlobalData {
     static isOnlineByUsername(username: string): boolean;
 }
 
-declare class
-GlobalStorage {
+declare class GlobalStorage {
     /**
      * @description Consulta um valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser buscada.
