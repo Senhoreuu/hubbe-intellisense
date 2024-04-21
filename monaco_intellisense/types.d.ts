@@ -1919,7 +1919,7 @@ declare class Highscores {
      * @param {Number} furni - id do placar.
      * @returns {Map<String, Number>} Quantidade de pontos que o grupo tem no Placar.
     */
-    static getScoreAll(furni: Number): Map<String, Number>;
+    static getScoreAll(furni: Number): Map<String, number>;
 
     /**
      * @description Remove pontos do Placar
