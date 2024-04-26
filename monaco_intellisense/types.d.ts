@@ -1575,12 +1575,26 @@ declare class Currency {
     static payById(id: number, amount: number): void;
 
     /**
+    * @description Faz o pagamento de evento ao usuario
+     * @param {number} id - Id do usuário que receberá o pagamento.
+     * @returns {void}
+     */
+    static payById(id: number): void;
+
+    /**
      * @description Faz o pagamento de evento ao usuario
      * @param {string} username - Nome do usuário que receberá o pagamento.
      * @param {number} amount - Quantidade de créditos a ser entregue.
      * @returns {void}
      */
     static payByUsername(username: string, amount: number): void;
+
+    /**
+     * @description Faz o pagamento de evento ao usuario
+     * @param {string} username - Nome do usuário que receberá o pagamento.
+     * @returns {void}
+     */
+    static payByUsername(username: string): void;
 }
 
 declare class Events {
