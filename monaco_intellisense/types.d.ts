@@ -1,12 +1,6 @@
 // --------------------------- Instances --------------------------- //
 
-type Genders = "M" | "F";
-type EntitiesType = "PLAYER" | "BOT" | "PET";
-type DancesID = 0 | 1 | 2 | 3 | 4;
-type ActionID = 1 | 2 | 3;
-type relationships = 1 | 2 | 3 | 4;
 type WiredCallback = (entity?: ScriptEntity, furni?: ScriptFurni, entities?: ScriptEntity[], furnis?: ScriptFurni[]) => void;
-type BubblesID = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43;
 
 interface IScriptReachable {
     /**
@@ -31,21 +25,21 @@ interface IScriptReachable {
 interface ScriptTile {
     /**
      * @description Retorna posição X do piso.
-     * @returns {Number} Posição X do piso.
+     * @returns {number} Posição X do piso.
      */
-    getX(): Number;
+    getX(): number;
 
     /**
      * @description Retorna posição Y do piso.
-     * @returns {Number} Posição Y do piso.
+     * @returns {number} Posição Y do piso.
      */
-    getY(): Number;
+    getY(): number;
 
     /**
      * @description Retorna posição Z do piso.
-     * @returns {Number} Posição Z do piso.
+     * @returns {number} Posição Z do piso.
      */
-    getZ(): Number;
+    getZ(): number;
 
     /**
      * @description Retorna todos os furnis que estão no piso.
@@ -67,9 +61,9 @@ interface ScriptTile {
 
     /**
      * @description Retorna a altura andável no piso.
-     * @returns {Number} Altura andável no piso.
+     * @returns {number} Altura andável no piso.
      */
-    getWalkHeight(): Number;
+    getWalkHeight(): number;
 
     /**
      * @description Retorna se a um furni com interação de porta no piso.
@@ -137,9 +131,9 @@ interface ScriptPlayerData {
 
     /**
      * @description Retorna o gênero do player.
-     * @return {Genders} O gênero do player.
+     * @return {string} O gênero do player.
      */
-    getGender(): Genders;
+    getGender(): string;
 
     /**
      * @description Retorna o visual do player.
@@ -263,9 +257,9 @@ interface BotEntity extends FakeEntity { }
 interface ScriptEntity {
     /**
      * @description Retorna o Balão de fala atual da entidade.
-     * @returns {BubblesID} O Balão de fala atual da entidade.
+     * @returns {number} O Balão de fala atual da entidade.
      */
-    getBubbleId(): BubblesID;
+    getBubbleId(): number;
 
     /**
      * @description Retorna o ID da entidade.
@@ -311,9 +305,10 @@ interface ScriptEntity {
 
     /**
      * @description Retorna o tipo da entidade.
-     * @returns {EntitiesType} O tipo da entidade.
+     * @returns {string} O tipo da entidade.
+     * @example "PLAYER" | "BOT" | "PET"
      */
-    getType(): EntitiesType;
+    getType(): string;
 
     /**
      * @description Retorna o rank da entidade.
@@ -329,9 +324,9 @@ interface ScriptEntity {
 
     /**
      * @description Retorna o genero da entidade
-     * @returns {Genders} O genero da entidade
+     * @returns {string} O genero da entidade
      */
-    getGender(): Genders;
+    getGender(): string;
 
     /**
      * @description Retorna o código do atual visual da entidade.
@@ -354,9 +349,9 @@ interface ScriptEntity {
 
     /**
      * @description Retorna a atual dança da entidade.
-     * @returns {DancesID} A atual dança da entidade.
+     * @returns {number} A atual dança da entidade.
      */
-    getDance(): DancesID;
+    getDance(): number;
 
     /**
      * @description Retorna objeto com status atual da conquista
@@ -394,6 +389,32 @@ interface ScriptEntity {
      * @returns {number} O ID do quarto atual da entidade.
      */
     getRoomId(): number;
+
+    /**
+     * @description Retorna o valor da memória da entidade.
+     * @returns {string} O valor da memória da entidade.
+     */
+    getMemoryValue(): string;
+
+    /**
+     * @description Retorna o valor da memória da entidade como número inteiro.
+     * @returns {number} O valor da memória da entidade como número inteiro.
+     */
+    getMemoryValueDouble(): number;
+
+    /**
+    * @description Retorna o valor da memória da entidade.
+    * @param {string} key - Chave da memória a ser retornada.
+    * @returns {string} O valor da memória da entidade.
+    */
+    getMemoryValue(key: string): string;
+
+    /**
+     * @description Retorna o valor da memória da entidade como número inteiro.
+     * @param {string} key - Chave da memória a ser retornada.
+     * @returns {number} O valor da memória da entidade como número inteiro.
+     */
+    getMemoryValueDouble(key: string): number;
 
     /**
      * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
@@ -531,10 +552,10 @@ interface ScriptEntity {
 
     /**
      * @description Define o balão de fala da entidade.
-     * @param {BubblesID} bubbleId - Id do balão que será definido.
+     * @param {number} bubbleId - Id do balão que será definido.
      * @returns {void}
      */
-    setBubbleId(bubbleId: BubblesID): void;
+    setBubbleId(bubbleId: number): void;
 
     /**
      * @description Define uma missão a entidade.
@@ -585,10 +606,10 @@ interface ScriptEntity {
      * @argument 2: Pogo-Mogo
      * @argument 3: Duck Funk
      * @argument 4: Rollie
-     * @param {DancesID} danceId - Código da dança
+     * @param {number} danceId - Código da dança
      * @returns {void}
      */
-    setDance(danceId: DancesID): void;
+    setDance(danceId: number): void;
 
     /**
      * @description Envia um emblema a entidade apenas para o ScriptEntity.
@@ -658,19 +679,19 @@ interface ScriptEntity {
     /**
      * @description Envia uma mensagem que aparecerá somente para está entidade.
      * @param {string} message - Mensagem a ser enviada.
-     * @param {BubblesID} bubble - Balão da mensagem.
+     * @param {number} bubble - Balão da mensagem.
      * @returns {void}
      */
-    message(message: string, bubble: BubblesID): void;
+    message(message: string, bubble: number): void;
 
     /**
      * @description Sussura uma mensagem para outra entidade.
      * @param {ScriptEntity | null;} to - Entidade que receberá a mensagem.
      * @param {string} message - Mensagem que será enviada.
-     * @param {BubblesID} bubbleId - Balão da mensagem.
+     * @param {number} bubbleId - Balão da mensagem.
      * @returns {void}
      */
-    whisper(to: ScriptEntity, message: string, bubbleId: BubblesID): void;
+    whisper(to: ScriptEntity, message: string, bubbleId: number): void;
 
     /**
      * @description Envia um alerta ao usuário.
@@ -753,9 +774,9 @@ interface ScriptEntity {
      * @argument 1: Acenar
      * @argument 2: Mandar Beijo
      * @abstract 3: Rir
-     * @param {ActionID} action - Número da ação
+     * @param {number} action - Número da ação
     */
-    action(action: ActionID): void;
+    action(action: number): void;
 
     /**
      * @description Faz a entidade se levantar.
@@ -1028,10 +1049,10 @@ interface FakeEntity {
      * 2: Sorriso (Smile)
      * 3: Bobba (Bobba)
      * 4: Merda (Poop)
-     * @param {relationships} relationship - Relação entre entidade e FakeEntity
+     * @param {number} relationship - Relação entre entidade e FakeEntity
      * @returns {void}
      */
-    addRelationship(entityId: number, relationship: relationships): void;
+    addRelationship(entityId: number, relationship: number): void;
 
     /**
      * @description Retorna ID da FakeEntity
@@ -1211,10 +1232,10 @@ interface FakeEntity {
      * 2: Pogo-Mogo
      * 3: Duck Funk
      * 4: Rollie
-     * @param {DancesID} danceId - Código da dança
+     * @param {number} danceId - Código da dança
      * @returns {void}
      */
-    setDance(danceId: DancesID): void;
+    setDance(danceId: number): void;
 
     /**
      * @description Remove efeito (:enable 0)
@@ -1246,10 +1267,10 @@ interface FakeEntity {
      * 1: Acenar
      * 2: Mandar Beijo
      * 3: Rir
-     * @param {ActionID} action - Número da ação
+     * @param {number} action - Número da ação
      * @returns {void}
     */
-    action(action: ActionID): void;
+    action(action: number): void;
 
     /**
      * @description Move a entidade até a posição fornecida.
@@ -1303,19 +1324,19 @@ interface FakeEntity {
        * @description Faz a entidade dizer uma mensagem.
        * @param {string} message - Mensagem que será dita pela entidade.
        * @param {boolean} shout - Se o personagem deve gritar a mensagem. (Mensagem em Bold)
-       * @param {BubblesID} bubbleId - Balão da mensagem
+       * @param {number} bubbleId - Balão da mensagem
        * @returns {void}
        */
-    say(message: string, shout: boolean, bubbleId: BubblesID): void;
+    say(message: string, shout: boolean, bubbleId: number): void;
 
     /**
        * @description Sussurra uma mensagem para outra entendide.
        * @param to - Entidade que receberá a mensagem.
        * @param {string} message - Mensagem que será enviada.
-       * @param {BubblesID} bubbleId - Balão da mensagem.
+       * @param {number} bubbleId - Balão da mensagem.
        * @returns {void}
        */
-    whisper(to: ScriptEntity, message: string, bubbleId: BubblesID): void;
+    whisper(to: ScriptEntity, message: string, bubbleId: number): void;
 
     /**
      * @description Faz a entidade levantar
@@ -1399,7 +1420,7 @@ interface WebhookMessage {
 interface DelayTask {
     /** 
     * @description Retorna quantidade de ticks que restam para o termino do temporizador.
-    * @returns {Number} 
+    * @returns {number} 
     */
     getTicksRemain(): number;
 }
@@ -1892,9 +1913,9 @@ declare class GlobalStorage {
     /**
      * @description Consulta um valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser buscada.
-    * @returns {String | null} Valor correspondente a chave buscada.
+    * @returns {string | null} Valor correspondente a chave buscada.
     */
-    static get(key: string): String | null;
+    static get(key: string): string | null;
 
     /** 
      * @description Defini/Atualiza valor correspondente a chave buscada.
@@ -1902,90 +1923,90 @@ declare class GlobalStorage {
     * @param {string} value - Novo valor a ser definido.
     * @returns {void}
     */
-    static set(key: String, value: String): void;
+    static set(key: string, value: string): void;
 
     /**
      * @description Deleta valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser deletada.
     * @returns {void}
     */
-    static delete(key: String): void;
+    static delete(key: string): void;
 }
 
 declare class Highscores {
     /**
      * @description Adiciona pontos ao Placar
-     * @param {String | ScriptEntity} player - Nick ou Usuário que receberá os pontos.
+     * @param {string | ScriptEntity} player - Nick ou Usuário que receberá os pontos.
      * @param {number} points - Quantidade de pontos a serem adicionados.
      * @returns {void}
     */
-    static add(player: String | ScriptEntity, points: Number): void;
+    static add(player: string | ScriptEntity, points: number): void;
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
-     * @param {String | ScriptEntity} user - Nick ou Usuário que serão consultados.
+     * @param {string | ScriptEntity} user - Nick ou Usuário que serão consultados.
      * @returns {number} Quantidade de pontos que o grupo tem no Placar
     */
-    static getScore(user: String | ScriptEntity): number;
+    static getScore(user: string | ScriptEntity): number;
 
     /**
      * @description Retorna todos os pontos que tem no Placar
-     * @param {Number} furni - id do placar.
-     * @returns {Map<String, Number>} Quantidade de pontos que o grupo tem no Placar.
+     * @param {number} furni - id do placar.
+     * @returns {Map<string, number>} Quantidade de pontos que o grupo tem no Placar.
     */
-    static getScoreAll(furni: Number): Map<String, number>;
+    static getScoreAll(furni: number): Map<string, number>;
 
     /**
      * @description Remove pontos do Placar
-     * @param {String | ScriptEntity} player - Nick ou Usuário que perderá os pontos.
+     * @param {string | ScriptEntity} player - Nick ou Usuário que perderá os pontos.
      * @param {number} points - Quantidade de pontos a serem removidos.
      * @returns {void}
     */
-    static remove(player: String | ScriptEntity, points: Number): void;
+    static remove(player: string | ScriptEntity, points: number): void;
 
     /**
      * @description Adiciona pontos a todo o Grupo no Placar
-     * @param {String[] | ScriptEntity[]} player - Nicks ou Usuários que receberam os pontos.
+     * @param {string[] | ScriptEntity[]} player - Nicks ou Usuários que receberam os pontos.
      * @param {number} points - Quantidade de pontos a serem adicionados.
      * @returns {void}
     */
-    static addGroup(player: String[] | ScriptEntity[], points: Number): void;
+    static addGroup(player: string[] | ScriptEntity[], points: number): void;
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
-     * @param {String[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
+     * @param {string[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
      * @returns {number} Quantidade de pontos que o grupo tem no Placar
     */
-    static getGroupScore(group: String[] | ScriptEntity[]): number;
+    static getGroupScore(group: string[] | ScriptEntity[]): number;
 
     /**
      * @description Remove pontos de todo o Grupo no Placar
-     * @param {String | ScriptEntity} player - Nicks ou Usuários que perderam os pontos.
+     * @param {string | ScriptEntity} player - Nicks ou Usuários que perderam os pontos.
      * @param {number} points - Quantidade de pontos a serem removidos.
      * @returns {void}
     */
-    static removeGroup(player: String | ScriptEntity, points: Number): void;
+    static removeGroup(player: string | ScriptEntity, points: number): void;
 
     /**
      * @description Limpa todos os usuários do Placar
-     * @param {Number | ScriptFurni} scoreboard - ID ou Furni do Placar.
+     * @param {number | ScriptFurni} scoreboard - ID ou Furni do Placar.
      * @returns {void}
     */
-    static clear(scoreboard: Number | ScriptFurni): void;
+    static clear(scoreboard: number | ScriptFurni): void;
 
     /**
      * @description Limpa todos os usuários do Placar
-     * @param {Number | ScriptFurni} scoreboard - ID ou Furni do Placar.
+     * @param {number | ScriptFurni} scoreboard - ID ou Furni do Placar.
      * @returns {void}
     */
-    static reset(scoreboard: Number | ScriptFurni): void;
+    static reset(scoreboard: number | ScriptFurni): void;
 }
 
 declare class RoomStorage {
     /**
     * @description Retorna os dados salvos no quarto a partir da chave de busca. 
     * @param {string} key - Chave da propriedade a ser buscada.
-    * @returns {String | null} Valor correspondente a chave buscada.
+    * @returns {string | null} Valor correspondente a chave buscada.
     */
     static get(key: string): string;
 
@@ -2476,7 +2497,7 @@ declare class Debug {
 declare class Webhook {
     /**
      * @description Cria um novo Webhook direcionado ao link.
-     * @param {String} linkWebhook - Link do Webhook a receber informações.
+     * @param {string} linkWebhook - Link do Webhook a receber informações.
      * 
      * @example
      * // Exemplo de uso:
@@ -2533,6 +2554,21 @@ declare class Delay {
      * @param {number} sec - Quantidade de segundos a serem convertidos em ticks.
     */
     static seconds(sec: number): number;
+
+    /**
+     * Cancela todos os delays ativos.
+     * @example
+     * Delay.wait(() => {
+     *     //Executado após 10 segundos.
+     * }, Delay.seconds(10))
+     * 
+     * Delay.wait(() => {
+     *    //Executado após 20 segundos.
+     * }, Delay.seconds(20))
+     * 
+     * Delay.cancelAll(); //Cancela todos os delays criados.
+     */
+    static cancelAll(): void;
 }
 
 declare class Wired {
@@ -2587,7 +2623,36 @@ declare class Wired {
      * Wired.setMemoryValue('memoria', 1); // Define o valor do disquete 'memoria' para 1
      * @returns {void}
      */
-    static setMemoryValue(disqueteName: string, value: number): void;
+    static setMemoryValue(disqueteName: string, value: string | number): void;
+
+    /**
+     * @description Define um valor numérico para um disquete.
+     * @param disqueteName - Nome do disquete.
+     * @param value - Valor a ser definido.
+     */
+    static setMemoryValueDouble(disqueteName: string, value: number): void;
+
+    /**
+     * @description Retorna o valor de um disquete.
+     * @param {string} disqueteName - Nome do disquete.
+     * 
+     * @example
+     * // Exemplo de uso:
+     * Wired.getMemoryValue('memoria'); // Retorna o valor do disquete 'memoria'
+     * @returns {string} Retorna o valor do disquete.
+     */
+    static getMemoryValue(disqueteName: string): string;
+
+    /**
+     * @description Retorna o valor em número de um disquete.
+     * @param disqueteName - Nome do disquete.
+     * 
+     * @example
+     * // Exemplo de uso:
+     * Wired.getMemoryValueDouble('memoria'); // Retorna o valor do disquete 'memoria'
+     * @returns {number} Retorna o valor do disquete, caso não exista ou a memória seja uma string, retorna 0.
+     */
+    static getMemoryValueDouble(disqueteName: string): number;
 
     /**
      * @description Ínicia o próximo evento da cota.
