@@ -1,6 +1,13 @@
 // --------------------------- Instances --------------------------- //
 
+type Genders = "M" | "F";
+type EntitiesType = "PLAYER" | "BOT" | "PET";
+type DancesID = 0 | 1 | 2 | 3 | 4;
+type ActionID = 1 | 2 | 3;
+type relationships = 1 | 2 | 3 | 4;
 type WiredCallback = (entity?: ScriptEntity, furni?: ScriptFurni, entities?: ScriptEntity[], furnis?: ScriptFurni[]) => void;
+type BubblesID = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43;
+type AnimationTime = 50 | 100 | 150 | 200 | 1000 | 2000; // de 50 em 50.
 
 interface IScriptReachable {
     /**
@@ -22,25 +29,224 @@ interface IScriptReachable {
     getZ(): number;
 }
 
-interface ScriptTile {
+interface RoomTile extends IScriptReachable {
     /**
-     * @description Retorna posição X do piso.
-     * @returns {number} Posição X do piso.
+     * @description Retorna o ID do Furni.
+     * @returns {number}
      */
-    getX(): number;
+    getId(): number;
 
     /**
-     * @description Retorna posição Y do piso.
-     * @returns {number} Posição Y do piso.
+     * @description Retorna o ID do furni da database.
+     * @returns {number}
      */
-    getY(): number;
+    getDefinitionId(): number;
 
     /**
-     * @description Retorna posição Z do piso.
-     * @returns {number} Posição Z do piso.
+     * @description Retorna a atual rotação do Furni.
+     * @returns {number}
      */
-    getZ(): number;
+    getR(): number;
 
+    /**
+     * @description Retorna atual estado do furni.
+     * @returns {string}
+     */
+    getCurrentState(): string;
+
+    /**
+     * @description Retorna o ID do sprite do furni.
+     * @returns {number}
+     */
+    getSprite(): number;
+
+    /**
+     * @description Retorna o nome do furni.
+     * *O nome que está na database*
+     * @returns {string}
+     */
+    getName(): string;
+
+    /**
+     * @description Retorna o nome público do furni. 
+     * *O nome que todos estão vendo no quarto*
+     * @returns {string}
+     */
+    getPublicName(): string;
+
+    /**
+     * @description Retorna todas as entidades que estão sobre o furni.
+     * @returns {ScriptEntity[]}
+     */
+    getEntities(): ScriptEntity[];
+
+    /**
+     * @description Retorna o tipo da interação do furni.
+     * @returns {string}
+     */
+    getInteractionType(): string;
+
+    /**
+     * @description Retorna quantidade de interações que o furni possui.
+     * @returns {number}
+     */
+    getInteractionModesCount(): number;
+
+    /**
+    * @description Retorna altura empilhável do furni.
+    * @returns {number}
+    */
+    getStackHeight(): number;
+
+    /**
+     * @description Retorna a largura do furni.
+     * @returns {number}
+     */
+    getItemWidth(): number;
+
+    /**
+     * @description Retorna o comprimento do Furni.
+     * @returns {number}
+     */
+    getItemLength(): number;
+
+    /**
+     * @description Retorna a altura do Furni.
+     * @returns {number}
+     */
+    getItemHeight(): number;
+
+    /**
+     * @description Retorna a unidade de lote atual do furni.
+     * @returns {number}
+     */
+    getLimitedUnit(): number;
+
+    /**
+     * @description Retorna o total de lotes que tem do furni.
+     * @returns {number}
+     */
+    getLimitedTotal(): number;
+
+    /**
+     * @description Retorna se a entidades a cima do furni.
+     * @returns {boolean} Se a entidades a cima do furni.
+     */
+    hasEntities(): boolean;
+
+    /**
+     * @description Retorna se o furni é sentável por uma entidade.
+     * @returns {boolean} Se o furni é sentável por uma entidade.
+     */
+    canSit(): boolean;
+
+    /**
+     * @description Retorna se entidades podem andar sobre o furni.
+     * @returns {boolean} Se entidades podem andar sobre o furni.
+     */
+    canWalk(): boolean;
+
+    /**
+     * @description Altera o estado do furni.
+     * @param {string} state - Valor do estado em que o furni será definido.
+     * @returns {void}
+     */
+    setState(state: string): void;
+
+    /**
+     * @description Mostra o furni.
+     * @returns {void}
+     */
+    show(): void;
+
+    /**
+     * @description Esconde o furni.
+     * @returns {void}
+     */
+    hide(): void;
+
+    /**
+     * @description Mostra o furni apenas para a entidade.
+     * @param {ScriptEntity | null;} entity - Entidade que irá ver o furni.
+     * @returns {void}
+     */
+    show(entity: ScriptEntity): void;
+
+    /**
+     * @description Esconde o furni apenas para a entidade.
+     * @param {ScriptEntity | null;} entity - Entidade que não irá ver o furni.
+     * @returns {void}
+     */
+    hide(entity: ScriptEntity): void;
+
+    /**
+     * @description Ativa a interação do furni.
+     * @returns {void}
+     */
+    toggleState(): void;
+
+    /** 
+     * @description Move o furni de parede para a posição fornecida.
+     * @param {number} x - Posição X para onde o furni será movido.
+     * @param {number} y - Posição Y para onde o furni será movido.
+     * @param {number} z - Posição Z para onde o furni será movido. (Apenas inteiros)
+     * @param {number} r - Posição R para onde o furni será movido.
+     * @param {string} state 
+     */
+    moveWall(x: number, y: number, z: number, r: number, state: string): void;
+
+    /**
+     * @description Move o furni para posição fornecida.
+     * @param {IScriptReachable} position - posição para o onde o furni será movido.
+     * @param {number} r - Rotação definida ao furni ao ser movido.
+     * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
+     * @param {boolean} animation - Se o furni será movido com animacao.
+     */
+    move(position: IScriptReachable, r: number, force: boolean, animation: boolean): void;
+
+    /**
+     * @description Move o furni para posição fornecida.
+     * @param {IScriptReachable} position - posição para o onde o furni será movido.
+     * @param {number} r - Rotação definida ao furni ao ser movido.
+     * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
+     */
+    move(position: IScriptReachable, r: number, force: boolean): void;
+
+    /**
+     * @description Move o furni para posição fornecida.
+     * @param {number} x - Posição X para onde o furni será movido.
+     * @param {number} y - Posição Y para onde o furni será movido.
+     * @param {number} z - Posição Z para onde o furni será movido.
+     * @param {number} r - Rotação definida ao furni ao ser movido.
+     * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
+     * @param {boolean} animation - Se o furni será movido com animacao.
+     */
+    move(x: number, y: number, z: number, r: number, force: boolean, animation: boolean): void;
+
+    /**
+     * @description Move o furni para posição fornecida.
+     * @param {number} x - Posição X para onde o furni será movido.
+     * @param {number} y - Posição Y para onde o furni será movido.
+     * @param {number} z - Posição Z para onde o furni será movido.
+     * @param {number} r - Rotação definida ao furni ao ser movido.
+     * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
+     * @param {boolean} animation - Se o furni será movido com animacao.
+     * @param {AnimationTime} animationTime - O tempo de animacao em que o furni sera movido do 50ms ate o 2000ms.
+     */
+    move(x: number, y: number, z: number, r: number, force: boolean, animation: boolean, animationTime: AnimationTime): void;
+
+    /**
+     * @description Move o furni para posição fornecida.
+     * @param {number} x - Posição X para onde o furni será movido.
+     * @param {number} y - Posição Y para onde o furni será movido.
+     * @param {number} z - Posição Z para onde o furni será movido.
+     * @param {number} r - Rotação definida ao furni ao ser movido.
+     * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
+     */
+    move(x: number, y: number, z: number, r: number, force: boolean): void;
+}
+
+interface ScriptTile extends IScriptReachable {
     /**
      * @description Retorna todos os furnis que estão no piso.
      * @returns {ScriptFurni[]} Lista de furnis que estão no piso.
@@ -61,9 +267,9 @@ interface ScriptTile {
 
     /**
      * @description Retorna a altura andável no piso.
-     * @returns {number} Altura andável no piso.
+     * @returns {Number} Altura andável no piso.
      */
-    getWalkHeight(): number;
+    getWalkHeight(): Number;
 
     /**
      * @description Retorna se a um furni com interação de porta no piso.
@@ -113,126 +319,109 @@ interface ScriptAchievementProgress {
 interface ScriptPlayerData {
     /**
      * @description Retorna o ID do player.
-     * @return {number} O ID do player.
+     * @returns {number} O ID do player.
      */
     getId(): number;
 
     /**
      * @description Retorna o nome do player.
-     * @return {string} O nome do player.
+     * @returns {string} O nome do player.
      */
     getUsername(): string;
 
     /**
      * @description Retorna o total de pontos de conquista do player.
-     * @return {number} O total de pontos de conquista do player.
+     * @returns {number} O total de pontos de conquista do player.
      */
     getAchievementPoints(): number;
 
     /**
      * @description Retorna o gênero do player.
-     * @return {string} O gênero do player.
+     * @returns {Genders} O gênero do player.
      */
-    getGender(): string;
+    getGender(): Genders;
 
     /**
      * @description Retorna o visual do player.
-     * @return {string} O visual do player.
+     * @returns {string} O visual do player.
      */
     getFigure(): string;
 
     /**
+     * @description Retorna se o player é VIP.
+     * @returns {boolean} Se o player é VIP.
+     */
+    isVip(): boolean;
+
+    /**
      * @description Retorna a missão do player.
-     * @return {string} O missão do player.
+     * @returns {string} O missão do player.
      */
     getMotto(): string;
 
     /**
      * @description Retorna o rank do player.
-     * @return {number} O rank do player.
+     * @returns {number} O rank do player.
      */
     getRank(): number;
 
     /**
      * @description Retorna o total de diamantes do player.
-     * @return {number} O total de diamantes do player.
+     * @returns {number} O total de diamantes do player.
      */
     getDiamonds(): number;
 
     /**
      * @description Retorna o total de duckets do player.
-     * @return {number} O total de duckets do player.
+     * @returns {number} O total de duckets do player.
      */
     getDuckets(): number;
 
     /**
      * @description Retorna o total de moedas do player.
-     * @return {number} O total de moedas do player.
+     * @returns {number} O total de moedas do player.
      */
     getCredits(): number;
 
     /**
      * @description Retorna o grupo favoritado do player.
-     * @return {number} O grupo favoritado do player.
+     * @returns {number} O grupo favoritado do player.
      */
     getFavouriteGroup(): number;
 
     /**
      * @description Retorna o timestamp de registro do player.
-     * @return {number} O timestamp de registro do player.
+     * @returns {number} O timestamp de registro do player.
      */
     getRegTimestamp(): number;
 
     /**
      * @description Retorna o timestamp da última vez que o player fez login no hotel.
-     * @return {number} O timestamp da última vez que o player fez login no hotel.
+     * @returns {number} O timestamp da última vez que o player fez login no hotel.
      */
     getLastOnlineTimestamp(): number;
+
+    /**
+     * @description Retorna o total de pontos de promoção do player.
+     * @returns {number} O total de pontos de promoção do player.
+     */
+    getPontosHallPromo(): number;
+
+    /**
+     * @description Retorna o total de pontos de presença do player.
+     * @returns {number} O total de pontos de presença.
+     */
+    getPontosHallPresenca(): number;
+
+    /**
+     * @description Retorna o total de pontos de evento do player.
+     * @returns {number} O total de pontos de evento.
+     */
+    getPontosHallEvento(): number;
 }
 
-interface FakeFloorItem {
-    /**
-     * @description Retorna o ID do FakeFurni
-     * @returns {number} O ID do FakeFurni
-     */
-    getId(): number;
+interface FakeFloorItem extends RoomTile {
 
-    /**
-     * @description Retorna a posição X atual do FakeFurni.
-     * @returns {number} A posição X atual do FakeFurni.
-     */
-    getX(): number;
-
-    /**
-     * @description Retorna a posição Y atual do FakeFurni.
-     * @returns {number} A posição Y atual do FakeFurni.
-     */
-    getY(): number;
-
-    /**
-     * @description Retorna a posição Z (altura) atual do Furni.
-     * @returns {number} A posição Z (altura) atual do Furni.
-     */
-    getZ(): number;
-
-    /**
-     * @description Retorna o atual estado do FakeFurni
-     * @returns {string} O atual estado do FakeFurni
-     */
-    getCurrentState(): string;
-
-    /**
-     * @description Retorna altura empilhável do FakeFurni.
-     * @returns {number} Altura empilhável do FakeFurni.
-     */
-    getStackHeight(): number;
-
-    /**
-     * @description Altera o estado do FakeFurni.
-     * @param {string} state - Valor do estado em que o furni será definido.
-     * @returns {void}
-     */
-    setState(state: string): void;
 
     /**
      * @description Define altura empilhável do FakeFurni.
@@ -240,26 +429,16 @@ interface FakeFloorItem {
      * @returns {void}
      */
     setStackHeight(height: number): void;
-
-    /**
-     * @description Move o FakeFurni para posição fornecida.
-     * @param {number} x - Posição X para onde o FakeFurni será movido.
-     * @param {number} y - Posição Y para onde o FakeFurni será movido.
-     * @param {number} z - Posição Z para onde o FakeFurni será movido.
-     * @param {number} r - Rotação definida ao FakeFurni ao ser movido.
-     * @param {boolean} force - Se o FakeFurni deve ser movido mesmo que o caminho esteja bloqueado.
-     */
-    move(x: number, y: number, z: number, r: number, force: boolean): void;
 }
 
 interface BotEntity extends FakeEntity { }
 
-interface ScriptEntity {
+interface ScriptEntity extends IScriptReachable {
     /**
      * @description Retorna o Balão de fala atual da entidade.
-     * @returns {number} O Balão de fala atual da entidade.
+     * @returns {BubblesID} O Balão de fala atual da entidade.
      */
-    getBubbleId(): number;
+    getBubbleId(): BubblesID;
 
     /**
      * @description Retorna o ID da entidade.
@@ -280,24 +459,6 @@ interface ScriptEntity {
     getUsername(): string;
 
     /**
-     * @description Retorna a posição X atual da entidade.
-     * @returns {number} A posição X atual da entidade.
-     */
-    getX(): number;
-
-    /**
-     * @description Retorna a posição Y atual da entidade.
-     * @returns {number} A posição Y atual da entidade.
-     */
-    getY(): number;
-
-    /**
-     * @description Retorna a atual posição Z da entidade.
-     * @returns {number} A atual posição Z da entidade.
-     */
-    getZ(): number;
-
-    /**
      * @description Retorna a atual rotação da entidade.
      * @returns {number} A atual rotação da entidade.
      */
@@ -305,10 +466,9 @@ interface ScriptEntity {
 
     /**
      * @description Retorna o tipo da entidade.
-     * @returns {string} O tipo da entidade.
-     * @example "PLAYER" | "BOT" | "PET"
+     * @returns {EntitiesType} O tipo da entidade.
      */
-    getType(): string;
+    getType(): EntitiesType;
 
     /**
      * @description Retorna o rank da entidade.
@@ -324,9 +484,9 @@ interface ScriptEntity {
 
     /**
      * @description Retorna o genero da entidade
-     * @returns {string} O genero da entidade
+     * @returns {Genders} O genero da entidade
      */
-    getGender(): string;
+    getGender(): Genders;
 
     /**
      * @description Retorna o código do atual visual da entidade.
@@ -349,14 +509,14 @@ interface ScriptEntity {
 
     /**
      * @description Retorna a atual dança da entidade.
-     * @returns {number} A atual dança da entidade.
+     * @returns {DancesID} A atual dança da entidade.
      */
-    getDance(): number;
+    getDance(): DancesID;
 
     /**
      * @description Retorna objeto com status atual da conquista
      * @param {string} achievement - Código da conquista
-     * @return {ScriptAchievementProgress} Objeto com status atual da conquista
+     * @returns {ScriptAchievementProgress} Objeto com status atual da conquista
      */
     getAchievementProgress(achievement: string): ScriptAchievementProgress;
 
@@ -389,32 +549,6 @@ interface ScriptEntity {
      * @returns {number} O ID do quarto atual da entidade.
      */
     getRoomId(): number;
-
-    /**
-     * @description Retorna o valor da memória da entidade.
-     * @returns {string} O valor da memória da entidade.
-     */
-    getMemoryValue(): string;
-
-    /**
-     * @description Retorna o valor da memória da entidade como número inteiro.
-     * @returns {number} O valor da memória da entidade como número inteiro.
-     */
-    getMemoryValueDouble(): number;
-
-    /**
-    * @description Retorna o valor da memória da entidade.
-    * @param {string} key - Chave da memória a ser retornada.
-    * @returns {string} O valor da memória da entidade.
-    */
-    getMemoryValue(key: string): string;
-
-    /**
-     * @description Retorna o valor da memória da entidade como número inteiro.
-     * @param {string} key - Chave da memória a ser retornada.
-     * @returns {number} O valor da memória da entidade como número inteiro.
-     */
-    getMemoryValueDouble(key: string): number;
 
     /**
      * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
@@ -552,10 +686,10 @@ interface ScriptEntity {
 
     /**
      * @description Define o balão de fala da entidade.
-     * @param {number} bubbleId - Id do balão que será definido.
+     * @param {BubblesID} bubbleId - Id do balão que será definido.
      * @returns {void}
      */
-    setBubbleId(bubbleId: number): void;
+    setBubbleId(bubbleId: BubblesID): void;
 
     /**
      * @description Define uma missão a entidade.
@@ -572,9 +706,6 @@ interface ScriptEntity {
      * @returns {void}
      */
     setFigure(gender: string, figure: string): void;
-
-    /** */
-    payBy
 
     /**
      * @description Define um item de mão para entidade segurar.
@@ -606,10 +737,57 @@ interface ScriptEntity {
      * @argument 2: Pogo-Mogo
      * @argument 3: Duck Funk
      * @argument 4: Rollie
-     * @param {number} danceId - Código da dança
+     * @param {DancesID} danceId - Código da dança
      * @returns {void}
      */
-    setDance(danceId: number): void;
+    setDance(danceId: DancesID): void;
+
+    /**
+     * @description Retorna o valor da memoria padrao do usuario em formato string.
+     * @returns {string}
+     */
+    getMemoryValue(): string;
+
+    /**
+     * @description Retorna o valor da memoria padrao do usuario em formato double.
+     * @returns {number}
+     */
+    getMemoryValueDouble(): number;
+
+    /** 
+     * @description Retorna o valor da chave buscada da memoria do usuario.
+     * @param {string} key - Chave de busca.
+     * @returns {string}
+    */
+    getMemoryValue(key: string): string;
+
+    /**
+     * @description Seta um valor string na memoria do usuario.
+     * @param {string} value - Valor que a memoria padrao do usuario recebera.
+     * @returns {void}
+     */
+    setMemoryValue(value: string): void;
+
+    /**
+     * @description Seta uma chave com um valor na memoria do usuario.
+     * @param {string} key - A chave que tera o valor.
+     * @param {string} value - Valor que a chave tera.
+     * @returns {void}
+     */
+    setMemoryValue(key: string, value: string): void;
+
+    /**
+     * @description - Seta um valor number na memoria do usuario.
+     * @param value - Valor que a memoria padrao do usuario recebera.
+     */
+    setMemoryValue(value: number): void;
+
+    /**
+     * @description Seta uma chave com um valor na memoria do usuario.
+     * @param key - A chave que tera o valor.
+     * @param value - Valor que a chave tera.
+     */
+    setMemoryValue(key: string, value: number): void;
 
     /**
      * @description Envia um emblema a entidade apenas para o ScriptEntity.
@@ -679,19 +857,19 @@ interface ScriptEntity {
     /**
      * @description Envia uma mensagem que aparecerá somente para está entidade.
      * @param {string} message - Mensagem a ser enviada.
-     * @param {number} bubble - Balão da mensagem.
+     * @param {BubblesID} bubble - Balão da mensagem.
      * @returns {void}
      */
-    message(message: string, bubble: number): void;
+    message(message: string, bubble: BubblesID): void;
 
     /**
      * @description Sussura uma mensagem para outra entidade.
      * @param {ScriptEntity | null;} to - Entidade que receberá a mensagem.
      * @param {string} message - Mensagem que será enviada.
-     * @param {number} bubbleId - Balão da mensagem.
+     * @param {BubblesID} bubbleId - Balão da mensagem.
      * @returns {void}
      */
-    whisper(to: ScriptEntity, message: string, bubbleId: number): void;
+    whisper(to: ScriptEntity, message: string, bubbleId: BubblesID): void;
 
     /**
      * @description Envia um alerta ao usuário.
@@ -774,9 +952,9 @@ interface ScriptEntity {
      * @argument 1: Acenar
      * @argument 2: Mandar Beijo
      * @abstract 3: Rir
-     * @param {number} action - Número da ação
+     * @param {ActionID} action - Número da ação
     */
-    action(action: number): void;
+    action(action: ActionID): void;
 
     /**
      * @description Faz a entidade se levantar.
@@ -858,188 +1036,9 @@ interface ScriptEntity {
 
 }
 
-interface ScriptFurni {
-    /**
-     * @description Retorna o ID do Furni.
-     * @returns {number} O ID do Furni.
-     */
-    getId(): number;
+interface ScriptFurniWall extends RoomTile { }
 
-    /**
-     * @description Retorna o ID do furni da database.
-     * @returns {number} O ID do furni da database.
-     */
-    getDefinitionId(): number;
-
-    /**
-    * @description Retorna a posição X atual do Furni.
-    * @returns {number} A posição X atual do Furni.
-    */
-    getX(): number;
-
-    /**
-     * @description Retorna a posição Y atual do Furni.
-     * @returns {number} A posição Y atual do Furni.
-     */
-    getY(): number;
-
-    /**
-     * @description Retorna a posição Z (altura) atual do Furni.
-     * @returns {number} A posição Z (altura) atual do Furni.
-     */
-    getZ(): number;
-
-    /**
-     * @description Retorna a atual rotação do Furni.
-     * @returns {number} A atual rotação do Furni.
-     */
-    getR(): number;
-
-    /**
-     * @description Retorna atual estado do furni.
-     * @returns {string} O atual estado do furni.
-     */
-    getCurrentState(): string;
-
-    /**
-     * @description Retorna o ID do sprite do furni.
-     * @returns {number} O ID do sprite do furni.
-     */
-    getSprite(): number;
-
-    /**
-     * @description Retorna o nome do furni.
-     * *O nome que está na database*
-     * @returns {string} O nome do furni.
-     */
-    getName(): string;
-
-    /**
-     * @description Retorna o nome público do furni. 
-     * *O nome que todos estão vendo no quarto*
-     * @returns {string} O nome público do furni.
-     */
-    getPublicName(): string;
-
-    /**
-     * @description Retorna todas as entidades que estão sobre o furni.
-     * @returns {ScriptEntity[]} Lista de entidades que estão sobre o furni.
-     */
-    getEntities(): ScriptEntity[];
-
-    /**
-     * @description Retorna o tipo da interação do furni.
-     * @returns {string} O tipo da interação do furni.
-     */
-    getInteractionType(): string;
-
-    /**
-     * @description Retorna quantidade de interações que o furni possui.
-     * @returns {number} Quantidade de interações que o furni possui.
-     */
-    getInteractionModesCount(): number;
-
-    /**
-    * @description Retorna altura empilhável do furni.
-    * @returns {number} Altura empilhável do furni.
-    */
-    getStackHeight(): number;
-
-    /**
-     * @description Retorna a largura do furni.
-     * @returns {number} A largura do furni.
-     */
-    getItemWidth(): number;
-
-    /**
-     * @description Retorna o comprimento do Furni.
-     * @returns {number} O comprimento do Furni.
-     */
-    getItemLength(): number;
-
-    /**
-     * @description Retorna a altura do Furni.
-     * @returns {number} A altura do Furni.
-     */
-    getItemHeight(): number;
-
-    /**
-     * @description Retorna se a entidades a cima do furni.
-     * @returns {boolean} Se a entidades a cima do furni.
-     */
-    hasEntities(): boolean;
-
-    /**
-     * @description Retorna se o furni é sentável por uma entidade.
-     * @returns {boolean} Se o furni é sentável por uma entidade.
-     */
-    canSit(): boolean;
-
-    /**
-     * @description Retorna se entidades podem andar sobre o furni.
-     * @returns {boolean} Se entidades podem andar sobre o furni.
-     */
-    canWalk(): boolean;
-
-    /**
-     * @description Mostra o furni.
-     * @returns {void}
-     */
-    show(): void;
-
-    /**
-     * @description Esconde o furni.
-     * @returns {void}
-     */
-    hide(): void;
-
-    /**
-     * @description Mostra o furni apenas para a entidade.
-     * @param {ScriptEntity | null;} entity - Entidade que irá ver o furni.
-     * @returns {void}
-     */
-    show(entity: ScriptEntity): void;
-
-    /**
-     * @description Esconde o furni apenas para a entidade.
-     * @param {ScriptEntity | null;} entity - Entidade que não irá ver o furni.
-     * @returns {void}
-     */
-    hide(entity: ScriptEntity): void;
-
-    /**
-     * @description Ativa a interação do furni.
-     * @returns {void}
-     */
-    toggleState(): void;
-
-    /**
-     * @description Move o furni até a posição fornecida.
-     * @param {number} x - Posição X para onde o furni será movido.
-     * @param {number} y - Posição y para onde o furni será movido.
-     * @param {number} z - Posição Z para onde o furni será movido.
-     * @param {number} rot - Rotação definida ao furni ao ser movido.
-     * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
-     * @returns {void}
-     */
-    move(x: number, y: number, z: number, rot: number, force: boolean): void;
-
-    /**
-     * @description Move o furni até a posição fornecida.
-     * @param {IScriptReachable} object - Onde o furni será movido.
-     * @param {number} rotation - Rotação
-     * @returns {void}
-     */
-    move(object: IScriptReachable, rotation: number): void;
-
-    /**
-     * @description Altera o estado do Furni.
-     * @param {string} value - Valor do estado em que o furni será definido.
-     * @returns {void}
-     */
-    setState(value: string): void;
-
-}
+interface ScriptFurni extends RoomTile { }
 
 interface FakeEntity {
     /**
@@ -1049,10 +1048,10 @@ interface FakeEntity {
      * 2: Sorriso (Smile)
      * 3: Bobba (Bobba)
      * 4: Merda (Poop)
-     * @param {number} relationship - Relação entre entidade e FakeEntity
+     * @param {relationships} relationship - Relação entre entidade e FakeEntity
      * @returns {void}
      */
-    addRelationship(entityId: number, relationship: number): void;
+    addRelationship(entityId: number, relationship: relationships): void;
 
     /**
      * @description Retorna ID da FakeEntity
@@ -1198,11 +1197,10 @@ interface FakeEntity {
 
     /**
      * @description Define o visual da entidade
-     * @param {string} gender - Gênero do visual.
      * @param {string} figure - Código do visual.
      * @returns {void}
      */
-    setFigure(gender: string, figure: string): void;
+    setFigure(figure: string): void;
 
     /**
      * @description Define nova missão na entidade
@@ -1232,10 +1230,10 @@ interface FakeEntity {
      * 2: Pogo-Mogo
      * 3: Duck Funk
      * 4: Rollie
-     * @param {number} danceId - Código da dança
+     * @param {DancesID} danceId - Código da dança
      * @returns {void}
      */
-    setDance(danceId: number): void;
+    setDance(danceId: DancesID): void;
 
     /**
      * @description Remove efeito (:enable 0)
@@ -1267,10 +1265,10 @@ interface FakeEntity {
      * 1: Acenar
      * 2: Mandar Beijo
      * 3: Rir
-     * @param {number} action - Número da ação
+     * @param {ActionID} action - Número da ação
      * @returns {void}
     */
-    action(action: number): void;
+    action(action: ActionID): void;
 
     /**
      * @description Move a entidade até a posição fornecida.
@@ -1321,22 +1319,28 @@ interface FakeEntity {
     lookTo(object: IScriptReachable): void;
 
     /**
-       * @description Faz a entidade dizer uma mensagem.
-       * @param {string} message - Mensagem que será dita pela entidade.
-       * @param {boolean} shout - Se o personagem deve gritar a mensagem. (Mensagem em Bold)
-       * @param {number} bubbleId - Balão da mensagem
-       * @returns {void}
-       */
-    say(message: string, shout: boolean, bubbleId: number): void;
+     * @description Faz a entidade dizer uma mensagem.
+     * @param {string} message - Mensagem que será dita pela entidade.
+     * @param {boolean} shout - Se o personagem deve gritar a mensagem. (Mensagem em Bold)
+     * @param {BubblesID} bubbleId - Balão da mensagem
+     * @returns {void}
+    */
+    say(message: string, shout: boolean, bubbleId: BubblesID): void;
+
+    /**
+     * @description Faz a entidade dizer uma mensagem.
+     * @returns {void}
+     */
+    say(message: string): void;
 
     /**
        * @description Sussurra uma mensagem para outra entendide.
        * @param to - Entidade que receberá a mensagem.
        * @param {string} message - Mensagem que será enviada.
-       * @param {number} bubbleId - Balão da mensagem.
+       * @param {BubblesID} bubbleId - Balão da mensagem.
        * @returns {void}
        */
-    whisper(to: ScriptEntity, message: string, bubbleId: number): void;
+    whisper(to: ScriptEntity, message: string, bubbleId: BubblesID): void;
 
     /**
      * @description Faz a entidade levantar
@@ -1420,7 +1424,7 @@ interface WebhookMessage {
 interface DelayTask {
     /** 
     * @description Retorna quantidade de ticks que restam para o termino do temporizador.
-    * @returns {number} 
+    * @returns {Number} 
     */
     getTicksRemain(): number;
 }
@@ -1596,26 +1600,12 @@ declare class Currency {
     static payById(id: number, amount: number): void;
 
     /**
-    * @description Faz o pagamento de evento ao usuario
-     * @param {number} id - Id do usuário que receberá o pagamento.
-     * @returns {void}
-     */
-    static payById(id: number): void;
-
-    /**
      * @description Faz o pagamento de evento ao usuario
      * @param {string} username - Nome do usuário que receberá o pagamento.
      * @param {number} amount - Quantidade de créditos a ser entregue.
      * @returns {void}
      */
     static payByUsername(username: string, amount: number): void;
-
-    /**
-     * @description Faz o pagamento de evento ao usuario
-     * @param {string} username - Nome do usuário que receberá o pagamento.
-     * @returns {void}
-     */
-    static payByUsername(username: string): void;
 }
 
 declare class Events {
@@ -1809,7 +1799,7 @@ declare class Events {
      * @description Evento chamado quando um bot é selecionado.
      * @param event - Nome do evento.
      * @param callback - Função a ser executada quando o evento for chamado.
-     * return {void}
+     * returns {void}
      * @example
      * // Exemplo de uso:
      * Events.on('botSelected', (user, bot) => {
@@ -1913,9 +1903,9 @@ declare class GlobalStorage {
     /**
      * @description Consulta um valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser buscada.
-    * @returns {string | null} Valor correspondente a chave buscada.
+    * @returns {String | null} Valor correspondente a chave buscada.
     */
-    static get(key: string): string | null;
+    static get(key: string): String | null;
 
     /** 
      * @description Defini/Atualiza valor correspondente a chave buscada.
@@ -1923,90 +1913,90 @@ declare class GlobalStorage {
     * @param {string} value - Novo valor a ser definido.
     * @returns {void}
     */
-    static set(key: string, value: string): void;
+    static set(key: String, value: String): void;
 
     /**
      * @description Deleta valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser deletada.
     * @returns {void}
     */
-    static delete(key: string): void;
+    static delete(key: String): void;
 }
 
 declare class Highscores {
     /**
      * @description Adiciona pontos ao Placar
-     * @param {string | ScriptEntity} player - Nick ou Usuário que receberá os pontos.
+     * @param {String | ScriptEntity} player - Nick ou Usuário que receberá os pontos.
      * @param {number} points - Quantidade de pontos a serem adicionados.
      * @returns {void}
     */
-    static add(player: string | ScriptEntity, points: number): void;
+    static add(player: String | ScriptEntity, points: Number): void;
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
-     * @param {string | ScriptEntity} user - Nick ou Usuário que serão consultados.
+     * @param {String | ScriptEntity} user - Nick ou Usuário que serão consultados.
      * @returns {number} Quantidade de pontos que o grupo tem no Placar
     */
-    static getScore(user: string | ScriptEntity): number;
+    static getScore(user: String | ScriptEntity): number;
 
     /**
      * @description Retorna todos os pontos que tem no Placar
-     * @param {number} furni - id do placar.
-     * @returns {Map<string, number>} Quantidade de pontos que o grupo tem no Placar.
+     * @param {Number} furni - id do placar.
+     * @returns {Map<String, Number>} Quantidade de pontos que o grupo tem no Placar.
     */
-    static getScoreAll(furni: number): Map<string, number>;
+    static getScoreAll(furni: Number): Map<String, number>;
 
     /**
      * @description Remove pontos do Placar
-     * @param {string | ScriptEntity} player - Nick ou Usuário que perderá os pontos.
+     * @param {String | ScriptEntity} player - Nick ou Usuário que perderá os pontos.
      * @param {number} points - Quantidade de pontos a serem removidos.
      * @returns {void}
     */
-    static remove(player: string | ScriptEntity, points: number): void;
+    static remove(player: String | ScriptEntity, points: Number): void;
 
     /**
      * @description Adiciona pontos a todo o Grupo no Placar
-     * @param {string[] | ScriptEntity[]} player - Nicks ou Usuários que receberam os pontos.
+     * @param {String[] | ScriptEntity[]} player - Nicks ou Usuários que receberam os pontos.
      * @param {number} points - Quantidade de pontos a serem adicionados.
      * @returns {void}
     */
-    static addGroup(player: string[] | ScriptEntity[], points: number): void;
+    static addGroup(player: String[] | ScriptEntity[], points: Number): void;
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
-     * @param {string[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
+     * @param {String[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
      * @returns {number} Quantidade de pontos que o grupo tem no Placar
     */
-    static getGroupScore(group: string[] | ScriptEntity[]): number;
+    static getGroupScore(group: String[] | ScriptEntity[]): number;
 
     /**
      * @description Remove pontos de todo o Grupo no Placar
-     * @param {string | ScriptEntity} player - Nicks ou Usuários que perderam os pontos.
+     * @param {String | ScriptEntity} player - Nicks ou Usuários que perderam os pontos.
      * @param {number} points - Quantidade de pontos a serem removidos.
      * @returns {void}
     */
-    static removeGroup(player: string | ScriptEntity, points: number): void;
+    static removeGroup(player: String | ScriptEntity, points: Number): void;
 
     /**
      * @description Limpa todos os usuários do Placar
-     * @param {number | ScriptFurni} scoreboard - ID ou Furni do Placar.
+     * @param {Number | ScriptFurni} scoreboard - ID ou Furni do Placar.
      * @returns {void}
     */
-    static clear(scoreboard: number | ScriptFurni): void;
+    static clear(scoreboard: Number | ScriptFurni): void;
 
     /**
      * @description Limpa todos os usuários do Placar
-     * @param {number | ScriptFurni} scoreboard - ID ou Furni do Placar.
+     * @param {Number | ScriptFurni} scoreboard - ID ou Furni do Placar.
      * @returns {void}
     */
-    static reset(scoreboard: number | ScriptFurni): void;
+    static reset(scoreboard: Number | ScriptFurni): void;
 }
 
 declare class RoomStorage {
     /**
     * @description Retorna os dados salvos no quarto a partir da chave de busca. 
     * @param {string} key - Chave da propriedade a ser buscada.
-    * @returns {string | null} Valor correspondente a chave buscada.
+    * @returns {String | null} Valor correspondente a chave buscada.
     */
     static get(key: string): string;
 
@@ -2302,7 +2292,7 @@ declare class Faker {
      * Events.on('load', () => {
      *  const faker = Faker.createFakeItem(1, 0, 0, 0, 0); // Cria um item falso na posição 0, 0, 0, 0
      * });
-     *  @return {FakeFloorItem} Retorna o item criado
+     *  @returns {FakeFloorItem} Retorna o item criado
      */
     static createFakeItem(baseId: number, x: number, y: number, z: number, r: number): FakeFloorItem;
 
@@ -2406,7 +2396,7 @@ declare class Faker {
      * });
      * 
      * Commands.register('remove', true, (user, message) => {
-     *  if (!faker) return; // Se o item não existir, não faça nada
+     *  if (!faker) returns; // Se o item não existir, não faça nada
      * 
      *  Faker.removeFakeFloorItem(faker); // Remove o item criado
      *  faker = null; // Limpa a variável
@@ -2427,7 +2417,7 @@ declare class Faker {
      * });
      * 
      * Commands.register('remove', true, (user, message) => {
-     *  if (!faker) return; // Se a entidade não existir, não faça nada
+     *  if (!faker) returns; // Se a entidade não existir, não faça nada
      * 
      *  Faker.removeEntity(faker); // Remove a entidade criado
      *  faker = null; // Limpa a variável
@@ -2497,7 +2487,7 @@ declare class Debug {
 declare class Webhook {
     /**
      * @description Cria um novo Webhook direcionado ao link.
-     * @param {string} linkWebhook - Link do Webhook a receber informações.
+     * @param {String} linkWebhook - Link do Webhook a receber informações.
      * 
      * @example
      * // Exemplo de uso:
@@ -2541,8 +2531,20 @@ declare class Delay {
      * Delay.cancel(delay)
      * //Função não executará, pois o delay foi interrompido antes do tempo a ser aguardado.
      * @param {DelayTask} task - Wait/Delay a ser interrompido.
+     * @returns {void}
     */
     static cancel(task: DelayTask): void;
+
+    /**
+     * @description Cancela todos os delays criados
+     * @example
+     * Delay.wait(() => {}, 100);
+     * Delay.interval(() => {}, 1);
+     * 
+     * Delay.cancelAll(); // cancela os dois delays criados.
+     * @returns {void}
+     */
+    static cancelAll(): void;
 
     /**
      * Converte segundos em uma quantia de ticks correspondente.
@@ -2554,21 +2556,6 @@ declare class Delay {
      * @param {number} sec - Quantidade de segundos a serem convertidos em ticks.
     */
     static seconds(sec: number): number;
-
-    /**
-     * Cancela todos os delays ativos.
-     * @example
-     * Delay.wait(() => {
-     *     //Executado após 10 segundos.
-     * }, Delay.seconds(10))
-     * 
-     * Delay.wait(() => {
-     *    //Executado após 20 segundos.
-     * }, Delay.seconds(20))
-     * 
-     * Delay.cancelAll(); //Cancela todos os delays criados.
-     */
-    static cancelAll(): void;
 }
 
 declare class Wired {
@@ -2611,7 +2598,13 @@ declare class Wired {
      * // entity opcional, furni opcional, entities opcional, furnis opcional
      * @returns {void}
      */
-    static trigger(wiredName: string, entity?: ScriptEntity, furni?: ScriptFurni, entities?: ScriptEntity[], furnis?: ScriptFurni[]): void;
+    static trigger(wiredName: string, entity: ScriptEntity, furni: ScriptFurni, entities: ScriptEntity[], furnis: ScriptFurni[]): void;
+
+    static trigger(wiredName: string): void;
+
+    static trigger(wiredName: string, entity: ScriptEntity): void;
+
+    static trigger(wiredName: string, entity: ScriptEntity, furni: ScriptFurni): void;
 
     /**
      * @description Define o valor de um disquete.
@@ -2623,36 +2616,33 @@ declare class Wired {
      * Wired.setMemoryValue('memoria', 1); // Define o valor do disquete 'memoria' para 1
      * @returns {void}
      */
-    static setMemoryValue(disqueteName: string, value: string | number): void;
+    static setMemoryValue(disqueteName: string, value: number): void;
 
     /**
-     * @description Define um valor numérico para um disquete.
-     * @param disqueteName - Nome do disquete.
-     * @param value - Valor a ser definido.
-     */
-    static setMemoryValueDouble(disqueteName: string, value: number): void;
+ * @description Define o valor de um disquete.
+ * @param {string} disqueteName - Nome do disquete.
+ * @param {string} value - Valor a ser definido.
+ * 
+ * @example
+ * // Exemplo de uso:
+ * Wired.setMemoryValue('memoria', 'a'); // Define o valor do disquete 'memoria' para 'a'
+ * @returns {void}
+ */
+    static setMemoryValue(disqueteName: string, value: string): void;
 
     /**
-     * @description Retorna o valor de um disquete.
+     * @description Retorna o valor da memoria em formato number.
      * @param {string} disqueteName - Nome do disquete.
-     * 
-     * @example
-     * // Exemplo de uso:
-     * Wired.getMemoryValue('memoria'); // Retorna o valor do disquete 'memoria'
-     * @returns {string} Retorna o valor do disquete.
-     */
-    static getMemoryValue(disqueteName: string): string;
-
-    /**
-     * @description Retorna o valor em número de um disquete.
-     * @param disqueteName - Nome do disquete.
-     * 
-     * @example
-     * // Exemplo de uso:
-     * Wired.getMemoryValueDouble('memoria'); // Retorna o valor do disquete 'memoria'
-     * @returns {number} Retorna o valor do disquete, caso não exista ou a memória seja uma string, retorna 0.
+     * @returns {number}
      */
     static getMemoryValueDouble(disqueteName: string): number;
+
+    /**
+     * @description Retorna o valor da memoria em formato string.
+     * @param disqueteName - Nome do disquete.
+     * @returns {string}
+     */
+    static getMemoryValue(disqueteName: string): string;
 
     /**
      * @description Ínicia o próximo evento da cota.
