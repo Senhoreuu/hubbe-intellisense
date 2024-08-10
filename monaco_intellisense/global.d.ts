@@ -6,8 +6,8 @@ type DancesID = 0 | 1 | 2 | 3 | 4;
 type ActionID = 1 | 2 | 3;
 type relationships = 1 | 2 | 3 | 4;
 type WiredCallback = (entity?: ScriptEntity, furni?: ScriptFurni, entities?: ScriptEntity[], furnis?: ScriptFurni[]) => void;
-type BubblesID = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43;
-type AnimationTime = 50 | 100 | 150 | 200 | 1000 | 2000; // de 50 em 50.
+type BubblesID = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | number;
+type AnimationTime = 50 | 100 | 150 | 200 | 1000 | 2000 | number; // de 50 em 50.
 
 interface IScriptReachable {
     /**
@@ -154,6 +154,21 @@ interface RoomTile extends IScriptReachable {
     setState(state: string): void;
 
     /**
+     * @description Altera o estado do furni.
+     * @param {number} state - Estado do furni.
+     * @returns {void}
+     */
+    setState(state: number): void;
+
+    /**
+     * @description Altera a cor de um mobi colorivel
+     * @param {string} colorHexA - Primeira cor. 
+     * @param {string} colorHexB - Segunda cor.
+     * @returns {void}
+     */
+    setColor(colorHexA: string, colorHexB: string): void;
+
+    /**
      * @description Mostra o furni.
      * @returns {void}
      */
@@ -244,60 +259,82 @@ interface RoomTile extends IScriptReachable {
      * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
      */
     move(x: number, y: number, z: number, r: number, force: boolean): void;
+
+    /**
+     * @description Move o item de parede para a posição fornecida.
+     * @param {number} x1 - Posição X1 para onde o item de parede será movido.
+     * @param {number} x2 - Posição X2 para onde o item de parede será movido.
+     * @param {number} y1 - Posição Y1 para onde o item de parede será movido.
+     * @param {number} y2 - Posição Y2 para onde o item de parede será movido.
+     * @param {string} side - Lado para onde o item de parede será movido.
+     */
+    moveWall(x1: number, x2: number, y1: number, y2: number, side: string): void;
+
+    /**
+     * @description Retorna a opacidade do furni. Entre 100 a 0.
+     */
+    getOpacity(): number;
+
+    /**
+     * @description Define a opacidade do furni.
+     * @param {number} opacity - Opacidade do furni. Entre 100 a 0.
+     * @returns {void}
+     */
+    setOpacity(opacity: number): void;
 }
 
 interface ScriptTile extends IScriptReachable {
     /**
      * @description Retorna todos os furnis que estão no piso.
-     * @returns {ScriptFurni[]} Lista de furnis que estão no piso.
+     * @returns {ScriptFurni[]}
      */
     getFurnis(): ScriptFurni[];
 
     /**
      * @description Retorna todas entidades que estão no piso.
-     * @returns {ScriptEntity[]} Lista de entidades que estão no piso.
+     * @returns {ScriptEntity[]}
      */
     getEntities(): ScriptEntity[];
 
     /**
      * @description Retorna o Furni que está mais alto no piso.
-     * @returns {ScriptFurni} Furni mais alto no piso.
+     * @returns {ScriptFurni}
      */
     getTopFurni(): ScriptFurni;
 
     /**
      * @description Retorna a altura andável no piso.
-     * @returns {Number} Altura andável no piso.
+     * @returns {Number}
      */
     getWalkHeight(): Number;
 
     /**
      * @description Retorna se a um furni com interação de porta no piso.
-     * @returns {Boolean} Se tem um furni com interação de porta no piso.
+     * @returns {Boolean}
      */
     hasGate(): Boolean;
 
     /**
      * @description Retorna se tem algum furni no piso.
-     * @returns {Boolean} Se tem algum furni no piso.
+     * @returns {Boolean}
      */
     hasFurni(): Boolean;
 
     /**
      * @description Retorna se tem entidades no piso.
-     * @returns {Boolean} Se tem entidades no piso.
+     * @returns {Boolean}
      */
     hasEntities(): Boolean;
 
     /**
      * @description Retorna se o piso pode ser empilhável.
-     * @returns {Boolean} Se o piso pode ser empilhável.
+     * @returns {Boolean}
      */
     canStack(): Boolean;
 
     /**
      * @description Retorna se pode criar/posicionar furnis no piso.
-     * @returns {Boolean} Se pode criar/posicionar furnis no piso.
+     * @returns {Boolean}
      */
     canPlaceItem(): Boolean;
 }
@@ -305,13 +342,13 @@ interface ScriptTile extends IScriptReachable {
 interface ScriptAchievementProgress {
     /**
      * @description Retorna o progresso da conquista
-     * @returns {number} O progresso da conquista
+     * @returns {number}
      */
     getProgress(): number;
 
     /**
      * @description Retorna o nível da conquista do usuário
-     * @returns {number} O nível da conquista do usuário
+     * @returns {number}
      */
     getLevel(): number;
 }
@@ -319,103 +356,103 @@ interface ScriptAchievementProgress {
 interface ScriptPlayerData {
     /**
      * @description Retorna o ID do player.
-     * @returns {number} O ID do player.
+     * @returns {number}
      */
     getId(): number;
 
     /**
      * @description Retorna o nome do player.
-     * @returns {string} O nome do player.
+     * @returns {string}
      */
     getUsername(): string;
 
     /**
      * @description Retorna o total de pontos de conquista do player.
-     * @returns {number} O total de pontos de conquista do player.
+     * @returns {number}
      */
     getAchievementPoints(): number;
 
     /**
      * @description Retorna o gênero do player.
-     * @returns {Genders} O gênero do player.
+     * @returns {Genders}
      */
     getGender(): Genders;
 
     /**
      * @description Retorna o visual do player.
-     * @returns {string} O visual do player.
+     * @returns {string}
      */
     getFigure(): string;
 
     /**
      * @description Retorna se o player é VIP.
-     * @returns {boolean} Se o player é VIP.
+     * @returns {boolean}
      */
     isVip(): boolean;
 
     /**
      * @description Retorna a missão do player.
-     * @returns {string} O missão do player.
+     * @returns {string}
      */
     getMotto(): string;
 
     /**
      * @description Retorna o rank do player.
-     * @returns {number} O rank do player.
+     * @returns {number}
      */
     getRank(): number;
 
     /**
      * @description Retorna o total de diamantes do player.
-     * @returns {number} O total de diamantes do player.
+     * @returns {number}
      */
     getDiamonds(): number;
 
     /**
      * @description Retorna o total de duckets do player.
-     * @returns {number} O total de duckets do player.
+     * @returns {number}
      */
     getDuckets(): number;
 
     /**
      * @description Retorna o total de moedas do player.
-     * @returns {number} O total de moedas do player.
+     * @returns {number}
      */
     getCredits(): number;
 
     /**
      * @description Retorna o grupo favoritado do player.
-     * @returns {number} O grupo favoritado do player.
+     * @returns {number}
      */
     getFavouriteGroup(): number;
 
     /**
      * @description Retorna o timestamp de registro do player.
-     * @returns {number} O timestamp de registro do player.
+     * @returns {number}
      */
     getRegTimestamp(): number;
 
     /**
      * @description Retorna o timestamp da última vez que o player fez login no hotel.
-     * @returns {number} O timestamp da última vez que o player fez login no hotel.
+     * @returns {number}
      */
     getLastOnlineTimestamp(): number;
 
     /**
      * @description Retorna o total de pontos de promoção do player.
-     * @returns {number} O total de pontos de promoção do player.
+     * @returns {number}
      */
     getPontosHallPromo(): number;
 
     /**
      * @description Retorna o total de pontos de presença do player.
-     * @returns {number} O total de pontos de presença.
+     * @returns {number}
      */
     getPontosHallPresenca(): number;
 
     /**
      * @description Retorna o total de pontos de evento do player.
-     * @returns {number} O total de pontos de evento.
+     * @returns {number}
      */
     getPontosHallEvento(): number;
 }
@@ -436,124 +473,124 @@ interface BotEntity extends FakeEntity { }
 interface ScriptEntity extends IScriptReachable {
     /**
      * @description Retorna o Balão de fala atual da entidade.
-     * @returns {BubblesID} O Balão de fala atual da entidade.
+     * @returns {BubblesID}
      */
     getBubbleId(): BubblesID;
 
     /**
      * @description Retorna o ID da entidade.
-     * @returns {number} O ID da entidade.
+     * @returns {number}
      */
     getId(): number;
 
     /**
      * @description Retorna o ID do jogador.
-     * @returns {number} O ID do jogador.
+     * @returns {number}
      */
     getPlayerId(): number;
 
     /**
      * @description Retorna o nome da Entidade atual.
-     * @returns {string} O nome da Entidade atual.
+     * @returns {string}
      */
     getUsername(): string;
 
     /**
      * @description Retorna a atual rotação da entidade.
-     * @returns {number} A atual rotação da entidade.
+     * @returns {number}
      */
     getR(): number;
 
     /**
      * @description Retorna o tipo da entidade.
-     * @returns {EntitiesType} O tipo da entidade.
+     * @returns {EntitiesType}
      */
     getType(): EntitiesType;
 
     /**
      * @description Retorna o rank da entidade.
-     * @returns {number} O rank da entidade.
+     * @returns {number}
      */
     getRank(): number;
 
     /**
      * @description Retorna a missão da entidade.
-     * @returns {string} A missão da entidade.
+     * @returns {string}
      */
     getMotto(): string;
 
     /**
      * @description Retorna o genero da entidade
-     * @returns {Genders} O genero da entidade
+     * @returns {Genders}
      */
     getGender(): Genders;
 
     /**
      * @description Retorna o código do atual visual da entidade.
      * *Não aplicável a Pets*
-     * @returns {string} O código do atual visual da entidade.
+     * @returns {string}
      */
     getFigure(): string;
 
     /**
      * @description Retorna o código do efeito atual da entidade.
-     * @returns {number} O código do efeito atual da entidade.
+     * @returns {number}
      */
     getEffect(): number;
 
     /**
      * @description Retorna o código do atual item de mão que a entidade está segurando.
-     * @returns {number} O código do atual item de mão que a entidade está segurando.
+     * @returns {number}
      */
     getHandItem(): number;
 
     /**
      * @description Retorna a atual dança da entidade.
-     * @returns {DancesID} A atual dança da entidade.
+     * @returns {DancesID}
      */
     getDance(): DancesID;
 
     /**
      * @description Retorna objeto com status atual da conquista
      * @param {string} achievement - Código da conquista
-     * @returns {ScriptAchievementProgress} Objeto com status atual da conquista
+     * @returns {ScriptAchievementProgress}
      */
     getAchievementProgress(achievement: string): ScriptAchievementProgress;
 
     /**
      * @description Retorna a quantidade de *Diamantes* da entidade.
-     * @returns {number} A quantidade de *Diamantes* da entidade.
+     * @returns {number}
      */
     getDiamonds(): number;
 
     /**
      * @description Retorna a quantidade de *Duckets* da entidade.
-     * @returns {number} A quantidade de *Duckets* da entidade.
+     * @returns {number}
      */
     getDuckets(): number;
 
     /**
      * @description Retorna a quantidade de *Moedas* da entidade.
-     * @returns {number} A quantidade de *Moedas* da entidade.
+     * @returns {number}
     */
     getCredits(): number;
 
     /**
      * @description Retorna o total de *Ponto de Conquista* da entidade. 
-     * @returns {number} O total de *Ponto de Conquista* da entidade.
+     * @returns {number}
      */
     getAchievementPoints(): number;
 
     /**
      * @description Retorna o ID do quarto atual da entidade.
-     * @returns {number} O ID do quarto atual da entidade.
+     * @returns {number}
      */
     getRoomId(): number;
 
     /**
      * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
      * @param {IScriptReachable} object - Posição a ser comparada.
-     * @returns {number} A distancia atual entre esta entidade e a posição fornecida.
+     * @returns {number}
      */
     distanceTo(object: IScriptReachable): number;
 
@@ -562,38 +599,43 @@ interface ScriptEntity extends IScriptReachable {
      * @param {number} x - Posição X a ser comparada.
      * @param {number} y - Posição Y a ser comparada.
      * @param {number} z - Posição Z a ser comparada.
-     * @returns {number} A distancia atual entre esta entidade e a posição fornecida.
+     * @returns {number}
      */
     distanceTo(x: number, y: number, z: number): number;
 
     /**
      * @description Retorna se a entidade é um usuário.
-     * @returns {boolean} Se a entidade é um usuário.
+     * @returns {boolean}
      */
     isPlayer(): boolean;
 
     /**
      * @description Retorna se entidade é um Bot.
-     * @returns {boolean} Se entidade é um Bot.
+     * @returns {boolean}
      */
     isBot(): boolean;
 
     /**
      * @description Retorna se a entidade é um Pet.
-     * @returns {boolean} Se a entidade é um Pet.
+     * @returns {boolean}
      */
     isPet(): boolean;
 
     /**
      * @description Retorna se a entidade está ausente.
-     * @returns {boolean} Se a entidade está ausente.
+     * @returns {boolean}
      */
     isIdle(): boolean;
 
     /**
+     * @description Retorna se a entidade está visível no quarto.
+     * @returns {boolean}
+     */
+    isVisibleInRoom(): boolean;
+    /**
      * @description Retorna se esta entidade é igual a entidade fornecida.
      * @param {ScriptEntity | null;} entity - Entidade que será comparada.
-     * @returns {boolean} Se esta entidade é igual a entidade fornecida.
+     * @returns {boolean}
      */
     equals(entity: ScriptEntity): boolean;
 
@@ -607,7 +649,7 @@ interface ScriptEntity extends IScriptReachable {
     /**
      * @description Retorna se a entidade está em alguma das mobilias fornecidas.
      * @param {IScriptReachable[]} furnis - Lista de mobilias a serem comparadas.
-     * @returns {boolean} Se a entidade está em alguma das mobilias fornecidas.
+     * @returns {boolean}
      */
     inAny(furnis: IScriptReachable[]): boolean;
 
@@ -619,7 +661,7 @@ interface ScriptEntity extends IScriptReachable {
 
     /**
      * @description Retorna se a entidade está se movendo.
-     * @returns {boolean} Se a entidade está se movendo.
+     * @returns {boolean}
      */
     isWalking(): boolean;
 
@@ -627,14 +669,14 @@ interface ScriptEntity extends IScriptReachable {
      * @description Retorna se a entidade possui o emblema no inventário do usuário.
      * *Emblema não precisa estar equipado como favorito.*
      * @param {string} badge - Código do emblema a ser verificado.
-     * @returns {boolean} Se a entidade possui o emblema no inventário do usuário.
+     * @returns {boolean}
     */
     hasBadge(badge: string): boolean;
 
     /**
      * @description Retorna se entidade possui o rank fornecido ou um maior.
      * @param {number} rank - Valor do rank a ser comparado.
-     * @returns {boolean} Se entidade possui o rank fornecido ou um maior.
+     * @returns {boolean}
      */
     hasRank(rank: number): boolean;
 
@@ -643,21 +685,21 @@ interface ScriptEntity extends IScriptReachable {
      * @param {number} x - Posição X a ser comparada.
      * @param {number} y - Posição Y a ser comparada.
      * @param {number} z - Posição Z a ser comparada.
-     * @returns {boolean} Se entidade está próxima (tocando) a posição fornecida.
+     * @returns {boolean}
      */
     touching(x: number, y: number, z: number): boolean;
 
     /**
      * @description Retorna se entidade está próxima (tocando) a posição fornecida pelo objeto.
      * @param {IScriptReachable} object
-     * @returns {boolean} Se entidade está próxima (tocando) a posição fornecida pelo objeto.
+     * @returns {boolean}
      */
     touching(object: IScriptReachable): boolean;
 
     /**
      * @description Retorna se entidade possui o item fornecido no inventário.
      * @param {number} spriteId - Código do item a ser verificado.
-     * @returns {boolean} Se entidade possui o item fornecido no inventário.
+     * @returns {boolean}
      */
     hasItemBySpriteId(spriteId: number): boolean;
 
@@ -665,14 +707,14 @@ interface ScriptEntity extends IScriptReachable {
      * @description Retorna se entidade possui a quantidade do item fornecido no inventário.
      * @param {number} spriteId - Código do item a ser verificado.
      * @param {number} quantity - Quantidade do item a ser verificado.
-     * @returns {boolean} Se entidade possui a quantidade do item fornecido no inventário.
+     * @returns {boolean}
      */
     hasItemBySpriteId(spriteId: number, quantity: number): boolean;
 
     /**
      * @description Retorna a quantidade do item no inventário da entidade.
      * @param {number} spriteId - Código do item a ser verificado.
-     * @returns {number} A quantidade do item no inventário da entidade.
+     * @returns {number}
      */
     getItemCountBySpriteId(spriteId: number): number;
 
@@ -741,6 +783,13 @@ interface ScriptEntity extends IScriptReachable {
      * @returns {void}
      */
     setDance(danceId: DancesID): void;
+
+    /**
+     * @description Define a visibilidade da entidade no quarto.
+     * @param {boolean} visible - Se a entidade será visível.
+     * @returns {void}
+     */
+    setVisibleInRoom(visible: boolean): void;
 
     /**
      * @description Retorna o valor da memoria padrao do usuario em formato string.
@@ -849,10 +898,32 @@ interface ScriptEntity extends IScriptReachable {
      * @description Faz a entidade dizer uma mensagem.
      * @param {string} message - Mensagem que será dita pela entidade.
      * @param {boolean} shout - Se o personagem deve gritar a mensagem. (Mensagem em negrito)
-     * @param {number} bubbleId - Balão da mensagem
+     * @param {BubblesID} bubbleId - Balão da mensagem
      * @returns {void}
      */
-    say(message: string, shout: boolean, bubbleId: number): void;
+    say(message: string, shout: boolean, bubbleId: BubblesID): void;
+
+    /**
+     * @description Faz a entidade dizer uma mensagem.
+     * @param {string} message - Mensagem que será dita pela entidade.
+     * @returns {void}
+     */
+    say(message: string): void;
+
+        /**
+     * @description Faz a entidade dizer uma mensagem.
+     * @param {string} message - Mensagem que será dita pela entidade.
+     * @param {BubblesID} bubbleId - Balão da mensagem
+     * @returns {void}
+     */
+    say(message: string, bubble: BubblesID): void;
+
+    /**
+     * @description Envia uma mensagem que aparecerá somente para está entidade.
+     * @param {string} message - Mensagem a ser enviada.
+     * @returns {void}
+     */
+    message(message: string): void;
 
     /**
      * @description Envia uma mensagem que aparecerá somente para está entidade.
@@ -879,6 +950,7 @@ interface ScriptEntity extends IScriptReachable {
     alert(text: string): void;
 
     /**
+     * @deprecated
      * @description Envia um alerta longo ao usuário.
      * @param {string} text - Texto do alerta.
      * @returns {void} 
@@ -918,6 +990,23 @@ interface ScriptEntity extends IScriptReachable {
      * @returns {void}
      */
     teleport(x: number, y: number, z: number, r: number): void;
+
+    /**
+     * @description Teletransporta a entidade para posição fornecida.
+     * @param {number} x - Posição X em que entidade será levada.
+     * @param {number} y - Posição Y em que entidade será levada.
+     * @param {number} r - Rotação definida para a entidade.
+     * @returns {void}
+     */
+    teleport(x: number, y: number, r: number): void;
+
+    /**
+     * @description Teletransporta a entidade para posição fornecida.
+     * @param {number} x - Posição X em que entidade será levada.
+     * @param {number} y - Posição Y em que entidade será levada.
+     * @returns {void}
+     */
+    teleport(x: number, y: number): void;
 
     /**
      * @description Teletransporta a entidade para posição fornecida no objeto.
@@ -1034,6 +1123,73 @@ interface ScriptEntity extends IScriptReachable {
      */
     sendUIMessage(eventName: string, data: string): void;
 
+    /**
+     * @description Retorna se o user está utilizando um teletransporte
+     * @returns {boolean}
+     */
+    usingTeleportItem(): boolean;
+
+    /**
+     * @description Retorna se o usuário pode interagir com mobis.
+     * @returns {boolean}
+     */
+    canInteract(): boolean;
+
+    /**
+     * @description Retorna se o usuário pode interagir com o mobi.
+     * @param {number} itemId - ID do mobi
+     */
+    canInteract(itemId: number): boolean;
+
+    /**
+     * @description Define se o usuário pode interagir com mobis.
+     * @param {boolean} canInteract - Se o usuário pode interagir com mobis.
+     */
+    setCanInteract(canInteract: boolean): void;
+
+    /**
+     * @description Define os mobis que o usuário não pode interagir.
+     * @param {number[]} itemsId - ID dos mobis que o usuário não pode interagir.
+     */
+    setNonInteractableItems(itemsId: number[]): void;
+
+    /**
+     * @description Retorna todos os códigos de emblemas que o usuário possui.
+     * @returns {string[]}
+     */
+    getBadges(): string[];
+
+    /**
+     * @description Retorna todos os amigos do usuário.
+     * @returns {Friend[]}
+     */
+    getFriends(): Friend;
+}
+
+interface Friend {
+    /**
+     * @description Retorna se o usuário está em algum quarto.
+     * @returns {boolean}
+     */
+    isInRoom(): boolean;
+
+    /**
+     * @description Retorna se o usuário está online.
+     * @returns {boolean}
+     */
+    isOnline(): boolean;
+
+    /**
+     * @description Retorna o PlayerData do usuário.
+     * @returns {ScriptPlayerData}
+     */
+    getAvatar(): ScriptPlayerData;
+
+    /**
+     * @description Retorna o id do usuário.
+     * @returns {number}
+     */
+    getUserId(): number;
 }
 
 interface ScriptFurniWall extends RoomTile { }
@@ -1359,8 +1515,6 @@ interface FakeEntity {
      * @returns {void}
      */
     lay(): void;
-
-
 }
 
 interface WebhookMessage {
@@ -1438,7 +1592,6 @@ interface CommandCallback {
      */
     (entity: ScriptEntity, message: string): void;
 }
-
 
 // --------------------------- Classes --------------------------- //
 
@@ -1897,15 +2050,21 @@ declare class GlobalData {
      * @returns {boolean} Se o player está online.
      */
     static isOnlineByUsername(username: string): boolean;
+
+    /**
+     * @description Retorna a instância de um quarto.
+     * @param {number} id - Id do quarto.
+     */
+    static getRoomById(id: number): Room | null;
 }
 
 declare class GlobalStorage {
     /**
      * @description Consulta um valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser buscada.
-    * @returns {String | null} Valor correspondente a chave buscada.
+    * @returns {string | null} Valor correspondente a chave buscada.
     */
-    static get(key: string): String | null;
+    static get(key: string): string | null;
 
     /** 
      * @description Defini/Atualiza valor correspondente a chave buscada.
@@ -1913,69 +2072,69 @@ declare class GlobalStorage {
     * @param {string} value - Novo valor a ser definido.
     * @returns {void}
     */
-    static set(key: String, value: String): void;
+    static set(key: string, value: string): void;
 
     /**
      * @description Deleta valor correspondente a chave buscada.
     * @param {string} key - Chave da propriedade a ser deletada.
     * @returns {void}
     */
-    static delete(key: String): void;
+    static delete(key: string): void;
 }
 
 declare class Highscores {
     /**
      * @description Adiciona pontos ao Placar
-     * @param {String | ScriptEntity} player - Nick ou Usuário que receberá os pontos.
+     * @param {string | ScriptEntity} player - Nick ou Usuário que receberá os pontos.
      * @param {number} points - Quantidade de pontos a serem adicionados.
      * @returns {void}
     */
-    static add(player: String | ScriptEntity, points: Number): void;
+    static add(player: string | ScriptEntity, points: Number): void;
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
-     * @param {String | ScriptEntity} user - Nick ou Usuário que serão consultados.
+     * @param {string | ScriptEntity} user - Nick ou Usuário que serão consultados.
      * @returns {number} Quantidade de pontos que o grupo tem no Placar
     */
-    static getScore(user: String | ScriptEntity): number;
+    static getScore(user: string | ScriptEntity): number;
 
     /**
      * @description Retorna todos os pontos que tem no Placar
      * @param {Number} furni - id do placar.
-     * @returns {Map<String, Number>} Quantidade de pontos que o grupo tem no Placar.
+     * @returns {Map<string, Number>} Quantidade de pontos que o grupo tem no Placar.
     */
-    static getScoreAll(furni: Number): Map<String, number>;
+    static getScoreAll(furni: Number): Map<string, number>;
 
     /**
      * @description Remove pontos do Placar
-     * @param {String | ScriptEntity} player - Nick ou Usuário que perderá os pontos.
+     * @param {string | ScriptEntity} player - Nick ou Usuário que perderá os pontos.
      * @param {number} points - Quantidade de pontos a serem removidos.
      * @returns {void}
     */
-    static remove(player: String | ScriptEntity, points: Number): void;
+    static remove(player: string | ScriptEntity, points: Number): void;
 
     /**
      * @description Adiciona pontos a todo o Grupo no Placar
-     * @param {String[] | ScriptEntity[]} player - Nicks ou Usuários que receberam os pontos.
+     * @param {string[] | ScriptEntity[]} player - Nicks ou Usuários que receberam os pontos.
      * @param {number} points - Quantidade de pontos a serem adicionados.
      * @returns {void}
     */
-    static addGroup(player: String[] | ScriptEntity[], points: Number): void;
+    static addGroup(player: string[] | ScriptEntity[], points: Number): void;
 
     /**
      * @description Retorna quantos pontos o grupo tem no Placar
-     * @param {String[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
+     * @param {string[] | ScriptEntity[]} group - Nicks ou Usuários que serão consultados.
      * @returns {number} Quantidade de pontos que o grupo tem no Placar
     */
-    static getGroupScore(group: String[] | ScriptEntity[]): number;
+    static getGroupScore(group: string[] | ScriptEntity[]): number;
 
     /**
      * @description Remove pontos de todo o Grupo no Placar
-     * @param {String | ScriptEntity} player - Nicks ou Usuários que perderam os pontos.
+     * @param {string | ScriptEntity} player - Nicks ou Usuários que perderam os pontos.
      * @param {number} points - Quantidade de pontos a serem removidos.
      * @returns {void}
     */
-    static removeGroup(player: String | ScriptEntity, points: Number): void;
+    static removeGroup(player: string | ScriptEntity, points: Number): void;
 
     /**
      * @description Limpa todos os usuários do Placar
@@ -1996,7 +2155,7 @@ declare class RoomStorage {
     /**
     * @description Retorna os dados salvos no quarto a partir da chave de busca. 
     * @param {string} key - Chave da propriedade a ser buscada.
-    * @returns {String | null} Valor correspondente a chave buscada.
+    * @returns {string | null} Valor correspondente a chave buscada.
     */
     static get(key: string): string;
 
@@ -2487,7 +2646,7 @@ declare class Debug {
 declare class Webhook {
     /**
      * @description Cria um novo Webhook direcionado ao link.
-     * @param {String} linkWebhook - Link do Webhook a receber informações.
+     * @param {string} linkWebhook - Link do Webhook a receber informações.
      * 
      * @example
      * // Exemplo de uso:
