@@ -3,13 +3,39 @@
 type Genders = "M" | "F";
 type EntitiesType = "PLAYER" | "BOT" | "PET";
 type DancesID = 0 | 1 | 2 | 3 | 4;
-type ActionID = 1 | 2 | 3;
+type ActionID = number;
 type relationships = 1 | 2 | 3 | 4;
-type WiredCallback = (entity?: ScriptEntity, furni?: ScriptFurni, entities?: ScriptEntity[], furnis?: ScriptFurni[]) => void;
-type BubblesID = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | number;
-type AnimationTime = 50 | 100 | 150 | 200 | 1000 | 2000 | number; // de 50 em 50.
+type WiredCallback = (entity?: ScriptEntity, furni?: ScriptFurni, entities?: ScriptEntity[], furnis?: ScriptFurni[]) => void
+type BubblesID = number;
+type AnimationTime = number;
 
-interface IScriptReachable {
+declare enum keyCodes {
+    CTRL = 1,
+    ALT = 2,
+    SHIFT = 3,
+    UP = 4,
+    DOWN = 5,
+    LEFT = 6,
+    RIGHT = 7
+}
+
+interface Effect {
+    /**
+    * @description Retorna o ID do efeito.
+    * @returns {number}
+    */
+    getEffectId(): number;
+
+    /**
+    * @description Retorna quanto tempo resta para o efeito acabar.
+    * @returns {number}
+    */
+    getDuration(): number;
+}
+
+interface Counter { }
+
+interface ScriptPosition {
     /**
      * @description Retorna a posição X
      * @returns {number} A posição X
@@ -27,9 +53,15 @@ interface IScriptReachable {
      * @returns {number} A posição Z
     */
     getZ(): number;
+
+    /**
+     * @description Retorna a posição R
+     * @returns {number} A posição R
+     */
+    equals(object: ScriptPosition): boolean;
 }
 
-interface RoomTile extends IScriptReachable {
+interface RoomTile extends ScriptPosition {
     /**
      * @description Retorna o ID do Furni.
      * @returns {number}
@@ -212,20 +244,20 @@ interface RoomTile extends IScriptReachable {
 
     /**
      * @description Move o furni para posição fornecida.
-     * @param {IScriptReachable} position - posição para o onde o furni será movido.
+     * @param {ScriptPosition} position - posição para o onde o furni será movido.
      * @param {number} r - Rotação definida ao furni ao ser movido.
      * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
      * @param {boolean} animation - Se o furni será movido com animacao.
      */
-    move(position: IScriptReachable, r: number, force: boolean, animation: boolean): void;
+    move(position: ScriptPosition, r: number, force: boolean, animation: boolean): void;
 
     /**
      * @description Move o furni para posição fornecida.
-     * @param {IScriptReachable} position - posição para o onde o furni será movido.
+     * @param {ScriptPosition} position - posição para o onde o furni será movido.
      * @param {number} r - Rotação definida ao furni ao ser movido.
      * @param {boolean} force - Se o furni deve ser movido mesmo que o caminho esteja bloqueado.
      */
-    move(position: IScriptReachable, r: number, force: boolean): void;
+    move(position: ScriptPosition, r: number, force: boolean): void;
 
     /**
      * @description Move o furni para posição fornecida.
@@ -283,7 +315,7 @@ interface RoomTile extends IScriptReachable {
     setOpacity(opacity: number): void;
 }
 
-interface ScriptTile extends IScriptReachable {
+interface ScriptTile extends ScriptPosition {
     /**
      * @description Retorna todos os furnis que estão no piso.
      * @returns {ScriptFurni[]}
@@ -468,9 +500,9 @@ interface FakeFloorItem extends RoomTile {
     setStackHeight(height: number): void;
 }
 
-interface BotEntity extends FakeEntity { }
+interface BotEntity extends ScriptEntity { }
 
-interface ScriptEntity extends IScriptReachable {
+interface ScriptEntity extends ScriptPosition {
     /**
      * @description Retorna o Balão de fala atual da entidade.
      * @returns {BubblesID}
@@ -588,11 +620,24 @@ interface ScriptEntity extends IScriptReachable {
     getRoomId(): number;
 
     /**
-     * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
-     * @param {IScriptReachable} object - Posição a ser comparada.
+     * @description Retorna a tecla que a entidade está pressionando.
+     * @description 1 - CTRL
+     * @description 2 - ALT
+     * @description 3 - SHIFT
+     * @description 4 - Seta para cima
+     * @description 5 - Seta para baixo
+     * @description 6 - Seta para esquerda
+     * @description 7 - Seta para direita
      * @returns {number}
      */
-    distanceTo(object: IScriptReachable): number;
+    getKeyPressing(): number;
+
+    /**
+     * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
+     * @param {ScriptPosition} object - Posição a ser comparada.
+     * @returns {number}
+     */
+    distanceTo(object: ScriptPosition): number;
 
     /**
      * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
@@ -628,6 +673,18 @@ interface ScriptEntity extends IScriptReachable {
     isIdle(): boolean;
 
     /**
+     * @description Retorna se o player é VIP.
+     * @returns {boolean}
+     */
+    isVip(): boolean;
+
+    /**
+     * @description Retorna se a entidade está andando para trás.
+     * @returns {boolean}
+     */
+    isMoonwalking(): boolean;
+
+    /**
      * @description Retorna se a entidade está visível no quarto.
      * @returns {boolean}
      */
@@ -641,17 +698,17 @@ interface ScriptEntity extends IScriptReachable {
 
     /**
      * @description Retorna se esta entidade está sobre a mobilia fornecida.
-     * @param {IScriptReachable} furni
+     * @param {ScriptPosition} furni
      * @returns {boolean} Se esta entidade está sobre a mobilia fornecida.
      */
-    in(furni: IScriptReachable): boolean;
+    in(furni: ScriptPosition): boolean;
 
     /**
      * @description Retorna se a entidade está em alguma das mobilias fornecidas.
-     * @param {IScriptReachable[]} furnis - Lista de mobilias a serem comparadas.
+     * @param {ScriptPosition[]} furnis - Lista de mobilias a serem comparadas.
      * @returns {boolean}
      */
-    inAny(furnis: IScriptReachable[]): boolean;
+    inAny(furnis: ScriptPosition[]): boolean;
 
     /**
      * @description Retorna se a entidade pode se mover.
@@ -691,10 +748,10 @@ interface ScriptEntity extends IScriptReachable {
 
     /**
      * @description Retorna se entidade está próxima (tocando) a posição fornecida pelo objeto.
-     * @param {IScriptReachable} object
+     * @param {ScriptPosition} object
      * @returns {boolean}
      */
-    touching(object: IScriptReachable): boolean;
+    touching(object: ScriptPosition): boolean;
 
     /**
      * @description Retorna se entidade possui o item fornecido no inventário.
@@ -725,6 +782,13 @@ interface ScriptEntity extends IScriptReachable {
      * @returns {void}
      */
     progressAchievement(code: string, levels: number): void;
+
+    /**
+     * @description Define a entidade para andar virada para frente ou para trás.
+     * @param {boolean} enabled - Se a entidade deve andar virada para trás.
+     * @returns {void}
+     */
+    setMoonwalking(enabled: boolean): void;
 
     /**
      * @description Define o balão de fala da entidade.
@@ -862,10 +926,10 @@ interface ScriptEntity extends IScriptReachable {
 
     /**
      * @description Remove um item do inventário da entidade.
-     * @param {number} spriteId - Código do item.
+     * @param {number} itemId - Código do item.
      * @returns {void}
      */
-    removeItemBySpriteId(spriteId: number): void;
+    removeItemByItem(itemId: number): void;
 
     /**
      * @description Remove um ou mais itens do inventário da entidade.
@@ -910,7 +974,7 @@ interface ScriptEntity extends IScriptReachable {
      */
     say(message: string): void;
 
-        /**
+    /**
      * @description Faz a entidade dizer uma mensagem.
      * @param {string} message - Mensagem que será dita pela entidade.
      * @param {BubblesID} bubbleId - Balão da mensagem
@@ -959,11 +1023,11 @@ interface ScriptEntity extends IScriptReachable {
 
     /**
      * @description Entidade olha para o ponto definido.
-     * @param {IScriptReachable} object
+     * @param {ScriptPosition} object
      * @param {boolean} moveHead = Se a entidade pode mover somente sua cabeça.
      * @returns {void}
      */
-    lookTo(object: IScriptReachable, moveHead: boolean): void;
+    lookTo(object: ScriptPosition, moveHead: boolean): void;
 
     /**
      * @description Esta entidade olha para outra entidade.
@@ -1010,17 +1074,17 @@ interface ScriptEntity extends IScriptReachable {
 
     /**
      * @description Teletransporta a entidade para posição fornecida no objeto.
-     * @param {IScriptReachable} object - Posição em que entidade séra teleportada.
+     * @param {ScriptPosition} object - Posição em que entidade séra teleportada.
      * @returns {void}
      */
-    teleport(object: IScriptReachable): void;
+    teleport(object: ScriptPosition): void;
 
     /**
      * @description Move a entidade até a posição fornecida no objeto.
-     * @param {IScriptReachable} object - Posição em que entidade andará.
+     * @param {ScriptPosition} object - Posição em que entidade andará.
      * @returns {void}
      */
-    walk(object: IScriptReachable): void;
+    walk(object: ScriptPosition): void;
 
     /**
      * @description Move a entidade até a posição fornecida.
@@ -1124,7 +1188,13 @@ interface ScriptEntity extends IScriptReachable {
     sendUIMessage(eventName: string, data: string): void;
 
     /**
-     * @description Retorna se o user está utilizando um teletransporte
+     * @description Retorna se o user está utilizando um teletransporte ao entrar no quarto.
+     * @returns {boolean}
+     */
+    isTeleporting(): boolean;
+
+    /**
+     * @description Retorna se o user está utilizando um teletransporte.
      * @returns {boolean}
      */
     usingTeleportItem(): boolean;
@@ -1194,7 +1264,72 @@ interface Friend {
 
 interface ScriptFurniWall extends RoomTile { }
 
-interface ScriptFurni extends RoomTile { }
+interface ScriptFurni extends RoomTile {
+    /**
+     * @description Altera a altura atual do mobi.
+     * @param {number} height - Altura modificada do mobi.
+     * @returns {void}
+     */
+    changeHeight(height: number): void;
+
+    /**
+     * @description Altera se o mobi pode ser empilhado ou não.
+     * @param {boolean} stackeable - Se o mobi pode ser empilhado.
+     * @returns {void}
+     */
+    changeStackeable(stackeable: boolean): void;
+
+    /**
+     * @description Altera se o mobi pode ser sentável ou não.
+     * @param {boolean} seatable - Se o mobi pode ser sentável.
+     * @returns {void}
+     */
+    changeSeatable(seatable: boolean): void;
+
+    /**
+     * @description Altera se o mobi pode ser andável ou não.
+     * @param {boolean} walkable - Se o mobi pode ser andável.
+     * @returns {void}
+     */
+    changeWalkable(walkable: boolean): void;
+
+    /**
+     * @description Altera a quantidade de estados que o mobi tem.
+     * @param {number} cycleCount - Quantidade de estados que o mobi terá.
+     * @returns {void}
+     */
+    changeCycleCount(cycleCount: number): void;
+
+    /**
+     * @description Volta o mobi para a altura original.
+     * @returns {void}
+     */
+    changeHeight(): void;
+
+    /**
+     * @description Volta o mobi para o modo empilhável original.
+     * @returns {void}
+     */
+    changeStackeable(): void;
+
+    /**
+     * @description Volta o mobi para o modo sentável original.
+     * @returns {void}
+     */
+    changeSeatable(): void;
+
+    /**
+     * @description Volta o mobi para o modo andável original.
+     * @returns {void}
+     */
+    changeWalkable(): void;
+
+    /**
+     * @description Volta o mobi para a quantidade de estados original.
+     * @returns {void}
+     */
+    changeCycleCount(): void;
+}
 
 interface FakeEntity {
     /**
@@ -1259,9 +1394,9 @@ interface FakeEntity {
 
     /**
      * @description Retorna o código do efeito atual da entidade.
-     * @returns {number} O código do efeito atual da entidade.
+     * @returns {Effect} O código do efeito atual da entidade.
      */
-    getEffect(): number;
+    getEffect(): Effect;
 
     /**
      * @description Retorna o código do atual item de mão que a entidade está segurando.
@@ -1295,10 +1430,10 @@ interface FakeEntity {
 
     /**
      * @description Retorna a distancia entre a entidade e outra posição fornecida no objeto.
-     * @param {IScriptReachable} object Posição a ser comparada.
+     * @param {ScriptPosition} object Posição a ser comparada.
      * @returns {number} A distancia entre a entidade e outra posição fornecida no objeto.
      */
-    distanceTo(object: IScriptReachable): number;
+    distanceTo(object: ScriptPosition): number;
 
     /**
      * @description Retorna a distancia atual entre esta entidade e a posição fornecida.
@@ -1326,17 +1461,17 @@ interface FakeEntity {
 
     /**
      * @description Retorna se entidade está próxima (tocando) a posição fornecida pelo objeto.
-     * @param {IScriptReachable} object
+     * @param {ScriptPosition} object
      * @returns {boolean} Se entidade está próxima (tocando) a posição fornecida pelo objeto.
      */
-    touching(object: IScriptReachable): boolean;
+    touching(object: ScriptPosition): boolean;
 
     /**
      * @description Retorna se esta entidade está sobre a mobilia fornecida.
-     * @param {IScriptReachable} object
+     * @param {ScriptPosition} object
      * @returns {boolean} Se esta entidade está sobre a mobilia fornecida.
      */
-    in(object: IScriptReachable): boolean;
+    in(object: ScriptPosition): boolean;
 
     /**
      * @description Retorna se a entidade está se movendo.
@@ -1350,13 +1485,6 @@ interface FakeEntity {
      * @returns {void}
      */
     setUsername(username: string): void;
-
-    /**
-     * @description Define o visual da entidade
-     * @param {string} figure - Código do visual.
-     * @returns {void}
-     */
-    setFigure(figure: string): void;
 
     /**
      * @description Define nova missão na entidade
@@ -1436,10 +1564,10 @@ interface FakeEntity {
     walk(x: number, y: number): void;
 
     /**
-     * @param {IScriptReachable} object Posição em que a entidade andará.
+     * @param {ScriptPosition} object Posição em que a entidade andará.
      * @returns {void}
      */
-    walk(object: IScriptReachable): void;
+    walk(object: ScriptPosition): void;
 
     /**
      * @description Teletransporta a entidade para posição fornecida.
@@ -1453,10 +1581,10 @@ interface FakeEntity {
 
     /**
      * @description Teletransporta a entidade para posição fornecida no objeto.
-     * @param {IScriptReachable} object Posição em que a entidade.
+     * @param {ScriptPosition} object Posição em que a entidade.
      * @returns {void}
      */
-    teleport(object: IScriptReachable): void;
+    teleport(object: ScriptPosition): void;
 
     /**
      * @description Entidade olha para o ponto definido.
@@ -1469,10 +1597,10 @@ interface FakeEntity {
 
     /**
      * @description Entidade olha para o ponto definido.
-     * @param {IScriptReachable} object Posição em que a entidade.
+     * @param {ScriptPosition} object Posição em que a entidade.
      * @returns {void}
      */
-    lookTo(object: IScriptReachable): void;
+    lookTo(object: ScriptPosition): void;
 
     /**
      * @description Faz a entidade dizer uma mensagem.
@@ -1610,6 +1738,20 @@ declare class Commands {
      * @returns {void}
      */
     static register(commandName: string, needStart: boolean, callback: CommandCallback): void;
+
+    /**
+     * @description Registra um comando para ser executado.
+     * @param {string} commandName - Nome do comando a ser registrado.
+     * @param {CommandCallback} callback - Função a ser executada quando o comando for chamado.
+     * 
+     * @example
+     * // exemplo de uso:
+     * Commands.register('comando', (entity, message) => {
+     *  entity.say('Olá, ' + entity.getUsername() + '!');
+     * });
+     * @returns {void}
+     */
+    static register(commandName: string, callback: CommandCallback): void;
 
     /**
      * @description Remove um comando registrado.
@@ -1896,6 +2038,41 @@ declare class Events {
         callback: (user: ScriptEntity, target: ScriptEntity) => void
     ): void;
 
+    static on(
+        event: 'floorClicked',
+        callback: (user: ScriptEntity, position: ScriptPosition) => void
+    )
+
+    static on(
+        event: 'floorItemMoved',
+        callback: (user: ScriptEntity, furni: ScriptFurni, rotation: boolean) => void
+    )
+
+    static on(
+        event: 'keyDown',
+        callback: (user: ScriptEntity, key: keyCodes) => void
+    )
+
+    static on(
+        event: 'keyUp',
+        callback: (user: ScriptEntity, key: keyCodes) => void
+    )
+
+    static on(
+        event: "userIdle",
+        callback: (user: ScriptEntity) => void
+    )
+
+    static on(
+        event: "userWakeUp",
+        callback: (user: ScriptEntity) => void
+    )
+
+    static on(
+        event: "walk",
+        callback: (user: ScriptEntity) => void
+    )
+
     /**
      * @description Evento chamado quando uma mensagem é enviada para o quarto atual.
      * @param roomId - ID do quarto que enviou.
@@ -2052,10 +2229,308 @@ declare class GlobalData {
     static isOnlineByUsername(username: string): boolean;
 
     /**
-     * @description Retorna a instância de um quarto.
+     * @description Retorna a instância de um quarto
      * @param {number} id - Id do quarto.
+     * @returns {Room | null} A instância de um quarto.
      */
-    static getRoomById(id: number): Room | null;
+    static getRoomById(id: number): RoomInstance | null;
+
+    /**
+     * @description Retorna todos os raros e preços.
+     * @returns {Map<number, number>} Todos os raros e preços.
+     * @example
+     * // Exemplo de uso:
+     * const rares = GlobalData.getAllRares();
+     * for (const [definitionId, price] of rares) {
+     *      Engine.log('Raro: ' + definitionId + ' Preço: ' + price);
+     * }
+    */
+    static getAllRares(): Map<number, number>;
+
+    /**
+     * @description Retorna o preço de um raro.
+     * @param definitionId - ID definitivo do mobi.
+     * @returns {number} Preço do raro.
+     * @example
+     * // Exemplo de uso:
+     * const price = GlobalData.getRarePriceByDefinitionId(1);
+     * Engine.log('Preço do raro: ' + price);
+     */
+    static getRarePriceByDefinitionId(definitionId: number): number;
+}
+
+interface RoomInstance {
+    /**
+    * @description Retorna o ID do quarto
+    * @returns {number} o ID do quarto
+    */
+    getId(): number;
+
+    /**
+     * @description Retorna o nome atual do quarto.
+     * @returns {number} o nome atual do quarto.
+     */
+    getName(): string;
+
+    /**
+     * @description Retorna o nome do dono do quarto
+     * @returns {number} o nome do dono do quarto
+     */
+    getOwnerUsername(): string;
+
+    /**
+     * @description Retorna o ID do dono do quarto
+     * @returns {number} o ID do dono do quarto
+     */
+    ownerId(): number;
+
+    /**
+     * @description Retorna o nome do grupo do quarto
+     * @returns {number} a quantidade de usuários do quarto
+     */
+    userCount(): number;
+
+    /**
+     * @description Retorna o usuário correspondente ao ID.
+     * @param {number} id - ID do usuário buscado.
+     * @returns {ScriptEntity | null;} o usuário correspondente ao ID.
+     */
+    getPlayerById(id: number): ScriptEntity | null;
+
+    /**
+     * @description Retorna o usuário correspondente ao Nome.
+     * @param {string} name - Nome do usuário buscado.
+     * @returns {ScriptEntity | null;} o usuário correspondente ao Nome.
+     */
+    getPlayerByName(name: string): ScriptEntity | null;
+
+    /**
+     * @description Retorna o bot correspondente ao Nome.
+     * @param {string} name - Nome do Bot a ser buscado.
+     * @returns {ScriptEntity | null;} o bot correspondente ao nome.
+     */
+    getBotByName(name: string): ScriptEntity | null;
+
+    /**
+     * @description Retorna uma lista com todos os usuários do quarto..
+     * @returns {ScriptEntity[]} uma lista com todos os usuários do quarto.
+     */
+    getAllPlayers(): ScriptEntity[];
+
+    /**
+     * @description Retorna uma lista com todos os itens do quarto.
+     * @returns {ScriptFurni[]} uma lista com todos os itens do quarto.
+     */
+    getAllFurnis(): ScriptFurni[];
+
+    /**
+     * @description Retorna o temporizador correspondente ao ID. Caso não exista, será retornado null.
+     * @returns {Counter | null} o temporizador correspondente ao ID.
+     */
+    getCounter(furniId: number): Counter | null;
+
+    /**
+     * @description Retorna uma lista com todos as entidades na posição fornecida.
+     * @param {number} x - Posição X buscada.
+     * @param {number} y - Posição Y buscada.
+     * @returns {ScriptEntity[]} todas entidades que estão na posição fornecida.
+     */
+    getEntitiesByCoord(x: number, y: number): ScriptEntity[];
+
+    /**
+     * @description Retorna uma lista com todas as entidades presentes na mobilia.
+     * @param {ScriptFurni} furni - Mobilia a ser consultada.
+     * @returns {ScriptEntity[]} uma lista com todas as entidades presentes na mobilia.
+     */
+    getEntitiesByFurni(furni: ScriptFurni): ScriptEntity[];
+
+    /**
+     * @description Retorna uma lista com todas as entidades presentes nas mobilias.
+     * @param {ScriptFurni[]} furnis - Mobilias a serem consultadas.
+     * @returns uma lista de todas as entidades presentes nas mobilias.
+     */
+    getEntitiesByFurnis(furnis: ScriptFurni[]): ScriptFurni[];
+
+    /**
+     * @description Retorna o piso da posição fornecida.
+     * @param {number} x - Posição X do piso.
+     * @param {number} y - Posição y do piso.
+     * @returns {ScriptTile} o Piso da posição fornecida.
+     */
+    getTile(x: number, y: number): ScriptTile | null;
+
+    /**
+     * @param {number} id - ID da mobilia a ser buscada.
+     * @description Retorna a mobilia correspondente ao ID.
+     */
+    getFurniById(id: number): ScriptFurni | null;
+
+    /**
+     * @description Retorna uma lista de mobilias que estão no piso
+     * @param {number} x - Posição X do piso.
+     * @param {number} y - Posição y do piso.
+     * @returns {ScriptFurni[]} uma lista de mobilias que estão no piso
+     */
+    getFurniByTile(x: number, y: number): ScriptFurni[];
+
+    /**
+     * @description Retorna uma lista com todos as mobilias do tipo definido.
+     * @param {number} sprite - Código base da mobilia buscada.
+     * @returns {ScriptFurni[]} uma lista com todos as mobilias do tipo definido.
+     */
+    getAllFurnisBySpriteId(sprite: number): ScriptFurni[];
+
+    /**
+     * @description Retorna se o floor existe
+     * @param {number} x - Posição X do piso.
+     * @param {number} y - Posição X do piso.
+     * @returns {boolean} se o floor existe
+     */
+    tileExists(x: number, y: number): Boolean;
+
+    /** 
+     * @description Retorna se o usuário tem direitos no quarto.
+     * @param {number} id - Id da entidade a ser verificada.
+     * @returns {boolean} se o usuário tem direitos no quarto.
+    */
+    hasRights(id: number): boolean;
+
+    /**
+     * @description Dá Direitos ao usuário *ID*.
+     * @param {number} id - Id do usuário que receberá Direitos.
+     * @returns {void}
+     */
+    addRights(id: number): void;
+
+    /**
+     * @description Retira os Direitos do usuário *ID*.
+     * @param {number} id - Id do usuário que perderá Direitos.
+     * @returns {void}
+     */
+    removeRights(id: number): void;
+
+    /** 
+     * @description Retorna estado atual do atravessar.
+     * @returns {boolean} estado atual do atravessar.
+     */
+    getWalkThrough(): boolean;
+
+    /**
+     * @description Retorna estado atual da diagonal.
+     * @returns {boolean} estado atual da diagonal.
+     */
+    getDiagonal(): boolean;
+
+    /**
+     * @description Retorna o atual estado do mute no quarto.
+     * @returns {boolean} o atual estado do mute no quarto.
+     */
+    getRoomMute(): boolean;
+
+    /**
+     * @description Define o nome do quarto
+     * @param {string} name - Novo nome que será definido ao quarto.
+     * @returns {void}
+     */
+    setName(name: string): void;
+
+    /**
+     * @description Desliga/liga a luz do quarto.
+     * @param {boolean} activated - Se a luz deve ser desligada ou ligada.
+     * @returns {void}
+     */
+    setMoodLight(activated: boolean): void;
+
+    /**
+     * @description Altera a cor e estado da luz do quarto.
+     * @param {boolean} activated - Se a luz deve ser desligada ou ligada.
+     * @param {string} hex - Cor em hexadecimal que a luz deve ficar.
+     * @param {number} intensity - Valor da intensidade que a cor. *(0: Opaco a 255: Transparente)*
+     * @param {boolean} wallOnly - Se a luz deve ficar só nas paredes.
+     * @returns {void}
+     */
+    setMoodLight(activated: boolean, hex: string, intensity: number, wallOnly: boolean): void;
+
+    /**
+     * @description Altera a cor do plano de fundo do quarto. Formato em HSL.
+     * @param {string} hex - Cor em hexadecimal que o plano de fundo deve ficar.
+     * @returns {void}
+     */
+    setBackgroundTonerColor(hex: string): void;
+
+    /**
+     * @description Define a velocidade dos Rollers no quarto.
+     * @param {number} speed - Velocidade dos rollers.
+     * @returns {void}
+     */
+    setRollerSpeed(speed: number): void;
+
+    /**
+     * @description Define a diagonal
+     * @param {boolean} allow - Valor que irá definir se será habilitado ou desabilitado.
+     * @returns {void}
+     */
+    setDiagonal(allow: boolean): void;
+
+    /**
+     * @description Define o atravessar
+     * @param {boolean} allow - Valor que irá definir se será habilitado ou desabilitado.
+     * @returns {void}
+     */
+    setWalkThrough(allow: boolean): void;
+
+    /**
+     * @description Define mute do quarto
+     * @param {boolean} mute - Valor que irá definir se será mutado ou desmutado.
+     * @returns {void}
+     */
+    setRoomMute(mute: boolean): void;
+
+    /**
+     * @description Define uma senha para trancar o quarto.
+     * @param {string} password - Senha a ser definida.
+     */
+    setPassword(password: string): void;
+
+    /**
+     * @description Define campanhia.
+     * @returns {void} 
+     */
+    setDoorbell(): void;
+
+    /**
+     * @description Envia notificação para todos do quarto
+     * @param {string} icon - Código do icone que irá aparecer na notificação
+     * @param {string} message - Mensagem que irá aparecer na notificação.
+     * @returns {void}
+     */
+    notification(icon: string, message: string): void;
+
+    /**
+     * @description Envia um alerta para todos do quarto
+     * @param {string} message - Mensagem que irá aparecer no alerta.
+     * @returns {void}
+     */
+    alert(message: string): void;
+
+    /**
+     * @description Abre o quarto
+     * @returns {void}  
+     */
+    open(): void;
+
+    /**
+     * @description Envia TTS para todos os usuários
+     * @param {string} text - Texto a ser lido pela voz sintetizada
+     * @returns {void}
+     */
+    tts(text: string): void;
+
+    /**
+     * @param {string} link - Link do video do Youtube.
+     * @returns Reproduz video do Youtube para todos os usuários do quarto.
+     */
+    youtube(link: string): void;
 }
 
 declare class GlobalStorage {
@@ -2435,6 +2910,18 @@ declare class Room {
      * @returns Reproduz video do Youtube para todos os usuários do quarto.
      */
     static youtube(link: string): void;
+
+    /**
+     * @description Retorna se o quarto tem os wireds desabilitados.
+     * @returns {boolean} se o quarto tem os wireds desabilitados.
+     */
+    static isDisableWired(): boolean;
+
+    /**
+     * @description Retorna se o quarto está blqueado de interações.
+     * @returns {boolean} se o quarto está blqueado de interações.
+     */
+    static isBlockedRoom(): boolean;
 }
 
 declare class Faker {
@@ -2681,6 +3168,28 @@ declare class Delay {
     static interval(callback: Function, ticks: number): DelayTask;
 
     /**
+     * Executa uma função no intervalo de tempo.
+     * @example
+     * Delay.shortWait(() => {
+     *  //Executado a cada 50 milisegundos.
+     * }, 1)
+     * @param {Function} callback - Função executada sempre que o tempo determinado ter passado.
+     * @param {number} ticks - Quantidade de mili ticks a aguardar até a execução da função.
+    */
+    static shortWait(callback: Function, milliseconds: number): DelayTask;
+
+    /**
+     * Executa uma função no intervalo de tempo.
+     * @example
+     * Delay.shortInterval(() => {
+     *  //Executado a cada 50 milisegundos.
+     * }, 1)
+     * @param {Function} callback - Função executada sempre que o tempo determinado ter passado.
+     * @param {number} ticks - Quantidade de mili ticks a aguardar até a execução da função.
+    */
+    static shortInterval(callback: Function, milliseconds: number): DelayTask;
+
+    /**
      * Cancela o delayScript que for passado.
      * @example 
      * const delay = Delay.wait(() => {
@@ -2745,7 +3254,7 @@ declare class Wired {
 
     /**
      * @description Ativa um wired ativador.
-     * @param {string} wiredName 
+     * @param {string} wiredName - codigo do wired.
      * @param {ScriptEntity} entity - Entidade que ativou o wired.
      * @param {ScriptFurni} furni - Mobilia que ativou o wired.
      * @param {ScriptEntity[]} entities - Entidades do seletor.
@@ -2759,10 +3268,40 @@ declare class Wired {
      */
     static trigger(wiredName: string, entity: ScriptEntity, furni: ScriptFurni, entities: ScriptEntity[], furnis: ScriptFurni[]): void;
 
+    /**
+     * @description Ativa um wired ativador.
+     * @param {string} wiredName - codigo do wired.
+     * 
+     * @example
+     * // Exemplo de uso:
+     * Wired.trigger('wiredName');
+     * @returns {void}
+     */
     static trigger(wiredName: string): void;
 
+    /**
+     * @description Ativa um wired ativador.
+     * @param {string} wiredName - codigo do wired.
+     * @param {ScriptEntity} entity - Entidade que ativou o wired.
+     * 
+     * @example
+     * // Exemplo de uso:
+     * Wired.trigger('wiredName', entity);
+     * @returns {void}
+     */
     static trigger(wiredName: string, entity: ScriptEntity): void;
 
+    /**
+     * @description Ativa um wired ativador.
+     * @param {string} wiredName - codigo do wired.
+     * @param {ScriptEntity} entity - Entidade que ativou o wired.
+     * @param {ScriptFurni} furni - Mobilia que ativou o wired.
+     * 
+     * @example
+     * // Exemplo de uso:
+     * Wired.trigger('wiredName', entity, furni);
+     * @returns {void}
+     */
     static trigger(wiredName: string, entity: ScriptEntity, furni: ScriptFurni): void;
 
     /**
@@ -2808,4 +3347,22 @@ declare class Wired {
      * @returns {void}
      */
     static nextEvent(): void;
+}
+
+declare class Utils {
+    static allRotations(x1: number, y1: number, distance: number): ScriptPosition[];
+
+    static calculatePosition(x1: number, y1: number, rotation: number, reverse: number, distance: number): ScriptPosition;
+
+    static calculateRotation(x1: number, y1: number, x2: number, y2: number, reverse: number): number;
+
+    static chebyshevDistance(x1: number, y1: number, x2: number, y2: number): number;
+
+    static isDiagonal(rotation: number): boolean;
+
+    static positionBehind(x1: number, y1: number, rotation: number, distance: number): ScriptPosition;
+
+    static positionInFront(x1: number, y1: number, rotation: number, distance: number): ScriptPosition;
+
+    static safeStr(text: string): string;
 }
