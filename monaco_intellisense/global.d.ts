@@ -2318,12 +2318,6 @@ interface RoomInstance {
     getAllPlayers(): ScriptEntity[];
 
     /**
-     * @description Retorna uma lista com todos os itens do quarto.
-     * @returns {ScriptFurni[]} uma lista com todos os itens do quarto.
-     */
-    getAllFurnis(): ScriptFurni[];
-
-    /**
      * @description Retorna o temporizador correspondente ao ID. Caso não exista, será retornado null.
      * @returns {Counter | null} o temporizador correspondente ao ID.
      */
@@ -2758,6 +2752,12 @@ declare class Room {
      * @returns {ScriptFurni[]} uma lista com todos as mobilias do tipo definido.
      */
     static getAllFurnisBySpriteId(sprite: number): ScriptFurni[];
+
+    /**
+     * @description Retorna uma lista com todos os itens do quarto.
+     * @returns {ScriptFurni[]} uma lista com todos os itens do quarto.
+     */
+    static getAllFurnis(): ScriptFurni[];
 
     /**
      * @description Retorna se o floor existe
