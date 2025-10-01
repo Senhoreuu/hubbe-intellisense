@@ -3789,7 +3789,7 @@ declare class Variables {
      * }
      * @returns {boolean} Retorna true se a variável for do tipo usuário, caso contrário, false.
      */
-    static isUserVariable(variable: ScriptVariable): boolean;
+    static isUserVariable(variable: ScriptVariable | any): variable is ScriptVariableUser;
 
     /**
      * @param variable - A variável a ser verificada.
@@ -3802,7 +3802,7 @@ declare class Variables {
      * }
      * @returns {boolean} Retorna true se a variável for do tipo mobilia, caso contrário, false.
      */
-    static isFurniVariable(variable: ScriptVariable): boolean;
+    static isFurniVariable(variable: ScriptVariable | any): variable is ScriptVariableFurni;
 
     /**
      * @param variable - A variável a ser verificada.
@@ -3815,7 +3815,7 @@ declare class Variables {
      * }
      * @returns {boolean} Retorna true se a variável for do tipo global, caso contrário, false.
      */
-    static isGlobalVariable(variable: ScriptVariable): boolean;
+    static isGlobalVariable(variable: ScriptVariable | any): variable is ScriptVariableGlobal;
 
     /**
      * @param entity - A entidade a ser verificada.
