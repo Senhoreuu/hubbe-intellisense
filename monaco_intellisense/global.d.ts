@@ -19,6 +19,348 @@ declare enum keyCodes {
     RIGHT = 7
 }
 
+declare enum ScriptVariableAvailabilityType {
+    USER_IN_ROOM = 0,
+    ROOM_ACTIVE = 1,
+    PERMANENT = 10,
+    PERMANENT_SHARED = 11,
+    REFERENCE = 20,
+    SMART = 21,
+    INTERNAL = 100,
+    ECHO = 101
+}
+
+declare enum ScriptVariableType {
+    FURNI = 0,
+    USER = 1,
+    GLOBAL = -10,
+    CONTEXT = -20
+}
+
+type VariableTextsEntry = Record<number, string>;
+
+type ScriptVariableFurniEntry = Record<number, ScriptVariableFurni>;
+
+interface ScriptVariable {
+    /**
+     * @description Retorna o nome da variável.
+     * @returns {string}
+     */
+    getVariableName(): string;
+
+    /**
+     * @description Retorna o ID da variável.
+     * @returns {number}
+     */
+    getVariableId(): number;
+
+    /**
+     * @description Retorna o ID do item associado à variável.
+     * @returns {number}
+     */
+    getItemId(): number;
+
+    /**
+     * @description Retorna o ID do quarto associado à variável.
+     * @returns {number}
+     */
+    getRoomId(): number;
+
+    /**
+     * @description Retorna o ID do proprietário associado à variável.
+     * @returns {number}
+     */
+    getOwnerId(): number;
+
+    /**
+     * @description Retorna o tipo de disponibilidade da variável.
+     * @returns {ScriptVariableAvailabilityType}
+     */
+    getAvailabilityType(): ScriptVariableAvailabilityType;
+
+    /**
+     * @description Retorna o tipo da variável.
+     * @returns {ScriptVariableType}
+     */
+    getVariableType(): ScriptVariableType;
+
+    /**
+     * @description Retorna o alvo da variável.
+     * @returns {ScriptVariableType}
+     */
+    getVariableTarget(): ScriptVariableType;
+
+    /**
+     * @description Retorna o item associado à variável.
+     * @returns {ScriptFurni}
+     */
+    getVariableItem(): ScriptFurni;
+
+    /**
+     * @description Retorna os textos associados à variável.
+     * @returns {VariableTextsEntry[]}
+     */
+    getVariableTexts(): VariableTextsEntry[];
+
+    /**
+     * @description Verifica se a variável está sempre disponível.
+     * @returns {boolean}
+     */
+    isAlwaysAvailable(): boolean;
+
+    /**
+     * @description Verifica se a variável está invisível.
+     * @returns {boolean}
+     */
+    isInvisible(): boolean;
+
+    /**
+     * @description Verifica se a variável tem um valor.
+     * @returns {boolean}
+     */
+    hasValue(): boolean;
+
+    /**
+     * @description Verifica se a variável tem textos associados.
+     * @returns {boolean}
+     */
+    hasTexts(): boolean;
+
+    /**
+     * @description Verifica se a variável pode ser escrita.
+     * @returns {boolean}
+     */
+    canWriteTo(): boolean;
+
+    /**
+     * @description Verifica se a variável pode ser criada e excluída.
+     * @returns {boolean}
+     */
+    canCreateAndDelete(): boolean;
+
+    /**
+     * @description Verifica se a variável pode interceptar mudanças.
+     * @returns {boolean}
+     */
+    canInterceptChanges(): boolean;
+}
+
+interface ScriptVariableData {
+    /**
+     * @description Retorna o valor da variável.
+     * @returns {number}
+     */
+    getValue(): number;
+
+    /**
+     * @description Retorna o timestamp de criação da variável.
+     * @returns {number}
+     */
+    getCreationTime(): number;
+
+    /**
+     * @description Retorna o timestamp da última atualização da variável.
+     * @returns {number}
+     */
+    getUpdateTime(): number;
+}
+
+interface ScriptVariableUserData extends ScriptVariableData {
+    /**
+     * @description Retorna o ID do jogador.
+     * @returns {number}
+     */
+    getPlayerId(): number;
+
+    /**
+     * @description Retorna o nome do jogador.
+     * @returns {string}
+     */
+    getUsername(): string;
+}
+
+interface ScriptVariableUser extends ScriptVariable {
+    /**
+     * @description Retorna todos os dados das variáveis dos usuários.
+     * @returns {ScriptVariableUserData[]}
+     */
+    getUserVariablesData(): ScriptVariableUserData[];
+
+    /**
+     * @description Retorna os dados da variável do usuário específico.
+     * @param {number} playerId - ID do usuário.
+     * @returns {ScriptVariableUserData}
+     */
+    getUserVariableData(playerId: number): ScriptVariableUserData;
+
+    /**
+     * @description Retorna os dados da variável do bot específico.
+     * @param {number} botId - ID do bot.
+     * @returns {ScriptVariableUserData}
+     */
+    getBotVariableData(botId: number): ScriptVariableUserData;
+
+    /**
+     * @description Retorna os dados da variável do pet específico.
+     * @param {number} petId - ID do pet.
+     * @returns {ScriptVariableUserData}
+     */
+    getPetVariableData(petId: number): ScriptVariableUserData;
+}
+
+interface ScriptVariableFurniData extends ScriptVariableData {
+    /**
+     * @description Retorna o ID do furni.
+     * @return {number}
+     */
+    getItemId(): number;
+}
+
+interface ScriptVariableFurni extends ScriptVariable {
+    /**
+     * @description Retorna os dados da variável do furni específico.
+     * @param {number} furniId - ID do furni.
+     * @return {ScriptVariableFurniData}
+     */
+    getFurniVariableData(furniId: number): ScriptVariableFurniData;
+
+    /**
+     * @description Retorna todos os dados das variáveis dos furnis.
+     * @return {ScriptVariableFurniEntry}
+     */
+    getFurniVariablesData(): ScriptVariableFurniEntry;
+}
+
+interface ScriptVariableGlobal extends ScriptVariable {
+    /**
+     * @description Retorna os dados da variável global.
+     * @returns {ScriptVariableData}
+     */
+    getValue(): number;
+
+    /**
+     * @description Retorna o timestamp de criação da variável global.
+     * @return {number}
+     */
+    getCreationTime(): number;
+
+    /**
+     * @description Retorna o timestamp da última atualização da variável global.
+     * @return {number}
+     */
+    getUpdatedTime(): number;
+}
+
+
+interface ScriptGroupMember {
+    /**
+     * Retorna o ID do usuário.
+     * @returns {number}
+     */
+    getPlayerId(): number;
+    /**
+       * Retorna o timestamp de quando o usuário entrou no Grupo.
+       * @returns {string}
+       */
+    getDateJoined(): string;
+    /**
+       * Retorna o acesso do usuário no Grupo.
+     * 0: membro
+     * 1: admin
+     * 2: dono
+       * @returns {string}
+       */
+    getAccessLevel(): string;
+    /**
+       * Retorna o id do Grupo.
+       * @returns {string}
+       */
+    getGroupId(): string;
+}
+
+
+interface ScriptGroup {
+    /**
+    * Retorna o ID do Grupo.
+    * @returns {number}
+    */
+    getId(): number;
+    /**
+    * Retorna o titulo do Grupo.
+    * @returns {string}
+    */
+    getTitle(): string;
+    /**
+    * Retorna o descrição do Grupo.
+    * @returns {string}
+    */
+    getDescription(): string;
+    /**
+    * Retorna o emblema do Grupo.
+    * @returns {number}
+    */
+    getBadge(): number;
+    /**
+    * Retorna o id do dono do Grupo.
+    * @returns {string}
+    */
+    getOwnerId(): string;
+    /**
+    * Retorna o ID do quarto do Grupo.
+    * @returns {number}
+    */
+    getRoomId(): number;
+    /**
+    * Retorna o timestamp de quando Grupo foi criado.
+    * @returns {number}
+    */
+    getCreatedTimestamp(): number;
+    /**
+    * Retorna o tipo do Grupo.
+    * 0: Regular
+    * 1: Exclusivo
+    * 2: Privado
+    * @returns {number}
+    */
+    getType(): number;
+    /**
+    * Retorna o color A do Grupo.
+    * @returns {number}
+    */
+    getColorA(): number;
+    /**
+    * Retorna o color B do Grupo.
+    * @returns {number}
+    */
+    getColorB(): number;
+    /**
+    * Retorna os membros do Grupo.
+    * @returns {ScriptGroupMember[]}
+    */
+    getMembers(): ScriptGroupMember[];
+    /**
+    * Retorna os adminstradores do Grupo.
+    * @returns {number[]}
+    */
+    getAdministrators(): number;
+    /**
+    * Retorna os dados do membro do Grupo.
+    * @param {number} playerId - ID do usuário
+    * @returns {ScriptGroupMember[]}
+    */
+    getMember(playerId: number): ScriptGroupMember;
+    /**
+    * Retorna se o membro pode decorar o quarto do Grupo.
+    * @returns {boolean}
+    */
+    canMemberDecorate(): boolean;
+    /**
+    * Retorna se o Grupo possui forum.
+    * @returns {boolean}
+    */
+    hasForum(): boolean;
+}
+
 interface Effect {
     /**
     * @description Retorna o ID do efeito.
@@ -214,14 +556,14 @@ interface RoomTile extends ScriptPosition {
 
     /**
      * @description Mostra o furni apenas para a entidade.
-     * @param {ScriptEntity | null;} entity - Entidade que irá ver o furni.
+     * @param {ScriptEntity | null} entity - Entidade que irá ver o furni.
      * @returns {void}
      */
     show(entity: ScriptEntity): void;
 
     /**
      * @description Esconde o furni apenas para a entidade.
-     * @param {ScriptEntity | null;} entity - Entidade que não irá ver o furni.
+     * @param {ScriptEntity | null} entity - Entidade que não irá ver o furni.
      * @returns {void}
      */
     hide(entity: ScriptEntity): void;
@@ -369,6 +711,36 @@ interface ScriptTile extends ScriptPosition {
      * @returns {Boolean}
      */
     canPlaceItem(): Boolean;
+
+    /**
+     * @description Retorna se o piso tem os wireds desativados.
+     * @returns {boolean}
+     */
+    isDisableWired(): boolean;
+
+    /**
+     * @description Retorna se o piso existe no quarto.
+     * @return {boolean}
+     */
+    isValidTile(): boolean;
+
+    /**
+     * @description Retorna se o piso tem movimento limitado.
+     * @return {boolean}
+     */
+    hasMagicLimitedMovement(): boolean;
+
+    /**
+     * @description Retorna se o piso está invisível por um Esconder Área.
+     * @return {boolean}
+     */
+    isHiddenByAreaHide(): boolean;
+
+    /**
+     * @description Retorna se o piso está proibido de ser caminhável por um Esconder Área.
+     * @return {boolean}
+     */
+    isBlockedByAreaHide(): boolean;
 }
 
 interface ScriptAchievementProgress {
@@ -397,6 +769,30 @@ interface ScriptPlayerData {
      * @returns {string}
      */
     getUsername(): string;
+
+    /**
+     * @description Retorna o apelido do player.
+     * @returns {string}
+     */
+    getNickname(): string;
+
+    /**
+     * @description Retorna a quantidade de Hubbe Coins do player.
+     * @returns {number}
+     */
+    getHubbeCoins(): number;
+
+    /**
+     * @description Retorna a quantidade de Promo Coins do player.
+     * @returns {number}
+     */
+    getPromoCoins(): number;
+
+    /**
+     * @description Retorna o balão de fala atual do player.
+     * @returns {BubblesID}
+     */
+    getBubbleId(): BubblesID;
 
     /**
      * @description Retorna o total de pontos de conquista do player.
@@ -487,6 +883,24 @@ interface ScriptPlayerData {
      * @returns {number}
      */
     getPontosHallEvento(): number;
+
+    /**
+     * @description Retorna a definição do layout da organização dos wireds do jogador.
+     * @returns {number[]}
+     */
+    getWiredLayout(): number[];
+
+    /**
+     * @description Retorna se o comércio do player está bloqueado.
+     * @returns {boolean}
+     */
+    isTradeLocked(): boolean;
+
+    /**
+     * @description Retorna se o player é um beta tester.
+     * @returns {boolean}
+     */
+    isBetaTester(): boolean;
 }
 
 interface FakeFloorItem extends RoomTile {
@@ -566,9 +980,9 @@ interface ScriptEntity extends ScriptPosition {
 
     /**
      * @description Retorna o código do efeito atual da entidade.
-     * @returns {number}
+     * @returns {Effect}
      */
-    getEffect(): number;
+    getEffect(): Effect;
 
     /**
      * @description Retorna o código do atual item de mão que a entidade está segurando.
@@ -655,10 +1069,22 @@ interface ScriptEntity extends ScriptPosition {
     isPlayer(): boolean;
 
     /**
+     * @description Retorna se a entidade é um usuário falso (Fake Player).
+     * @returns {boolean}
+     */
+    isFakePlayer(): boolean;
+
+    /**
      * @description Retorna se entidade é um Bot.
      * @returns {boolean}
      */
     isBot(): boolean;
+
+    /**
+     * @description Retorna se a entidade é um Bot falso (Fake Bot).
+     * @returns {boolean}
+     */
+    isFakeBot(): boolean;
 
     /**
      * @description Retorna se a entidade é um Pet.
@@ -691,7 +1117,7 @@ interface ScriptEntity extends ScriptPosition {
     isVisibleInRoom(): boolean;
     /**
      * @description Retorna se esta entidade é igual a entidade fornecida.
-     * @param {ScriptEntity | null;} entity - Entidade que será comparada.
+     * @param {ScriptEntity | null} entity - Entidade que será comparada.
      * @returns {boolean}
      */
     equals(entity: ScriptEntity): boolean;
@@ -819,7 +1245,7 @@ interface ScriptEntity extends ScriptPosition {
      * @param {number} time - Tempo em segundos que a entidade ficará com o item de mão.
      * @returns {void}
      */
-    setHandItem(item: number, time: number): void;
+    setHandItem(item: number, time?: number): void;
 
     /**
      * @description Define um efeito a entidade.
@@ -827,6 +1253,14 @@ interface ScriptEntity extends ScriptPosition {
      * @returns {void}
      */
     setEffect(effect: number): void;
+
+    /**
+ * @description Define um efeito a entidade.
+ * @param {number} effect - Código do efeito.
+ *  @param {number} duration - Duração do efeito em segundos.
+ * @returns {void}
+ */
+    setEffect(effect: number, duration: number): void;
 
     /**
      * @description Define a entidade pode ser mover.
@@ -999,7 +1433,7 @@ interface ScriptEntity extends ScriptPosition {
 
     /**
      * @description Sussura uma mensagem para outra entidade.
-     * @param {ScriptEntity | null;} to - Entidade que receberá a mensagem.
+     * @param {ScriptEntity | null} to - Entidade que receberá a mensagem.
      * @param {string} message - Mensagem que será enviada.
      * @param {BubblesID} bubbleId - Balão da mensagem.
      * @returns {void}
@@ -1031,7 +1465,7 @@ interface ScriptEntity extends ScriptPosition {
 
     /**
      * @description Esta entidade olha para outra entidade.
-     * @param {ScriptEntity | null;} entity - Entidade que será o alvo.
+     * @param {ScriptEntity | null} entity - Entidade que será o alvo.
      * @returns {void}
      */
     lookTo(entity: ScriptEntity): void;
@@ -1234,6 +1668,19 @@ interface ScriptEntity extends ScriptPosition {
      * @returns {Friend[]}
      */
     getFriends(): Friend;
+
+    /**
+     * @description Retorna se o usuário é amigo do ID fornecido.
+     * @param {number} userId - ID do usuário a ser verificado.
+     * @returns {boolean}
+     */
+    isFriend(userId: number): boolean;
+
+    /**
+     * @description Retorna o apelido do usuário.
+     * @returns {string}
+     */
+    getNickname(): string;
 }
 
 interface Friend {
@@ -1683,10 +2130,20 @@ interface WebhookMessage {
 
     /**
      * @description Define a cor no Embed do Webhook
-     * @param {number} decimalColor - Cor em decimal
+     * @param {string} hexadecimal - Cor hexadecimal que será definida no Embed do Webhook
      * @returns {WebhookMessage}
     */
-    setColor(decimalColor: number): WebhookMessage;
+    setColor(hexadecimal: string): WebhookMessage;
+
+    /**
+     * @description Adiciona um campo com titulo e descrição no Embed do Webhook
+     * @param {string} titleField - Titulo do campo
+     * @param {string} valueField - Descrição do campo
+     * @param {boolean} inline - Se o campo será inline
+     * @default inline = false
+     * @returns {WebhookMessage}
+    */
+    addField(titleField: string, valueField: string, inline: boolean): WebhookMessage;
 
     /**
      * @description Adiciona um campo com titulo e descrição no Embed do Webhook
@@ -1714,7 +2171,7 @@ interface DelayTask {
 interface CommandCallback {
     /**
      * @description Função que será executada quando o comando for chamado.
-     * @param {ScriptEntity | null;} entity - Entidade que chamou o comando.
+     * @param {ScriptEntity | null} entity - Entidade que chamou o comando.
      * @param {string} message - Argumentos passados no comando.
      * @returns {void}
      */
@@ -1726,7 +2183,7 @@ interface CommandCallback {
 declare class Commands {
     /**
      * @description Registra um comando para ser executado.
-     * @param {string} commandName - Nome do comando a ser registrado.
+     * @param {string | string[]} commandName - Nome do comando a ser registrado.
      * @param {boolean} needStart - Se o comando precisa iniciar na frase.
      * @param {CommandCallback} callback - Função a ser executada quando o comando for chamado.
      * 
@@ -1737,7 +2194,7 @@ declare class Commands {
      * });
      * @returns {void}
      */
-    static register(commandName: string, needStart: boolean, callback: CommandCallback): void;
+    static register(commandName: string | string[], needStart: boolean, callback: CommandCallback): void;
 
     /**
      * @description Registra um comando para ser executado.
@@ -1755,14 +2212,14 @@ declare class Commands {
 
     /**
      * @description Remove um comando registrado.
-     * @param {string} commandName - Nome do comando a ser removido.
+     * @param {string | string[]} commandName - Nome do comando a ser removido.
      * 
      * @example
      * // exemplo de uso:
      * Commands.unregister('comando');
      * @returns {void}
      */
-    static unregister(commandName: string): void;
+    static unregister(commandName: string | string[]): void;
 }
 
 declare class Currency {
@@ -2024,8 +2481,8 @@ declare class Events {
 
     /**
      * @description Evento chamado quando um player é selecionado.
-     * @param {ScriptEntity | null;} user - Usuário que selecionou.
-     * @param {ScriptEntity | null;} target - Usuário que foi selecionado.
+     * @param {ScriptEntity | null} user - Usuário que selecionou.
+     * @param {ScriptEntity | null} target - Usuário que foi selecionado.
      * @example
      * // Exemplo de uso:
      * Events.on('playerSelected', (user, target) => {
@@ -2038,40 +2495,63 @@ declare class Events {
         callback: (user: ScriptEntity, target: ScriptEntity) => void
     ): void;
 
+    /**
+     * @description Evento chamado quando o usuário clica no chão.
+     * @param {ScriptEntity | null} user - Usuário que selecionou.
+     * @param {ScriptPosition} position - Posição do chão que foi clicada.
+     * @example
+     * // Exemplo de uso:
+     * Events.on('floorClicked', (user, position) => {
+     * Engine.log(user.getUsername() + ' clicou no chão');
+     * });
+     * @returns {void}
+     */
     static on(
         event: 'floorClicked',
         callback: (user: ScriptEntity, position: ScriptPosition) => void
-    )
+    ): void;
 
+    /**
+     * @description Evento chamado quando um mobi é movido.
+     * @param {ScriptEntity | null} user - Usuário que moveu.
+     * @param {ScriptFurni} furni - Mobi que foi movido.
+     * @param {boolean} rotation - Se o mobi foi rotacionado.
+     * @example
+     * // Exemplo de uso:
+     * Events.on('floorItemMoved', (user, furni, rotation) => {
+     * Engine.log(user.getUsername() + ' moveu ' + furni.getName());
+     * });
+     * @returns {void}
+     */
     static on(
         event: 'floorItemMoved',
         callback: (user: ScriptEntity, furni: ScriptFurni, rotation: boolean) => void
-    )
+    ): void;
 
     static on(
         event: 'keyDown',
         callback: (user: ScriptEntity, key: keyCodes) => void
-    )
+    ): void;
 
     static on(
         event: 'keyUp',
         callback: (user: ScriptEntity, key: keyCodes) => void
-    )
+    ): void;
 
     static on(
         event: "userIdle",
         callback: (user: ScriptEntity) => void
-    )
+    ): void;
 
     static on(
         event: "userWakeUp",
         callback: (user: ScriptEntity) => void
-    )
+    ): void;
 
     static on(
         event: "walk",
         callback: (user: ScriptEntity) => void
-    )
+    ): void;
 
     /**
      * @description Evento chamado quando uma mensagem é enviada para o quarto atual.
@@ -2095,7 +2575,7 @@ declare class Events {
 
     /**
      * @description Evento chamado quando um mobi é colocado no quarto.
-     * @param {ScriptEntity | null;} user - Usuário que colocou.
+     * @param {ScriptEntity | null} user - Usuário que colocou.
      * @param {ScriptFurni} furni - Mobi que foi colocado.
      * @example
      * // Exemplo de uso:
@@ -2111,7 +2591,7 @@ declare class Events {
 
     /**
      * @description Evento chamado quando um mobi é removido do quarto.
-     * @param {ScriptEntity | null;} user - Usuário que removeu.
+     * @param {ScriptEntity | null} user - Usuário que removeu.
      * @param {ScriptFurni} furni - Mobi que foi removido.
      * @example
      * // Exemplo de uso:
@@ -2169,9 +2649,9 @@ declare class GlobalData {
      * @example
      * // Exemplo de uso:
      * const playerData = GlobalData.getPlayerDataById(1);
-     * @returns {ScriptPlayerData | null;} A instância de um ScriptPlayerData.
+     * @returns {ScriptPlayerData | null} A instância de um ScriptPlayerData.
      */
-    static getPlayerDataById(id: number): ScriptPlayerData | null;
+    static getPlayerDataById(id: number): ScriptPlayerData | null
 
     /**
      * @description Retorna a instância de um ScriptPlayerData.
@@ -2180,9 +2660,9 @@ declare class GlobalData {
      * @example
      * // Exemplo de uso:
      * const playerData = GlobalData.getPlayerDataByName('username');
-     * @returns {ScriptPlayerData | null;} A instância de um ScriptPlayerData.
+     * @returns {ScriptPlayerData | null} A instância de um ScriptPlayerData.
      */
-    static getPlayerDataByName(username: string): ScriptPlayerData | null;
+    static getPlayerDataByName(username: string): ScriptPlayerData | null
 
     /**
      * @description Retorna a instância de um ScriptEntity mesmo não estando no quarto.
@@ -2193,7 +2673,7 @@ declare class GlobalData {
      * const playerEntity = GlobalData.getPlayerEntityById(1);
      * @returns {ScriptEntity | null} A instância de um ScriptEntity.
      */
-    static getPlayerEntityById(id: number): ScriptEntity | null;
+    static getPlayerEntityById(id: number): ScriptEntity | null
 
     /**
      * @description Retorna a instância de um ScriptEntity mesmo não estando no quarto.
@@ -2204,7 +2684,7 @@ declare class GlobalData {
      * const playerEntity = GlobalData.getPlayerEntityByName('username'); // null caso não exista
      * @returns {ScriptEntity | null} A instância de um ScriptEntity.
      */
-    static getPlayerEntityByUsername(username: string): ScriptEntity | null;
+    static getPlayerEntityByUsername(username: string): ScriptEntity | null
 
     /**
      * @description Retorna se o player está online.
@@ -2233,7 +2713,7 @@ declare class GlobalData {
      * @param {number} id - Id do quarto.
      * @returns {Room | null} A instância de um quarto.
      */
-    static getRoomById(id: number): RoomInstance | null;
+    static getRoomById(id: number): RoomInstance | null
 
     /**
      * @description Retorna todos os raros e preços.
@@ -2293,23 +2773,23 @@ interface RoomInstance {
     /**
      * @description Retorna o usuário correspondente ao ID.
      * @param {number} id - ID do usuário buscado.
-     * @returns {ScriptEntity | null;} o usuário correspondente ao ID.
+     * @returns {ScriptEntity | null} o usuário correspondente ao ID.
      */
-    getPlayerById(id: number): ScriptEntity | null;
+    getPlayerById(id: number): ScriptEntity | null
 
     /**
      * @description Retorna o usuário correspondente ao Nome.
      * @param {string} name - Nome do usuário buscado.
-     * @returns {ScriptEntity | null;} o usuário correspondente ao Nome.
+     * @returns {ScriptEntity | null} o usuário correspondente ao Nome.
      */
-    getPlayerByName(name: string): ScriptEntity | null;
+    getPlayerByName(name: string): ScriptEntity | null
 
     /**
      * @description Retorna o bot correspondente ao Nome.
      * @param {string} name - Nome do Bot a ser buscado.
-     * @returns {ScriptEntity | null;} o bot correspondente ao nome.
+     * @returns {ScriptEntity | null} o bot correspondente ao nome.
      */
-    getBotByName(name: string): ScriptEntity | null;
+    getBotByName(name: string): ScriptEntity | null
 
     /**
      * @description Retorna uma lista com todos os usuários do quarto..
@@ -2321,7 +2801,7 @@ interface RoomInstance {
      * @description Retorna o temporizador correspondente ao ID. Caso não exista, será retornado null.
      * @returns {Counter | null} o temporizador correspondente ao ID.
      */
-    getCounter(furniId: number): Counter | null;
+    getCounter(furniId: number): Counter | null
 
     /**
      * @description Retorna uma lista com todos as entidades na posição fornecida.
@@ -2351,13 +2831,13 @@ interface RoomInstance {
      * @param {number} y - Posição y do piso.
      * @returns {ScriptTile} o Piso da posição fornecida.
      */
-    getTile(x: number, y: number): ScriptTile | null;
+    getTile(x: number, y: number): ScriptTile | null
 
     /**
      * @param {number} id - ID da mobilia a ser buscada.
      * @description Retorna a mobilia correspondente ao ID.
      */
-    getFurniById(id: number): ScriptFurni | null;
+    getFurniById(id: number): ScriptFurni | null
 
     /**
      * @description Retorna uma lista de mobilias que estão no piso
@@ -2533,7 +3013,7 @@ declare class GlobalStorage {
     * @param {string} key - Chave da propriedade a ser buscada.
     * @returns {string | null} Valor correspondente a chave buscada.
     */
-    static get(key: string): string | null;
+    static get(key: string): string | null
 
     /** 
      * @description Defini/Atualiza valor correspondente a chave buscada.
@@ -2646,6 +3126,32 @@ declare class RoomStorage {
 
 declare class Room {
     /**
+   * Retorna todas as entidades que estão na area
+   * @param {number} x1 - Posição X inicial
+   * @param {number} y1 - Posição Y inicial
+   * @param {number} x2 - Posição X final
+   * @param {number} y2 - Posição Y final
+   * @returns {ScriptEntity[]}
+   */
+    getEntitiesByArea(x1: number, y1: number, x2: number, y2: number): ScriptEntity[];
+
+    /**
+     * Retorna todas os mobis que estão na area
+     * @param {number} x1 - Posição X inicial
+     * @param {number} y1 - Posição Y inicial
+     * @param {number} x2 - Posição X final
+     * @param {number} y2 - Posição Y final
+     * @returns {ScriptFurni[]}
+    */
+    getFurnisByArea(x1: number, y1: number, x2: number, y2: number): ScriptFurni[];
+
+    /**
+     * Retorna o Grupo do quarto.
+     * @returns {ScriptGroup}
+    */
+    getGroup(): ScriptGroup;
+
+    /**
      * @description Retorna o ID do quarto
      * @returns {number} o ID do quarto
      */
@@ -2678,23 +3184,23 @@ declare class Room {
     /**
      * @description Retorna o usuário correspondente ao ID.
      * @param {number} id - ID do usuário buscado.
-     * @returns {ScriptEntity | null;} o usuário correspondente ao ID.
+     * @returns {ScriptEntity | null} o usuário correspondente ao ID.
      */
-    static getPlayerById(id: number): ScriptEntity | null;
+    static getPlayerById(id: number): ScriptEntity | null
 
     /**
      * @description Retorna o usuário correspondente ao Nome.
      * @param {string} name - Nome do usuário buscado.
-     * @returns {ScriptEntity | null;} o usuário correspondente ao Nome.
+     * @returns {ScriptEntity | null} o usuário correspondente ao Nome.
      */
-    static getPlayerByName(name: string): ScriptEntity | null;
+    static getPlayerByName(name: string): ScriptEntity | null
 
     /**
      * @description Retorna o bot correspondente ao Nome.
      * @param {string} name - Nome do Bot a ser buscado.
-     * @returns {ScriptEntity | null;} o bot correspondente ao nome.
+     * @returns {ScriptEntity | null} o bot correspondente ao nome.
      */
-    static getBotByName(name: string): ScriptEntity | null;
+    static getBotByName(name: string): ScriptEntity | null
 
     /**
      * @description Retorna uma lista com todos os usuários do quarto..
@@ -2730,13 +3236,13 @@ declare class Room {
      * @param {number} y - Posição y do piso.
      * @returns {ScriptTile} o Piso da posição fornecida.
      */
-    static getTile(x: number, y: number): ScriptTile | null;
+    static getTile(x: number, y: number): ScriptTile | null
 
     /**
      * @param {number} id - ID da mobilia a ser buscada.
      * @description Retorna a mobilia correspondente ao ID.
      */
-    static getFurniById(id: number): ScriptFurni | null;
+    static getFurniById(id: number): ScriptFurni | null
 
     /**
      * @description Retorna uma lista de mobilias que estão no piso
@@ -3036,7 +3542,7 @@ declare class Faker {
      * @example
      * // Exemplo de uso:
      * 
-     * let faker = null;
+     * let faker = null
      * Events.on('load', () => {
      *  faker = Faker.createFakeItem(1, 0, 0, 0, 0); // Cria um item falso na posição 0, 0, 0, 0
      * });
@@ -3045,7 +3551,7 @@ declare class Faker {
      *  if (!faker) returns; // Se o item não existir, não faça nada
      * 
      *  Faker.removeFakeFloorItem(faker); // Remove o item criado
-     *  faker = null; // Limpa a variável
+     *  faker = null // Limpa a variável
      * });
      * @returns {void}
      */
@@ -3057,7 +3563,7 @@ declare class Faker {
      * 
      * @example
      * // Exemplo de uso:
-     * let faker = null;
+     * let faker = null
      * Events.on('load', () => {
      *  faker = Faker.createFakePlayer('Senhoreu', 0, 0, 0, 0); // Cria um player falso na posição 0, 0, 0, 0
      * });
@@ -3066,7 +3572,7 @@ declare class Faker {
      *  if (!faker) returns; // Se a entidade não existir, não faça nada
      * 
      *  Faker.removeEntity(faker); // Remove a entidade criado
-     *  faker = null; // Limpa a variável
+     *  faker = null // Limpa a variável
      * });
      * @returns {void}
      */
@@ -3226,6 +3732,120 @@ declare class Delay {
     static seconds(sec: number): number;
 }
 
+declare class Variables {
+    /**
+     * @param variableName - Nome da variável a ser buscada.
+     * @description Retorna a variável com o nome fornecido.
+     * @example
+     * // Exemplo de uso:
+     * const varUser = Variables.getVariable('minhaVariavel'); // Retorna a variável 'minhaVariavel'
+     * Debug.log(varUser.getValue()); // Exibe no log o valor da variável
+     * @returns {ScriptVariable} Retorna a variável com o nome fornecido.
+     */
+    static getVariable(variableName: string): ScriptVariable | null;
+
+    /**
+     * @param variableName - Nome da variável a ser buscada.
+     * @description Retorna a variável do usuário com o nome fornecido.
+     * @example
+     * // Exemplo de uso:
+     * const varUser = Variables.getVariableUser('minhaVariavel'); // Retorna a variável 'minhaVariavel' do usuário
+     * Debug.log(varUser.getValue()); // Exibe no log o valor da variável
+     * @returns {ScriptVariableUser} Retorna a variável do usuário com o nome fornecido.
+     */
+    static getVariableUser(variableName: string): ScriptVariableUser | null;
+
+    /**
+     * @param variableName - Nome da variável a ser buscada.
+     * @description Retorna a variável da mobilia com o nome fornecido.
+     * @example
+     * // Exemplo de uso:
+     * const varFurni = Variables.getVariableFurni('minhaVariavel'); // Retorna a variável 'minhaVariavel' da mobilia
+     * Debug.log(varFurni.getValue()); // Exibe no log o valor da variável
+     * @returns {ScriptVariableFurni} Retorna a variável da mobilia com o nome fornecido.
+     */
+    static getVariableFurni(variableName: string): ScriptVariableFurni | null;
+
+    /**
+     * @param variableName - Nome da variável a ser buscada.
+     * @description Retorna a variável global com o nome fornecido.
+     * @example
+     * // Exemplo de uso:
+     * const varGlobal = Variables.getVariableGlobal('minhaVariavel'); // Retorna a variável 'minhaVariavel' global
+     * Debug.log(varGlobal.getValue());
+     * // Exibe no log o valor da variável
+     * @returns {ScriptVariableGlobal} Retorna a variável global com o nome fornecido.
+     */
+    static getVariableGlobal(variableName: string): ScriptVariableGlobal | null;
+
+    /**
+     * @param variable - A variável a ser verificada.
+     * @description Verifica se a variável é do tipo usuário.
+     * @example
+     * // Exemplo de uso:
+     * const varUser = Variables.getVariable('minhaVariavel');
+     * if (Variables.isUserVariable(varUser)) {
+     *     Debug.log('A variável é do tipo usuário');
+     * }
+     * @returns {boolean} Retorna true se a variável for do tipo usuário, caso contrário, false.
+     */
+    static isUserVariable(variable: ScriptVariable): boolean;
+
+    /**
+     * @param variable - A variável a ser verificada.
+     * @description Verifica se a variável é do tipo mobilia.
+     * @example
+     * // Exemplo de uso:
+     * const varFurni = Variables.getVariable('minhaVariavel');
+     * if (Variables.isFurniVariable(varFurni)) {
+     *     Debug.log('A variável é do tipo mobilia');
+     * }
+     * @returns {boolean} Retorna true se a variável for do tipo mobilia, caso contrário, false.
+     */
+    static isFurniVariable(variable: ScriptVariable): boolean;
+
+    /**
+     * @param variable - A variável a ser verificada.
+     * @description Verifica se a variável é do tipo global.
+     * @example
+     * // Exemplo de uso:
+     * const varGlobal = Variables.getVariable('minhaVariavel');
+     * if (Variables.isGlobalVariable(varGlobal)) {
+     *     Debug.log('A variável é do tipo global');
+     * }
+     * @returns {boolean} Retorna true se a variável for do tipo global, caso contrário, false.
+     */
+    static isGlobalVariable(variable: ScriptVariable): boolean;
+
+    /**
+     * @param entity - A entidade a ser verificada.
+     * @param variableName - Nome da variável a ser verificada.
+     * @description Verifica se a entidade possui a variável com o nome fornecido.
+     * @example
+     * // Exemplo de uso:
+     * const player = Room.getPlayerByName('Senhoreu');
+     * if (player && Variables.hasVariable(player, 'minhaVariavel')) {
+     *     Debug.log('O usuário possui a variável "minhaVariavel"');
+     * }
+     * @returns {boolean} Retorna true se a entidade possuir a variável, caso contrário, false.
+     */
+    static hasVariable(entity: ScriptEntity, variableName: string): boolean;
+
+    /**
+     * @param furni - A mobilia a ser verificada.
+     * @param variableName - Nome da variável a ser verificada.
+     * @description Verifica se a mobilia possui a variável com o nome fornecido.
+     * @example
+     * // Exemplo de uso:
+     * const furni = Room.getFurniById(12345);
+     * if (furni && Variables.hasVariable(furni, 'minhaVariavel')) {
+     *     Debug.log('A mobilia possui a variável "minhaVariavel"');
+     * }
+     * @returns {boolean} Retorna true se a mobilia possuir a variável, caso contrário, false.
+     */
+    static hasVariable(furni: ScriptFurni, variableName: string): boolean;
+}
+
 declare class Wired {
     /**
      * @description Recebe eventos dos wired de efeito que possuem o eventName.
@@ -3255,10 +3875,10 @@ declare class Wired {
     /**
      * @description Ativa um wired ativador.
      * @param {string} wiredName - codigo do wired.
-     * @param {ScriptEntity} entity - Entidade que ativou o wired.
-     * @param {ScriptFurni} furni - Mobilia que ativou o wired.
-     * @param {ScriptEntity[]} entities - Entidades do seletor.
-     * @param {ScriptFurni[]} furnis - Mobilias do seletor.
+     * @param {ScriptEntity | null} entity - Entidade que ativou o wired.
+     * @param {ScriptFurni | null} furni - Mobilia que ativou o wired.
+     * @param {ScriptEntity[] | null} entities - Entidades do seletor.
+     * @param {ScriptFurni[] | null} furnis - Mobilias do seletor.
      * 
      * @example
      * // Exemplo de uso:
@@ -3266,7 +3886,7 @@ declare class Wired {
      * // entity opcional, furni opcional, entities opcional, furnis opcional
      * @returns {void}
      */
-    static trigger(wiredName: string, entity: ScriptEntity, furni: ScriptFurni, entities: ScriptEntity[], furnis: ScriptFurni[]): void;
+    static trigger(wiredName: string, entity: ScriptEntity | null, furni: ScriptFurni | null, entities: ScriptEntity[] | null, furnis: ScriptFurni[] | null): void;
 
     /**
      * @description Ativa um wired ativador.
@@ -3350,19 +3970,70 @@ declare class Wired {
 }
 
 declare class Utils {
+    /**
+     * @description Calcula as posição adjacentes em todas as rotações, baseado na distancia fornecida.
+     * @param x1 
+     * @param y1 
+     * @param distance 
+     */
     static allRotations(x1: number, y1: number, distance: number): ScriptPosition[];
 
+    /**
+     * @description Calcula a posição final partindo de um ponto ao outro, seguindo a rotação e distancia.
+     * @param x1 
+     * @param y1 
+     * @param rotation 
+     * @param reverse 
+     * @param distance 
+     */
     static calculatePosition(x1: number, y1: number, rotation: number, reverse: number, distance: number): ScriptPosition;
 
+    /**
+     * @description Calcula a rotação partindo de um ponto ao outro.
+     * @param x1 
+     * @param y1 
+     * @param x2 
+     * @param y2 
+     * @param reverse 
+     */
     static calculateRotation(x1: number, y1: number, x2: number, y2: number, reverse: number): number;
 
+    /**
+     * @description Calcula a distancia de dois pontos usando o calculo de chebyshev.
+     * @param x1 
+     * @param y1 
+     * @param x2 
+     * @param y2 
+     */
     static chebyshevDistance(x1: number, y1: number, x2: number, y2: number): number;
 
+    /**
+     * @description Retorna se a rotação fornecida é em diagonal.
+     * @param rotation 
+     */
     static isDiagonal(rotation: number): boolean;
 
+    /**
+     * @description Calcula a posição atrás da posição fornecida, baseado na distancia fornecida.
+     * @param x1 
+     * @param y1 
+     * @param rotation 
+     * @param distance 
+     */
     static positionBehind(x1: number, y1: number, rotation: number, distance: number): ScriptPosition;
 
+    /**
+     * @description Calcula a posição frente da posição fornecida, baseado na distancia fornecida.
+     * @param x1 
+     * @param y1 
+     * @param rotation 
+     * @param distance 
+     */
     static positionInFront(x1: number, y1: number, rotation: number, distance: number): ScriptPosition;
 
+    /**
+     * @description Torna o texto seguro para ser usado em tags HTML sem riscos de XSS.
+     * @param text 
+     */
     static safeStr(text: string): string;
 }
