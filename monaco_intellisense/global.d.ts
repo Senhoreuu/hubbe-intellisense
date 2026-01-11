@@ -41,6 +41,132 @@ type VariableTextsEntry = Record<number, string>;
 
 type ScriptVariableFurniEntry = Record<number, ScriptVariableFurni>;
 
+interface ScriptFurnitureDefinition {
+
+    /**
+     * Verifica se o móvel é de anúncio.
+     */
+    isAdFurni(): boolean;
+
+    /**
+     * Verifica se é decoração de quarto (wall/floor/landscape).
+     */
+    isRoomDecor(): boolean;
+
+    /**
+     * Verifica se o móvel é um teleporte.
+     */
+    isTeleporter(): boolean;
+
+    /**
+     * Verifica se o móvel possui música.
+     */
+    isSong(): boolean;
+
+    /**
+     * Retorna o nome público do item.
+     */
+    getPublicName(): string;
+
+    /**
+     * Retorna o nome interno do item.
+     */
+    getItemName(): string;
+
+    /**
+     * Retorna a largura do item.
+     */
+    getWidth(): number;
+
+    /**
+     * Retorna o comprimento do item.
+     */
+    getLength(): number;
+
+    /**
+     * Retorna a altura do item.
+     */
+    getHeight(): number;
+
+    /**
+     * Retorna o sprite ID.
+     */
+    getSpriteId(): number;
+
+    /**
+     * Retorna o tipo de interação.
+     */
+    getInteraction(): string;
+
+    /**
+     * Retorna a quantidade de ciclos de interação.
+     */
+    getInteractionCycleCount(): number;
+
+    /**
+     * Retorna o ID do efeito.
+     */
+    getEffectId(): number;
+
+    /**
+     * Retorna os IDs de vending.
+     */
+    getVendingIds(): string[];
+
+    /**
+     * Verifica se pode empilhar.
+     */
+    canStack(): boolean;
+
+    /**
+     * Verifica se pode sentar.
+     */
+    canSit(): boolean;
+
+    /**
+     * Verifica se pode deitar.
+     */
+    canLay(): boolean;
+
+    /**
+     * Verifica se é caminhável.
+     */
+    canWalk(): boolean;
+
+    /**
+     * Verifica se pode ser trocado.
+     */
+    canTrade(): boolean;
+
+    /**
+     * Verifica se pode ser reciclado.
+     */
+    canRecycle(): boolean;
+
+    /**
+     * Verifica se pode ser deletado.
+     */
+    canDeletable(): boolean;
+
+    /**
+     * Verifica se pode ser escondido.
+     */
+    isHideable(): boolean;
+
+    /**
+     * Verifica se é wired.
+     */
+    isWired(): boolean;
+}
+
+interface ItemFakeSpawnData {
+    baseId: number;
+    x: number;
+    y: number;
+    z: number;
+    rotation: number;
+}
+
 interface ScriptVariable {
     /**
      * @description Retorna o nome da variável.
@@ -1359,6 +1485,15 @@ interface ScriptEntity extends ScriptPosition {
     addItemBySpriteId(spriteId: number, quantity: number): void;
 
     /**
+     * @description Adiciona ao inventário da entidade um ou mais itens.
+     * @param {number} spriteId - Código do item.
+     * @param {number} quantity - Quantidade do item.
+     * @param {string} icon - Ícone personalizado da notificação.
+     * @returns {void}
+     */
+    addItemBySpriteId(spriteId: number, quantity: number, icon: string): void;
+
+    /**
      * @description Remove um item do inventário da entidade.
      * @param {number} itemId - Código do item.
      * @returns {void}
@@ -2447,7 +2582,7 @@ declare class Events {
     static on(event: 'furniSelected', callback: (user: ScriptEntity, furni: ScriptFurni) => void): void;
 
     /**
-     * @description Evento chamado a cada tick. (1 tick = 0.5 segundo)
+     * @description Evento chamado a cada tick. (1 tick = 0.500 segundo)
      * @example
      * // Exemplo de uso:
      * Events.on('tick', () => {
@@ -2456,6 +2591,17 @@ declare class Events {
     * @returns {void}
     */
     static on(event: 'tick', callback: Function): void;
+    
+    /**
+     * @description Evento chamado a cada tick. (1 tick = 0.50 segundo)
+     * @example
+     * // Exemplo de uso:
+     * Events.on('shortTick', () => {
+     *  Engine.log('shortTick executado');
+     * });
+    * @returns {void}
+    */
+    static on(event: 'shortTick', callback: Function): void;
 
     /**
      * @description Evento chamado quando o quarto é carregado.
@@ -2737,6 +2883,17 @@ declare class GlobalData {
      * Engine.log('Preço do raro: ' + price);
      */
     static getRarePriceByDefinitionId(definitionId: number): number;
+
+    /**
+     * @description Retorna a definição de um mobi. Todo mobi tem sua própria definição.
+     * @param definitionId - ID definitivo do mobi.
+     * @returns {ScriptFurnitureDefinition | null} A definição do mobi ou null se não encontrado.
+     * @example
+     * // Exemplo de uso:
+     * const definition = GlobalData.getFurnitureDefinition(1);
+     * Engine.log('Definição do mobi: ' + definition);
+     */
+    static getFurnitureDefinition(definitionId: number): ScriptFurnitureDefinition | null;
 }
 
 interface RoomInstance {
@@ -3447,6 +3604,32 @@ declare class Faker {
      *  @returns {FakeFloorItem} Retorna o item criado
      */
     static createFakeItem(baseId: number, x: number, y: number, z: number, r: number): FakeFloorItem;
+
+    /**
+     * Cria vários itens falsos iguais.
+     * @param baseId ID da sprite base.
+     * @param x Posição X inicial.
+     * @param y Posição Y inicial.
+     * @param z Altura Z.
+     * @param r Rotação.
+     * @param quantity Quantidade de itens a gerar.
+     * @example
+     * // Cria 10 cadeiras na mesma posição
+     * const list = Faker.createFakeItems(1, 5, 5, 0, 0, 10);
+     */
+    static createFakeItems(baseId: number, x: number, y: number, z: number, r: number, quantity: number): FakeFloorItem[];
+
+    /**
+     * Cria vários itens falsos personalizados via lista.
+     * @param items Lista de objetos ItemFakeSpawnData.
+     * @example
+     * const data = [
+     *   { baseId: 1, x: 2, y: 2, z: 0, rotation: 0 },
+     *   { baseId: 2, x: 3, y: 2, z: 0, rotation: 2 },
+     * ];
+     * const list = Faker.createFakeItems(data);
+     */
+    static createFakeItems(items: ItemFakeSpawnData[]): FakeFloorItem[];
 
     /**
      * @description Cria entidade similar a um player real
