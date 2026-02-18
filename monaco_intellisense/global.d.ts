@@ -4010,12 +4010,52 @@ interface ScriptDatabase {
     dropCollection(collection: string): boolean;
 
     /**
+     * Cria um índice em uma coleção.
+     * @param collection Nome da coleção.
+     * @param fields Objeto com os campos e direção do índice (1 = asc, -1 = desc). Ex: { email: 1 }
+     * @param unique Se true, impede valores duplicados no campo indexado.
+     * @example
+     * db.createIndex("users", { email: 1 }, true);  // índice único
+     * db.createIndex("logs", { created_at: -1 }, false); // índice normal descendente
+     */
+    createIndex(collection: string, fields: Record<string, 1 | -1>, unique: boolean): boolean;
+
+    /**
      * Insere um novo documento em uma coleção.
      * @param collection Nome da coleção.
      * @param data Objeto com os dados a serem salvos.
      * @returns O ID (string) do documento inserido ou null em caso de falha.
      */
     insert(collection: string, data: Record<string, any>): string | null;
+
+    /**
+     * Insere ou atualiza um documento (upsert).
+     * Se o documento for encontrado pelo filtro, atualiza. Caso contrário, cria um novo.
+     * @param collection Nome da coleção.
+     * @param query Critérios para encontrar o documento.
+     * @param update Campos a serem atualizados.
+     * @example
+     * db.upsert("sessions", { user_id: userId }, { last_seen: new Date(), active: true });
+     */
+    upsert(collection: string, query: Record<string, any>, update: Record<string, any>): boolean;
+
+    /**
+     * Insere ou atualiza um documento, com suporte a valores padrão na criação.
+     * Os campos em `update` são sempre aplicados. Os campos em `defaults` só são aplicados
+     * quando o documento é criado (equivalente ao $setOnInsert do MongoDB).
+     * @param collection Nome da coleção.
+     * @param query Critérios para encontrar o documento.
+     * @param update Campos que sempre serão atualizados.
+     * @param defaults Campos que só serão definidos na criação do documento.
+     * @example
+     * db.upsertWithDefaults(
+     *     "users",
+     *     { room_id: roomId },
+     *     { last_seen: new Date() },   // sempre atualiza
+     *     { created_at: new Date() }   // só na criação
+     * );
+     */
+    upsertWithDefaults(collection: string, query: Record<string, any>, update: Record<string, any>, defaults: Record<string, any>): boolean;
 
     /**
      * Busca documentos que correspondam aos critérios fornecidos (limite padrão de 1000).
