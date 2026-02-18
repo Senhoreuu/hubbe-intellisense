@@ -4011,14 +4011,25 @@ interface ScriptDatabase {
 
     /**
      * Cria um índice em uma coleção.
-     * @param collection Nome da coleção.
-     * @param fields Objeto com os campos e direção do índice (1 = asc, -1 = desc). Ex: { email: 1 }
-     * @param unique Se true, impede valores duplicados no campo indexado.
+     * @param fields Campos e direção do índice (1 = asc, -1 = desc).
+     * @param options Opções do índice.
+     * @param options.unique Impede valores duplicados no campo indexado.
+     * @param options.expireAfterSeconds TTL em segundos — documentos são deletados automaticamente após esse tempo.
+     * @param options.sparse Só indexa documentos que possuem o campo, ignorando os que não têm.
      * @example
-     * db.createIndex("users", { email: 1 }, true);  // índice único
-     * db.createIndex("logs", { created_at: -1 }, false); // índice normal descendente
+     * db.createIndex("users", { email: 1 }, { unique: true });
+     * db.createIndex("sessions", { created_at: 1 }, { expireAfterSeconds: 86400 });
+     * db.createIndex("logs", { room_id: 1 }, { sparse: true });
      */
-    createIndex(collection: string, fields: Record<string, 1 | -1>, unique: boolean): boolean;
+    createIndex(
+        collection: string,
+        fields: Record<string, 1 | -1>,
+        options: {
+            unique?: boolean;
+            expireAfterSeconds?: number;
+            sparse?: boolean;
+        }
+    ): boolean;
 
     /**
      * Insere um novo documento em uma coleção.
