@@ -4757,12 +4757,6 @@ interface IForumThread {
      * Obtém a resposta mais recente do thread.
      */
     getMostRecentPost(): IForumThreadReply;
-
-    /**
-     * Adiciona uma resposta ao thread.
-     * @param reply A resposta a ser adicionada.
-     */
-    addReply(reply: IForumThreadReply): void;
 }
 
 interface ScriptGroup {
