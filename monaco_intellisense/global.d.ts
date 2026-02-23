@@ -4688,8 +4688,8 @@ interface IPlayerAvatar {
     getId(): number;
     getUsername(): string;
     getFigure(): string;
+    getGender(): string;
     getMotto(): string;
-    getRank(): number;
 }
 
 interface IForumThreadReply {
@@ -4759,6 +4759,23 @@ interface IForumThread {
     getMostRecentPost(): IForumThreadReply;
 }
 
+interface IGroupData {
+    getId(): number;
+    getTitle(): string;
+    getDescription(): string;
+    getOwnerId(): number;
+    getOwnerName(): string;
+    getOwnerAvatar(): IPlayerAvatar;
+    getBadge(): string;
+    getRoomId(): number;
+    getCreatedTimestamp(): number;
+    canMembersDecorate(): boolean;
+    getType(): GroupType;
+    getColourA(): number;
+    getColourB(): number;
+    hasForum(): boolean;
+}
+
 interface ScriptGroup {
     /**
      * Obtém o ID único do grupo.
@@ -4811,4 +4828,9 @@ interface ScriptGroup {
      * @param start Índice inicial (opcional).
      */
     getThreads(start?: number): IForumThread[];
+
+    /**
+     * Obtém os dados do grupo (título, badge, dono, etc).
+     */
+    getData(): IGroupData;
 }
