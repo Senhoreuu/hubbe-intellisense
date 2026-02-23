@@ -4692,13 +4692,77 @@ interface IPlayerAvatar {
     getRank(): number;
 }
 
-interface IForumThread {
+interface IForumThreadReply {
     getId(): number;
-    getSubject(): string;
     getAuthorId(): number;
-    getAuthorName(): string;
-    getMessageCount(): number;
-    getTimestamp(): number;
+    getAuthorTimestamp(): number;
+    getMessage(): string;
+    getState(): number;
+}
+
+interface IForumThread {
+    /**
+     * Obtém o ID único do thread.
+     */
+    getId(): number;
+
+    /**
+     * Obtém o título do thread.
+     */
+    getTitle(): string;
+
+    /**
+     * Obtém o ID do autor do thread.
+     */
+    getAuthorId(): number;
+
+    /**
+     * Obtém o timestamp de criação do thread.
+     */
+    getAuthorTimestamp(): number;
+
+    /**
+     * Verifica se o thread está bloqueado.
+     */
+    isLocked(): boolean;
+
+    /**
+     * Verifica se o thread está fixado (pinned).
+     */
+    isPinned(): boolean;
+
+    /**
+     * Obtém o estado do thread.
+     */
+    getState(): number;
+
+    /**
+     * Obtém todas as respostas do thread.
+     */
+    getReplies(): IForumThreadReply[];
+
+    /**
+     * Obtém respostas do thread a partir de um índice (paginação, máx 20 por página).
+     * @param start Índice inicial.
+     */
+    getReplies(start: number): IForumThreadReply[];
+
+    /**
+     * Obtém uma resposta pelo seu ID.
+     * @param id O ID da resposta.
+     */
+    getReplyById(id: number): IForumThreadReply | null;
+
+    /**
+     * Obtém a resposta mais recente do thread.
+     */
+    getMostRecentPost(): IForumThreadReply;
+
+    /**
+     * Adiciona uma resposta ao thread.
+     * @param reply A resposta a ser adicionada.
+     */
+    addReply(reply: IForumThreadReply): void;
 }
 
 interface ScriptGroup {
