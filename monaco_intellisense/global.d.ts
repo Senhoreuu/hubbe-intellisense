@@ -179,6 +179,8 @@ interface Room {
      */
     setMoodLight(active: boolean): void;
 
+    getGroup(): ScriptGroup;
+
     /**
      * Configura o moodlight do quarto com opções detalhadas.
      * @param active `true` para ativar, `false` para desativar.
@@ -3523,6 +3525,8 @@ interface GlobalData {
      * @returns A definição da mobília (ScriptFurnitureDefinition).
      */
     getFurnitureDefinition(id: number): ScriptFurnitureDefinition;
+
+    getGroupByRoomId(id: number): ScriptGroup;
 }
 
 /**
@@ -4678,4 +4682,75 @@ interface Variables {
      * @returns {boolean} Retorna true se a mobilia possuir a variável, caso contrário, false.
      */
     hasVariable(furni: ScriptFurni, variableName: string): boolean;
+}
+
+interface IPlayerAvatar {
+    getId(): number;
+    getUsername(): string;
+    getFigure(): string;
+    getMotto(): string;
+    getRank(): number;
+}
+
+interface IForumThread {
+    getId(): number;
+    getSubject(): string;
+    getAuthorId(): number;
+    getAuthorName(): string;
+    getMessageCount(): number;
+    getTimestamp(): number;
+}
+
+interface ScriptGroup {
+    /**
+     * Obtém o ID único do grupo.
+     */
+    getId(): number;
+
+    /**
+     * Verifica se o grupo possui um fórum.
+     */
+    hasForum(): boolean;
+
+    /**
+     * Verifica se um jogador é administrador do grupo.
+     * @param playerId O ID do jogador.
+     */
+    isAdmin(playerId: number): boolean;
+
+    /**
+     * Verifica se um jogador é membro do grupo.
+     * @param playerId O ID do jogador.
+     */
+    isMember(playerId: number): boolean;
+
+    /**
+     * Verifica se um jogador possui uma solicitação de entrada pendente.
+     * @param playerId O ID do jogador.
+     */
+    hasPendingRequest(playerId: number): boolean;
+
+    /**
+     * Obtém todos os membros do grupo.
+     * @returns Uma lista de avatares de jogadores.
+     */
+    getAllMembers(): IPlayerAvatar[];
+
+    /**
+     * Obtém todos os administradores do grupo.
+     * @returns Uma lista de avatares de jogadores com permissão de admin.
+     */
+    getAllAdmins(): IPlayerAvatar[];
+
+    /**
+     * Obtém todos os membros com solicitação pendente.
+     * @returns Uma lista de avatares de jogadores aguardando aprovação.
+     */
+    getAllPendingMembers(): IPlayerAvatar[];
+
+    /**
+     * Obtém os threads do fórum do grupo.
+     * @param start Índice inicial (opcional).
+     */
+    getThreads(start?: number): IForumThread[];
 }
