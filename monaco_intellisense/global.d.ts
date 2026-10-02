@@ -20,6 +20,10 @@ declare const Trade: Trade;
 declare const Furnis: Furnis;
 declare const Campaign: Campaign;
 declare const HubbeIA: HubbeIA;
+declare const CustomEvent: CustomEvent;
+declare const VariableFx: VariableFx;
+/** Disponível só quando o quarto tem o escopo "global". */
+declare const Global: Global;
 
 /**
  * @interface Room
@@ -616,6 +620,45 @@ interface Room {
      * }
      */
     isPublicRoom(): boolean;
+
+    /**
+     * @description Verifica se os wireds do quarto estão desativados (mobi "desativar wired").
+     * @example
+     * if (Room.isDisableWired()) Debug.log('Wireds desligados');
+     * @returns {boolean} true se os wireds estiverem desativados.
+     */
+    isDisableWired(): boolean;
+
+    /**
+     * @param id - ID do mobi.
+     * @description Retorna o mobi de anúncio (ads) com o ID informado.
+     * @example
+     * const ads = Room.getAdsFurniById(12345);
+     * if (ads) ads.setImageUrl('https://site.com/banner.png');
+     * @returns {ScriptAdsFurni | null} O mobi de anúncio, ou null se não existir ou não for um ads.
+     */
+    getAdsFurniById(id: number): ScriptAdsFurni | null;
+
+    /**
+     * @param id - ID do mobi.
+     * @description Retorna o wired com o ID informado, para ler ou mudar a configuração dele pelo script.
+     * @example
+     * const wired = Room.getWiredById(12345);
+     * if (wired) {
+     *     wired.setParam(0, 5);
+     *     wired.apply();
+     * }
+     * @returns {ScriptWired | null} O wired, ou null se não existir ou não for um wired.
+     */
+    getWiredById(id: number): ScriptWired | null;
+
+    /**
+     * @description Recarrega os scripts do quarto. Tem um intervalo mínimo de 5 segundos entre recargas;
+     * chamadas antes disso são ignoradas. Tudo que o script criou (fx, fakes, UIs) é descartado.
+     * @example
+     * Commands.register('recarregar', (player) => Room.reloadScripts());
+     */
+    reloadScripts(): void;
 }
 
 /**
@@ -1131,11 +1174,34 @@ interface ScriptEntity extends ScriptPosition {
      * Define a rotação via sistema de variáveis Wired.
      */
     setRotation(value: number): void;
+
+    /**
+     * @param status - Nome do status (ex.: "SIT", "LAY", "MOVE", "SIGN").
+     * @description Verifica se a entidade está com o status informado.
+     * @example
+     * if (player.hasStatus('SIT')) Debug.log('Está sentado');
+     * @returns {boolean} true se a entidade tiver o status.
+     */
+    hasStatus(status: ScriptEntityStatus): boolean;
+
+    /**
+     * @description Retorna o multiplicador de velocidade de movimento da entidade.
+     * @returns {number} Velocidade atual (1 = normal).
+     */
+    getMoveSpeed(): number;
+
+    /**
+     * @param speed - Multiplicador de velocidade (limitado entre 0.1 e 10).
+     * @description Muda a velocidade de movimento da entidade.
+     * @example
+     * player.setMoveSpeed(2); // anda 2x mais rápido
+     */
+    setMoveSpeed(speed: number): void;
 }
 
 interface ScriptPlayerEffect {
     getEffectId(): number;
-    duration(): number;
+    getDuration(): number;
 }
 
 declare enum ScriptRoomEntityType {
@@ -1874,6 +1940,21 @@ interface ScriptPlayerEntity extends ScriptEntity {
      * playerEntity.setClickThrough(true); // Ativa click-through
      */
     setClickThrough(clickThrough: boolean): void;
+
+    /**
+     * @description Verifica se o usuário está silenciado no quarto.
+     * @returns {boolean} true se estiver silenciado.
+     */
+    isSilent(): boolean;
+
+    /**
+     * @param silent - true para silenciar, false para liberar.
+     * @description Silencia ou libera o usuário no quarto. Quem tem direitos no quarto ou
+     * permissão de ignorar mute não pode ser silenciado (a chamada é ignorada).
+     * @example
+     * player.setSilent(true);
+     */
+    setSilent(silent: boolean): void;
 }
 
 interface ScriptPlayerData {
@@ -1902,6 +1983,18 @@ interface ScriptPlayerData {
     hasEarlyAccess(): boolean;
     getStartVipTimestamp(): number;
     getEndVipTimestamp(): number;
+
+    /**
+     * @description Retorna o apelido (nickname) do usuário.
+     * @returns {string}
+     */
+    getNickname(): string;
+
+    /**
+     * @description Retorna o layout dos wireds salvo pelo usuário (preferências do editor de wired).
+     * @returns {number[]}
+     */
+    getWiredLayout(): number[];
 }
 
 interface IAchievementProgress {
@@ -1917,6 +2010,18 @@ interface IAchievementProgress {
 interface IMessengerFriend {
     isInRoom(): boolean;
     getAvatar(): ScriptPlayerData;
+
+    /**
+     * @description Retorna o ID do amigo.
+     * @returns {number}
+     */
+    getUserId(): number;
+
+    /**
+     * @description Verifica se o amigo está online.
+     * @returns {boolean}
+     */
+    isOnline(): boolean;
 }
 
 /**
@@ -2444,6 +2549,14 @@ interface ScriptFurni extends ScriptPosition {
      * Altera a opacidade do item apenas para um jogador específico.
      */
     changeOpacity(playerEntity: ScriptPlayerEntity, opacity: number): void;
+
+    /**
+     * @description Retorna a definição (furnidata/items_base) do mobi.
+     * @example
+     * Debug.log(furni.getDefinition().getItemName());
+     * @returns {ScriptFurnitureDefinition}
+     */
+    getDefinition(): ScriptFurnitureDefinition;
 }
 
 interface FakeFloorItem extends ScriptFurni {
@@ -2932,6 +3045,18 @@ interface ScriptVariableUser extends ScriptVariable {
      * @returns {ScriptVariableUserData}
      */
     getPetVariableData(petId: number): ScriptVariableUserData;
+
+    /**
+     * @description Retorna todos os dados da variável dos bots.
+     * @returns {ScriptVariableUserData[]}
+     */
+    getBotVariablesData(): ScriptVariableUserData[];
+
+    /**
+     * @description Retorna todos os dados da variável dos pets.
+     * @returns {ScriptVariableUserData[]}
+     */
+    getPetVariablesData(): ScriptVariableUserData[];
 }
 
 interface ScriptVariableFurniData extends ScriptVariableData {
@@ -3043,6 +3168,23 @@ interface WebhookMessage {
      * @returns {void}
      */
     queue(): void;
+
+    /**
+     * @param username - Nome exibido como autor da mensagem.
+     * @description Troca o nome de quem envia a mensagem no webhook.
+     */
+    setUsername(username: string): WebhookMessage;
+
+    /**
+     * @param avatarUrl - URL da imagem.
+     * @description Troca o avatar de quem envia a mensagem no webhook.
+     */
+    setAvatarUrl(avatarUrl: string): WebhookMessage;
+
+    /**
+     * @param tts - true para a mensagem ser lida em voz alta (text-to-speech).
+     */
+    setTts(tts: boolean): WebhookMessage;
 }
 
 interface DelayTask {
@@ -3104,6 +3246,17 @@ interface Events {
      * @param data Dados em string (geralmente JSON).
      */
     sendMessageToRoom(roomId: number, event: string, data: string): void;
+
+    /**
+     * @param type - Tipo do evento.
+     * @param handler - A mesma função registrada com on().
+     * @description Remove um handler registrado com on().
+     * @example
+     * const onJoin = (player) => Debug.log(player.getUsername());
+     * Events.on('userJoin', onJoin);
+     * Events.off('userJoin', onJoin);
+     */
+    off<T extends ScriptEventType>(type: T, handler: ScriptEventHandlers[T]): void;
 }
 
 interface CommandCallback {
@@ -3527,6 +3680,27 @@ interface GlobalData {
     getFurnitureDefinition(id: number): ScriptFurnitureDefinition;
 
     getGroupByRoomId(id: number): ScriptGroup;
+
+    /**
+     * @param id - ID do grupo.
+     * @description Retorna o grupo com o ID informado.
+     * @returns {ScriptGroup | null}
+     */
+    getGroup(id: number): ScriptGroup | null;
+
+    /**
+     * @param roomId - ID do quarto.
+     * @description Retorna os dados de um quarto (mesmo que não esteja carregado).
+     * @returns {ScriptRoomData | null}
+     */
+    getRoomData(roomId: number): ScriptRoomData | null;
+
+    /**
+     * @param playerId - ID do usuário.
+     * @description Retorna os dados dos quartos do usuário.
+     * @returns {ScriptRoomData[]}
+     */
+    getPlayerRoomsData(playerId: number): ScriptRoomData[];
 }
 
 /**
@@ -4144,6 +4318,44 @@ interface ScriptDatabase {
      * Obtém o nome do banco de dados atual.
      */
     getDatabaseName(): string;
+
+    /**
+     * Verifica se o banco de dados está conectado.
+     */
+    isConnected(): boolean;
+
+    /** Igual ao insert(), dentro de uma sessão (transação). */
+    insert(session: ScriptDatabaseSession, collection: string, data: Record<string, any>): string | null;
+    /** Igual ao upsert(), dentro de uma sessão (transação). */
+    upsert(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, update: Record<string, any>): boolean;
+    /** Igual ao upsertWithDefaults(), dentro de uma sessão (transação). */
+    upsertWithDefaults(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, update: Record<string, any>, defaults: Record<string, any>): boolean;
+    /** Igual ao query(), dentro de uma sessão (transação). */
+    query(session: ScriptDatabaseSession, collection: string, query: Record<string, any>): Record<string, any>[];
+    /** Igual ao queryWithOffset(), dentro de uma sessão (transação). */
+    queryWithOffset(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, offset: number, limit: number): Record<string, any>[];
+    /** Igual ao queryWithSort(), dentro de uma sessão (transação). */
+    queryWithSort(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, offset: number, limit: number, sortField: string, sortAscending: boolean): Record<string, any>[];
+    /** Igual ao queryPage(), dentro de uma sessão (transação). */
+    queryPage(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, page: number, pageSize: number): Record<string, any>[];
+    /** Igual ao queryPageWithSort(), dentro de uma sessão (transação). */
+    queryPageWithSort(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, page: number, pageSize: number, sortField: string, sortAscending: boolean): Record<string, any>[];
+    /** Igual ao queryPageWithInfo(), dentro de uma sessão (transação). */
+    queryPageWithInfo(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, page: number, pageSize: number): Record<string, any>;
+    /** Igual ao queryOne(), dentro de uma sessão (transação). */
+    queryOne(session: ScriptDatabaseSession, collection: string, query: Record<string, any>): Record<string, any> | null;
+    /** Igual ao update(), dentro de uma sessão (transação). */
+    update(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, update: Record<string, any>): number;
+    /** Igual ao updateOne(), dentro de uma sessão (transação). */
+    updateOne(session: ScriptDatabaseSession, collection: string, query: Record<string, any>, update: Record<string, any>): boolean;
+    /** Igual ao delete(), dentro de uma sessão (transação). */
+    delete(session: ScriptDatabaseSession, collection: string, query: Record<string, any>): number;
+    /** Igual ao deleteOne(), dentro de uma sessão (transação). */
+    deleteOne(session: ScriptDatabaseSession, collection: string, query: Record<string, any>): boolean;
+    /** Igual ao count(), dentro de uma sessão (transação). */
+    count(session: ScriptDatabaseSession, collection: string, query: Record<string, any>): number;
+    /** Igual ao createIndex(), dentro de uma sessão (transação). */
+    createIndex(session: ScriptDatabaseSession, collection: string, fields: Record<string, 1 | -1>, options: Record<string, any>): boolean;
 }
 
 /**
@@ -4156,6 +4368,30 @@ interface ScriptDatabaseController {
      * Obtém a conexão ativa com o banco de dados NoSQL.
      */
     getConnection(): ScriptDatabase | null;
+
+    /**
+     * @description Verifica se o script tem uma conexão ativa com o banco de dados.
+     * @returns {boolean}
+     */
+    isConnected(): boolean;
+
+    /**
+     * @description Abre uma sessão para fazer várias operações numa transação: ou todas
+     * são aplicadas (commitTransaction) ou nenhuma (abortTransaction).
+     * @example
+     * const db = Database.getConnection();
+     * const session = Database.startSession();
+     * session.startTransaction();
+     * try {
+     *     db.update(session, 'carteiras', { id: 1 }, { $inc: { moedas: -10 } });
+     *     db.update(session, 'carteiras', { id: 2 }, { $inc: { moedas: 10 } });
+     *     session.commitTransaction();
+     * } catch (e) {
+     *     session.abortTransaction();
+     * }
+     * @returns {ScriptDatabaseSession}
+     */
+    startSession(): ScriptDatabaseSession;
 }
 
 /**
@@ -4457,6 +4693,12 @@ interface HubbeIA {
      * Verifica se existe histórico ativo para um determinado ID de conversa.
      */
     hasHistory(conversationId: string): boolean;
+
+    /**
+     * @param url - URL da API. Vazio ou nulo volta para a URL padrão.
+     * @description Troca a URL da API usada pela HubbeIA neste quarto.
+     */
+    setApiUrl(url: string): void;
 }
 
 /**
@@ -4563,6 +4805,12 @@ interface Delay {
      * @param {number} sec - Quantidade de segundos a serem convertidos em ticks.
     */
     seconds(sec: number): number;
+
+    /**
+     * @description Retorna quantos ticks se passaram desde que o script foi carregado.
+     * @returns {number}
+     */
+    getTicks(): number;
 }
 
 /**
@@ -4682,6 +4930,72 @@ interface Variables {
      * @returns {boolean} Retorna true se a mobilia possuir a variável, caso contrário, false.
      */
     hasVariable(furni: ScriptFurni, variableName: string): boolean;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi.
+     * @param variableName - Nome da variável (de usuário para entidades, de mobi para mobis).
+     * @param value - Valor inicial.
+     * @param replace - Se já tiver a variável, troca o valor (padrão: false, não mexe).
+     * @description Dá a variável para o alvo, igual ao wired "Dar variável". Dispara o gatilho
+     * "variável mudou", atualiza os Variable FX e os highscores.
+     * @example
+     * Variables.giveVariable(player, 'xp', 0);
+     * Variables.giveVariable(furni, 'vida', 100, true);
+     * @returns {boolean} true se a variável foi dada (ou trocada).
+     */
+    giveVariable(target: ScriptEntity | ScriptFurni, variableName: string, value: number, replace?: boolean): boolean;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi. Sem alvo, usa a variável global.
+     * @param variableName - Nome da variável.
+     * @param value - Novo valor.
+     * @description Muda o valor da variável. Só funciona se o alvo já tiver a variável
+     * (use giveVariable para dar). Também funciona com variáveis internas que aceitam escrita.
+     * @example
+     * Variables.setValue(player, 'xp', 50);
+     * Variables.setValue('pontos_do_time', 10); // global
+     * @returns {boolean} true se o valor foi alterado.
+     */
+    setValue(target: ScriptEntity | ScriptFurni, variableName: string, value: number): boolean;
+    setValue(variableName: string, value: number): boolean;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi. Sem alvo, usa a variável global.
+     * @param variableName - Nome da variável.
+     * @param operation - Operação do wired "Mudar variável", por nome ou id.
+     * @param value - Valor usado na operação.
+     * @description Aplica uma operação no valor atual da variável, igual ao wired "Mudar variável".
+     * Só funciona se o alvo já tiver a variável.
+     * @example
+     * Variables.changeValue(player, 'xp', 'add', 25);
+     * Variables.changeValue(player, 'flags', 'set_bit', 3);
+     * Variables.changeValue('rodada', 'add', 1); // global
+     * @returns {boolean} true se a operação foi aplicada (false em operação inválida ou divisão por zero).
+     */
+    changeValue(target: ScriptEntity | ScriptFurni, variableName: string, operation: ScriptVariableOperation | number, value: number): boolean;
+    changeValue(variableName: string, operation: ScriptVariableOperation | number, value: number): boolean;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi. Sem alvo, usa a variável global.
+     * @param variableName - Nome da variável.
+     * @description Retorna o valor da variável no alvo.
+     * @example
+     * const xp = Variables.getValue(player, 'xp');
+     * if (xp !== null) Debug.log('XP: ' + xp);
+     * @returns {number | null} O valor, ou null se o alvo não tiver a variável.
+     */
+    getValue(target: ScriptEntity | ScriptFurni, variableName: string): number | null;
+    getValue(variableName: string): number | null;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi.
+     * @param variableName - Nome da variável.
+     * @description Remove a variável do alvo, igual ao wired "Remover variável".
+     * @example
+     * Variables.removeVariable(player, 'xp');
+     * @returns {boolean} true se a variável foi removida.
+     */
+    removeVariable(target: ScriptEntity | ScriptFurni, variableName: string): boolean;
 }
 
 interface IPlayerAvatar {
@@ -4759,6 +5073,12 @@ interface IForumThread {
     getMostRecentPost(): IForumThreadReply;
 }
 
+declare enum GroupType {
+    REGULAR = "REGULAR",
+    EXCLUSIVE = "EXCLUSIVE",
+    PRIVATE = "PRIVATE"
+}
+
 interface IGroupData {
     getId(): number;
     getTitle(): string;
@@ -4833,4 +5153,405 @@ interface ScriptGroup {
      * Obtém os dados do grupo (título, badge, dono, etc).
      */
     getData(): IGroupData;
+}
+
+/**
+ * Status de entidade usados em hasStatus().
+ */
+type ScriptEntityStatus =
+    "SIT_IN" | "SIT" | "SIT_OUT" | "MOVE" | "LAY_IN" | "LAY" | "LAY_OUT" | "SIGN" | "CONTROLLER" | "WIRED" |
+    "TRADE" | "VOTE" | "GESTURE" | "PLAY_IN" | "PLAY" | "PLAY_OUT" | "PLAY_DEAD_IN" | "PLAY_DEAD" | "PLAY_DEAD_OUT" |
+    "JUMP_IN" | "JUMP" | "JUMP_OUT" | "EAT_IN" | "EAT" | "EAT_OUT" | "SLEEP_IN" | "SLEEP" | "SLEEP_OUT" | "DIP" |
+    "BEG" | "RDY" | "SCRATCH" | "SPEAK" | "CROAK" | "RELAX" | "WINGS" | "FLAME" | "KICK" | "WAG_TAIL" | "DANCE" |
+    "AMS" | "SWIM" | "TURN" | "FLASH" | "SRP_IN" | "SRP" | "RIP" | "GROW" | "SAD" | "HAPPY";
+
+/**
+ * Operações do wired "Mudar variável" (também aceitas pelo id numérico).
+ * set 0, add 1, sub 2, mul 3, div 4, pow 5, mod 6, max 40, min 41, random 50, abs 60,
+ * and 100, or 101, xor 102, not 103, shl 104, shr 105, bitcount 110,
+ * next_set_bit 111, next_clear_bit 112, prev_set_bit 113, prev_clear_bit 114,
+ * get_bit 115, set_bit 116, clear_bit 117, toggle_bit 118
+ */
+type ScriptVariableOperation =
+    "set" | "=" | "add" | "+" | "sub" | "subtract" | "-" | "mul" | "multiply" | "*" | "div" | "divide" | "/" |
+    "pow" | "power" | "^" | "mod" | "%" | "max" | "min" | "random" | "abs" |
+    "and" | "&" | "or" | "|" | "xor" | "not" | "~" | "shl" | "<<" | "shr" | ">>" | "bitcount" |
+    "next_set_bit" | "next_clear_bit" | "prev_set_bit" | "prev_clear_bit" |
+    "get_bit" | "set_bit" | "clear_bit" | "toggle_bit";
+
+/**
+ * @interface ScriptRoomData
+ * @description Dados de um quarto (carregado ou não).
+ */
+interface ScriptRoomData {
+    /** Verifica se o quarto está aberto (sem campainha e sem senha). */
+    isOpen(): boolean;
+    /** Verifica se o quarto pede campainha para entrar. */
+    hasDoorbell(): boolean;
+    /** Verifica se o quarto pede senha para entrar. */
+    hasPassword(): boolean;
+    /** Verifica se o quarto está invisível no navegador. */
+    isInvisible(): boolean;
+}
+
+/**
+ * @interface ScriptDatabaseSession
+ * @description Sessão do banco de dados para operações em transação. Obtida com Database.startSession().
+ */
+interface ScriptDatabaseSession {
+    /** Inicia a transação. */
+    startTransaction(): void;
+    /** Aplica tudo que foi feito na transação. */
+    commitTransaction(): void;
+    /** Desfaz tudo que foi feito na transação. */
+    abortTransaction(): void;
+}
+
+/**
+ * @interface ScriptAdsFurni
+ * @description Mobi de anúncio (imagem externa no quarto). As mudanças são salvas e
+ * enviadas para o quarto na hora.
+ */
+interface ScriptAdsFurni extends ScriptFurniFloor {
+    /** URL da imagem exibida. */
+    getImageUrl(): string;
+    /** @param imageUrl - URL da imagem. */
+    setImageUrl(imageUrl: string): void;
+    /** URL aberta ao clicar na imagem. */
+    getImageClickUrl(): string;
+    /** @param clickUrl - URL aberta ao clicar. */
+    setImageClickUrl(clickUrl: string): void;
+    /** Deslocamento horizontal da imagem. */
+    getOffsetX(): number;
+    /** @param offsetX - Deslocamento horizontal. */
+    setOffsetX(offsetX: number): void;
+    /** Deslocamento vertical da imagem. */
+    getOffsetY(): number;
+    /** @param offsetY - Deslocamento vertical. */
+    setOffsetY(offsetY: number): void;
+    /** Profundidade (ordem de desenho) da imagem. */
+    getOffsetZ(): number;
+    /** @param offsetZ - Profundidade (ordem de desenho). */
+    setOffsetZ(offsetZ: number): void;
+    /** Opacidade de 0 a 100. */
+    getAdsOpacity(): number;
+    /** @param opacity - Opacidade de 0 a 100 (valores fora são limitados). */
+    setAdsOpacity(opacity: number): void;
+    /** Modo de mistura da imagem. */
+    getBlendMode(): string;
+    /** @param blendMode - Modo de mistura da imagem. */
+    setBlendMode(blendMode: string): void;
+    /** Nome do anúncio. */
+    getAdsName(): string;
+    /** @param name - Nome do anúncio. */
+    setAdsName(name: string): void;
+}
+
+/**
+ * @interface ScriptColorableFurni
+ * @description Mobi com cor configurável (cores em hexadecimal sem "#", ex.: "ff0000").
+ */
+interface ScriptColorableFurni extends ScriptFurniFloor {
+    /** Cor primária (padrão "ffffff"). */
+    getColorA(): string;
+    /** Cor secundária. */
+    getColorB(): string;
+    /** @param colorA - Cor primária em hex. */
+    setColorA(colorA: string): void;
+    /** @param colorB - Cor secundária em hex. */
+    setColorB(colorB: string): void;
+    /**
+     * @param colorA - Cor primária em hex (6 dígitos).
+     * @param colorB - Cor secundária em hex (6 dígitos).
+     * @description Muda as duas cores, salva e atualiza no quarto. Cores inválidas são ignoradas.
+     * @example
+     * furni.setColor('ff0000', '0000ff');
+     */
+    setColor(colorA: string, colorB: string): void;
+}
+
+/**
+ * Tipo do wired retornado por ScriptWired.getWiredType():
+ * 1 gatilho, 2 efeito, 3 condição, 4 extra (addon), 5 seletor, 6 variável.
+ */
+type ScriptWiredType = 1 | 2 | 3 | 4 | 5 | 6;
+
+/**
+ * @interface ScriptWired
+ * @description Um wired do quarto (obtido com Room.getWiredById). Os setters só mudam a
+ * configuração em memória: chame apply() para validar, salvar e enviar para o quarto.
+ */
+interface ScriptWired extends ScriptFurniFloor {
+    /** @returns {ScriptWiredType} Tipo do wired. */
+    getWiredType(): ScriptWiredType;
+    /**
+     * @description Retorna o objeto interno de dados do wired. Ele não tem métodos expostos ao
+     * script; use getParam/getVariable/getSelectedIds para ler a configuração.
+     * @returns {object}
+     */
+    getWiredData(): object;
+    /**
+     * @param itemId - ID do mobi.
+     * @returns {boolean} true se o mobi existe e foi selecionado.
+     */
+    selectFurni(itemId: number): boolean;
+    /**
+     * @param itemId - ID do mobi (seleção secundária).
+     * @returns {boolean} true se o mobi existe e foi selecionado.
+     */
+    selectSecondFurni(itemId: number): boolean;
+    /** Limpa todas as seleções de mobis. */
+    clearSelection(): void;
+    /** IDs dos mobis selecionados. */
+    getSelectedIds(): number[];
+    /** IDs dos mobis da seleção secundária. */
+    getSecondarySelectedIds(): number[];
+    /** @param text - Texto do wired (validado conforme o tipo do wired). */
+    setText(text: string): void;
+    /**
+     * @param index - Índice do parâmetro.
+     * @param value - Valor (no máximo 50 parâmetros).
+     */
+    setParam(index: number, value: number): void;
+    /** @returns {number} O parâmetro do índice, ou 0. */
+    getParam(index: number): number;
+    /** Limpa todos os parâmetros. */
+    clearParams(): void;
+    /**
+     * @param index - Índice da variável.
+     * @param variableId - ID da variável (no máximo 50).
+     */
+    setVariable(index: number, variableId: number): void;
+    /** @returns {number} O ID da variável do índice, ou -1. */
+    getVariable(index: number): number;
+    /** Limpa as variáveis selecionadas. */
+    clearVariables(): void;
+    /** @param index - Índice da opção. @param value - Fonte de mobis escolhida. */
+    setFurniAction(index: number, value: number): void;
+    /** @param index - Índice da opção. @param value - Fonte de usuários escolhida. */
+    setUserAction(index: number, value: number): void;
+    /** Limpa as fontes de mobis escolhidas. */
+    clearFurniActions(): void;
+    /** Limpa as fontes de usuários escolhidas. */
+    clearUserActions(): void;
+    /** @returns {number} Delay do efeito (0 se não for efeito). */
+    getDelay(): number;
+    /** @param delay - Delay do efeito (ignorado se não for efeito). */
+    setDelay(delay: number): void;
+    /** @param can - false impede o wired de executar. */
+    setCanExecute(can: boolean): void;
+    /**
+     * @description Valida, salva e envia a configuração atual do wired para o quarto.
+     * @example
+     * const wired = Room.getWiredById(12345);
+     * wired.scriptReset();
+     * wired.selectFurni(67890);
+     * wired.apply();
+     */
+    apply(): void;
+    /** Limpa toda a configuração do wired (seleções, parâmetros, variáveis, fontes e texto). */
+    scriptReset(): void;
+}
+
+/**
+ * @interface CustomEvent
+ * @description Eventos próprios do script: registre handlers com on() e dispare com emit().
+ * O emit é síncrono e tem limite de profundidade (um evento disparando outro) para evitar loops.
+ */
+interface CustomEvent {
+    /**
+     * @param type - Nome do evento.
+     * @param handler - Função chamada com os argumentos passados no emit().
+     * @example
+     * CustomEvent.on('bossMorreu', (killer) => Debug.log(killer.getUsername()));
+     */
+    on(type: string, handler: (...args: any[]) => void): void;
+    /** Remove um handler registrado com on(). */
+    off(type: string, handler: (...args: any[]) => void): void;
+    /** Remove todos os handlers do evento. */
+    offAll(type: string): void;
+    /**
+     * @param type - Nome do evento.
+     * @param args - Argumentos repassados para os handlers.
+     * @example
+     * CustomEvent.emit('bossMorreu', player);
+     */
+    emit(type: string, ...args: any[]): void;
+    /** Profundidade atual (quantos emit estão em andamento um dentro do outro). */
+    getDepth(): number;
+    /** Profundidade máxima permitida (padrão 32). */
+    getMaxDepth(): number;
+    /** @param depth - Nova profundidade máxima (de 1 a 128). */
+    setMaxDepth(depth: number): void;
+}
+
+/**
+ * @interface Global
+ * @description Ações em todo o hotel. Só existe quando o quarto tem o escopo "global".
+ */
+interface Global {
+    /**
+     * @param icon - Ícone da notificação (até 20 caracteres; vazio usa o padrão).
+     * @param message - Mensagem.
+     * @description Envia uma notificação para todos os usuários online.
+     */
+    notification(icon: string, message: string): void;
+    notification(message: string): void;
+    /**
+     * @param title - Título (até 20 caracteres).
+     * @param message - Mensagem.
+     * @description Envia um alerta para todos os usuários online.
+     */
+    alert(title: string, message: string): void;
+    alert(message: string): void;
+    /** Usuários online no hotel. */
+    getOnlinePlayers(): any[];
+}
+
+/**
+ * Opções de uma config de Variable FX (VariableFx.createConfig / updateConfig).
+ * Nomes ou ids numéricos são aceitos em category, renderer, color, width e showMode.
+ */
+interface VariableFxConfigOptions {
+    /** Categoria (padrão "progress_bar"). */
+    category?: "health_points" | "progress_bar" | "levelling_progress" | "status_bar" | "boss_bar" | "number_display" | number;
+    /** Renderer (padrão: o da categoria). */
+    renderer?: "classic_progress" | "classic_mini_progress" | "block_progress" | "striped_progress" | "arrow_progress" |
+        "health_progress" | "masked_heart_fill" | "stacked_health_points" | "thermometer_health_points" |
+        "level_with_progress" | "level_with_bar_and_numerical_progress" | "boss_health_bar" | "numerical_progress" |
+        "number_recolorable" | "number_baked_colors" | number;
+    /** Cor (padrão "GREEN"). "DYNAMIC_TEAM_COLOR" usa a cor do time do usuário. */
+    color?: "GREEN" | "LIME_GREEN" | "YELLOW" | "ORANGE" | "RED" | "CYAN" | "BLUE" | "PURPLE" | "PINK" | "BROWN" |
+        "BEIGE" | "TEAL" | "INDIGO" | "MAGENTA" | "LIGHT_BLUE" | "FIRE_ORANGE" | "DARK_GREEN" | "DARK_BLUE" | "WHITE" |
+        "BRONZE" | "SILVER" | "GOLD" | "DIAMOND" | "EMERALD" | "DYNAMIC_RED_TO_GREEN" | "DYNAMIC_LEVELLING" |
+        "DYNAMIC_TEAM_COLOR" | "NOT_APPLICABLE" | number;
+    /** Largura (padrão "medium"). */
+    width?: "extra_small" | "small" | "medium" | "large" | "extra_large" | "big_mahoosive_chonky" | "not_applicable" | number;
+    /** Estilo da categoria (padrão 0). */
+    style?: number;
+    /** Valor mínimo (padrão 0). */
+    min?: number;
+    /** Valor máximo (padrão 100). Precisa ser maior que min, exceto em levelling e number_display. */
+    max?: number;
+    /** Quando mostrar (padrão "always"). */
+    showMode?: "always" | "on_change" | "never" | number;
+    /** Quando reexibir no modo "on_change": bit0 criada, bit1 subiu, bit2 desceu, bit3 igual (padrão 15). */
+    changeMask?: number;
+    /** Mostrar só com o mouse em cima (padrão false). */
+    hover?: boolean;
+    /** Tempo exibido em ms, de 1500 a 20000 (padrão 5000). */
+    duration?: number;
+    /** "everyone" (padrão) ou "only_user" (status de usuário só aparece para o próprio usuário). */
+    visibility?: "everyone" | "only_user";
+    /** Número de blocos, nos renderers que suportam (0 = não usa). */
+    segments?: number;
+    /** Extras da config (ex.: { icon: "misc_heart" }, { design: "blocky" }). */
+    extra?: Record<string, string>;
+}
+
+/**
+ * Opções de um status (VariableFx.set).
+ */
+interface VariableFxStatusOptions {
+    /** Mínimo só deste status (o outro lado usa o da config). */
+    min?: number;
+    /** Máximo só deste status (o outro lado usa o da config). */
+    max?: number;
+    /** Extras do status (ex.: levelling: { current_level: "3", max_level: "50", is_maxed: "false" }). */
+    extra?: Record<string, string>;
+}
+
+/**
+ * @interface VariableFx
+ * @description Barras e números (Variable FX) em cima de usuários e mobis, criados pelo script.
+ * Tudo que o script cria some quando ele recarrega ou o quarto fecha. Quem entra no quarto
+ * recebe os fx que já existem.
+ */
+interface VariableFx {
+    /**
+     * @param options - Aparência e comportamento do fx.
+     * @description Cria uma config de fx. A mesma config serve para usuários e mobis.
+     * @example
+     * const hp = VariableFx.createConfig({ category: 'health_points', color: 'RED', min: 0, max: 100 });
+     * @returns {number} O id da config, ou -1 se as opções forem inválidas.
+     */
+    createConfig(options: VariableFxConfigOptions): number;
+
+    /**
+     * @param config - Id da config.
+     * @param options - Só as opções que mudam.
+     * @description Muda a config. Os fx que já estão aparecendo continuam, com a nova aparência.
+     * @example
+     * VariableFx.updateConfig(hp, { color: 'GREEN' });
+     * @returns {boolean} true se a config existe e foi atualizada.
+     */
+    updateConfig(config: number, options: VariableFxConfigOptions): boolean;
+
+    /**
+     * @param config - Id da config.
+     * @description Remove a config e todos os fx dela.
+     * @returns {boolean} true se a config existia.
+     */
+    removeConfig(config: number): boolean;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi.
+     * @param config - Id da config.
+     * @param value - Valor mostrado.
+     * @param options - Mínimo/máximo e extras só deste alvo. Sem options, mantém os que já estavam.
+     * @description Mostra ou atualiza o fx no alvo.
+     * @example
+     * VariableFx.set(player, hp, 75);
+     * VariableFx.set(boss, hp, 1500, { min: 0, max: 5000 });
+     * @returns {boolean} true se o fx foi mostrado/atualizado.
+     */
+    set(target: ScriptEntity | ScriptFurni, config: number, value: number, options?: VariableFxStatusOptions): boolean;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi.
+     * @param config - Id da config.
+     * @returns {number | null} O valor mostrado agora, ou null se o alvo não tiver esse fx.
+     */
+    get(target: ScriptEntity | ScriptFurni, config: number): number | null;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi.
+     * @param config - Id da config.
+     * @returns {boolean} true se o alvo estiver com esse fx.
+     */
+    has(target: ScriptEntity | ScriptFurni, config: number): boolean;
+
+    /**
+     * @param target - Usuário, bot, pet ou mobi.
+     * @param config - Id da config.
+     * @description Tira o fx do alvo.
+     * @returns {boolean} true se o alvo tinha o fx.
+     */
+    remove(target: ScriptEntity | ScriptFurni, config: number): boolean;
+
+    /**
+     * @param config - Id da config.
+     * @description Tira o fx de todos os alvos (a config continua existindo).
+     * @returns {boolean} true se a config existe.
+     */
+    clear(config: number): boolean;
+
+    /**
+     * @param config - Id da config.
+     * @param variableName - Nome de uma variável de usuário ou de mobi.
+     * @description Liga o fx a uma variável: aparece em todos que têm a variável, com o valor
+     * dela, e atualiza ou some sozinho quando ela muda (por wired ou pelo script).
+     * @example
+     * const vida = VariableFx.createConfig({ category: 'health_points' });
+     * VariableFx.bind(vida, 'vida');
+     * @returns {boolean} true se a variável existe e é de usuário ou de mobi.
+     */
+    bind(config: number, variableName: string): boolean;
+
+    /**
+     * @param config - Id da config.
+     * @description Desliga a variável e tira os fx que vieram dela.
+     * @returns {boolean} true se a config estava ligada a uma variável.
+     */
+    unbind(config: number): boolean;
 }
