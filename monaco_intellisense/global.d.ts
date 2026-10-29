@@ -24,6 +24,10 @@ declare const CustomEvent: CustomEvent;
 declare const VariableFx: VariableFx;
 /** Disponível só quando o quarto tem o escopo "global". */
 declare const Global: Global;
+/** Venda por hubcoins. Não precisa de escopo. @see PurchaseComponent */
+declare const Purchase: PurchaseComponent;
+/** Clonagem de quartos. Requer o escopo `roomclone`. @see RoomCloneComponent */
+declare const RoomClone: RoomCloneComponent;
 
 /**
  * @interface Room
@@ -3222,6 +3226,8 @@ interface ScriptEventHandlers {
     "shortTick": () => void;
     "load": () => void;
     "dispose": () => void;
+    "purchaseAccepted": (player: ScriptPlayerEntity, product: PurchaseProduct) => void;
+    "purchaseDenied": (player: ScriptPlayerEntity, product: PurchaseProduct, reason: PurchaseDeniedReason) => void;
 }
 
 type ScriptEventType = keyof ScriptEventHandlers;
@@ -5554,4 +5560,321 @@ interface VariableFx {
      * @returns {boolean} true se a config estava ligada a uma variável.
      */
     unbind(config: number): boolean;
+}
+
+/**
+ * Código de retorno de {@link PurchaseComponent.prompt}.
+ *
+ * - `ok` — o card de compra foi aberto para o jogador.
+ * - `invalid_player` — o alvo não é um {@link ScriptPlayerEntity} válido e presente neste quarto.
+ * - `invalid_product` — falta `name`, `price` não é um inteiro entre 1 e 1.000.000, `image` não é uma URL http(s)
+ *   ou o produto inteiro passa de 4000 caracteres em JSON.
+ * - `busy` — o jogador já tem um card de compra aberto neste quarto.
+ */
+type PurchaseCode = "ok" | "invalid_player" | "invalid_product" | "busy";
+
+/**
+ * Motivo de `purchaseDenied`.
+ *
+ * - `cancel` — o jogador clicou em Cancelar/Recusar.
+ * - `close` — o jogador fechou o card no [x].
+ * - `timeout` — o tempo acabou sem resposta.
+ * - `insufficient` — o jogador tentou comprar sem hubcoins suficientes.
+ * - `left_room` — o jogador saiu do quarto ou do hotel com o card aberto.
+ */
+type PurchaseDeniedReason = "cancel" | "close" | "timeout" | "insufficient" | "left_room";
+
+/**
+ * Produto oferecido em {@link PurchaseComponent.prompt}. Além dos campos abaixo, o objeto pode ter qualquer
+ * outro dado: ele volta inteiro em `purchaseAccepted`/`purchaseDenied` e fica salvo no log de vendas.
+ */
+interface PurchaseProduct {
+    /** Identificador do produto no seu script. Até 64 caracteres. */
+    id?: string;
+    /** Nome mostrado no card. Obrigatório, até 60 caracteres. */
+    name: string;
+    /** Descrição mostrada nos modelos que têm espaço para ela. Até 200 caracteres. */
+    description?: string;
+    /** Preço em hubcoins. Inteiro de 1 a 1.000.000. */
+    price: number;
+    /** URL http(s) da imagem do produto. O servidor não gera imagem: mostra exatamente a URL enviada. */
+    image?: string;
+    /** Segundos para o jogador decidir, de 5 a 120. Padrão: 15. Aparece no título do card. */
+    timeout?: number;
+    /**
+     * Modelo do card, de 1 a 5. Padrão: 1.
+     *
+     * 1. Clássico (estilo Roblox) · 2. Vitrine · 3. Recibo · 4. Trava contra clique acidental · 5. Notificação no canto
+     */
+    model?: 1 | 2 | 3 | 4 | 5;
+    /** Qualquer outro dado do seu produto. */
+    [key: string]: unknown;
+}
+
+/**
+ * Venda de produtos do quarto por hubcoins.
+ *
+ * O servidor confere o saldo e desconta os hubcoins sozinho quando o jogador aceita. O script nunca mexe no
+ * saldo do jogador: ele só recebe `purchaseAccepted` depois que a cobrança foi feita e registrada.
+ *
+ * @example
+ * ```js
+ * Events.on("say", (player, message) => {
+ *     if (message !== ":caixa") return;
+ *
+ *     Purchase.prompt(player, {
+ *         id: "caixa_misteriosa",
+ *         name: "Caixa Misteriosa",
+ *         description: "Contém 1 raro aleatório.",
+ *         price: 25,
+ *         image: "https://exemplo.com/caixa.png",
+ *         model: 2,
+ *         raridade: "lendario"
+ *     });
+ * });
+ *
+ * Events.on("purchaseAccepted", (player, product) => {
+ *     // hubcoins já descontados; entregue o produto aqui
+ * });
+ *
+ * Events.on("purchaseDenied", (player, product, reason) => {
+ *     // reason: "cancel" | "close" | "timeout" | "insufficient" | "left_room"
+ * });
+ * ```
+ */
+interface PurchaseComponent {
+    /**
+     * Abre o card de confirmação de compra para o jogador.
+     *
+     * @param player - Jogador que vai decidir a compra. Precisa estar neste quarto.
+     * @param product - Produto oferecido. Ver {@link PurchaseProduct}.
+     * @returns `ok` se o card abriu, ou o motivo de recusa.
+     */
+    prompt(player: ScriptPlayerEntity, product: PurchaseProduct): PurchaseCode;
+}
+
+/**
+ * Código de retorno das operações de clonagem.
+ *
+ * - `ok` — pedido aceito (ou, em {@link RoomCloneComponent.canClone}, pode clonar agora).
+ * - `disabled` — clonagem por script desligada na `server_configuration` (`script_clone_enabled = 0`).
+ * - `paused` — um staff pausou a clonagem com `:scriptclone pause`.
+ * - `invalid_player` — o alvo não é um {@link ScriptPlayerEntity} válido e presente neste quarto.
+ * - `player_room_limit` — o jogador já tem o máximo de quartos permitido no hotel.
+ * - `player_cooldown` — o jogador criou/clonou um quarto há menos de `playerCooldown` segundos.
+ * - `room_cooldown` — o quarto de origem já foi clonado há menos de `roomCooldown` segundos.
+ * - `room_too_big` — o quarto de origem tem mais mobis (chão + parede) que `maxItems`.
+ * - `room_not_found` — o `roomId` informado não existe (ou não é um número inteiro válido).
+ * - `room_blocked` — o quarto de origem está com blockroom ativo (`:blockroom`).
+ * - `busy` — já existem `queueMax` clonagens em andamento no emulador.
+ * - `global_rate_limit` — o emulador inteiro já fez `windowMax` clonagens nos últimos `windowSeconds` segundos.
+ * - `global_total_limit` — o contador global atingiu `totalMax`. Só volta com `:scriptclone reset`.
+ * - `player_offline` — (só no callback) o jogador saiu do hotel antes da clonagem começar.
+ * - `error` — (só no callback) falha interna ao clonar. A vaga reservada é devolvida.
+ */
+type RoomCloneCode =
+    | "ok"
+    | "disabled"
+    | "paused"
+    | "invalid_player"
+    | "player_room_limit"
+    | "player_cooldown"
+    | "room_cooldown"
+    | "room_too_big"
+    | "room_not_found"
+    | "room_blocked"
+    | "busy"
+    | "global_rate_limit"
+    | "global_total_limit"
+    | "player_offline"
+    | "error";
+
+/**
+ * Opções de {@link RoomCloneComponent.clone}.
+ */
+interface RoomCloneOptions {
+    /**
+     * ID do quarto a ser clonado. Pode ser qualquer quarto do hotel, carregado ou não.
+     * Se omitido, clona o quarto deste script.
+     *
+     * O quarto não pode estar com blockroom ativo. Se o quarto não estiver carregado, ele é
+     * carregado durante a clonagem e as verificações dele (existência, blockroom, limite de mobis) só
+     * acontecem nesse momento: nesse caso a recusa chega no callback, não no retorno.
+     */
+    roomId?: number;
+
+    /**
+     * Nome do novo quarto. Máximo de 50 caracteres (o excesso é cortado), passa pelo filtro de palavras
+     * do hotel. Se omitido, usa o nome padrão do bundle (com `%username%` trocado pelo nick do dono).
+     */
+    name?: string;
+
+    /**
+     * Copia o script deste quarto para o clone, trocando os IDs do quarto e dos mobis pelos novos.
+     *
+     * O clone **não** herda os escopos (`:scriptscope`), então o script copiado não tem acesso ao
+     * `RoomClone` nem a outros escopos até um staff liberar. Isso impede clonagem em cadeia.
+     *
+     * @defaultValue `false`
+     */
+    copyScript?: boolean;
+
+    /**
+     * Leva o jogador para o quarto novo assim que a clonagem terminar.
+     *
+     * @defaultValue `false`
+     */
+    forward?: boolean;
+}
+
+/**
+ * Resultado entregue ao callback de {@link RoomCloneComponent.clone}.
+ */
+interface RoomCloneResult {
+    /** `true` se o quarto foi criado. */
+    readonly success: boolean;
+    /**
+     * Motivo da falha. `null` quando `success` é `true`. Pode ser `player_offline`, `error` ou, quando o
+     * quarto de origem não estava carregado, `room_not_found`, `room_blocked` ou `room_too_big`.
+     */
+    readonly error: RoomCloneCode | null;
+    /** ID do quarto de origem. */
+    readonly sourceRoomId: number;
+    /** ID do quarto criado. `0` em caso de falha. */
+    readonly roomId: number;
+    /** ID do jogador dono do quarto novo. */
+    readonly playerId: number;
+}
+
+/**
+ * Situação atual dos limites de clonagem. Os valores são globais (o emulador inteiro),
+ * exceto `roomCooldownRemaining`, que é deste quarto.
+ */
+interface RoomCloneStatus {
+    /** `false` se desligado na config ou pausado por staff. */
+    readonly enabled: boolean;
+    /** Clonagens feitas na janela atual. */
+    readonly windowUsed: number;
+    /** Máximo de clonagens por janela. Padrão: `10`. */
+    readonly windowMax: number;
+    /** Tamanho da janela, em segundos. Padrão: `600` (10 minutos). */
+    readonly windowSeconds: number;
+    /** Segundos até liberar uma vaga na janela. `0` se ainda há vaga. */
+    readonly windowResetIn: number;
+    /** Total de quartos clonados por script desde o último reset (inclui os em andamento). */
+    readonly total: number;
+    /** Limite do total. `0` = sem limite. Padrão: `1000`. */
+    readonly totalMax: number;
+    /** Quantos ainda podem ser clonados no total. `-1` = sem limite. */
+    readonly totalRemaining: number;
+    /** Clonagens em andamento agora. */
+    readonly pending: number;
+    /** Máximo de clonagens simultâneas na fila. Padrão: `3`. */
+    readonly queueMax: number;
+    /** Cooldown por jogador, em segundos (mínimo forçado de 30). Padrão: `30`. */
+    readonly playerCooldown: number;
+    /** Cooldown por quarto de origem, em segundos. Padrão: `60`. */
+    readonly roomCooldown: number;
+    /** Segundos até o quarto deste script poder ser clonado de novo. */
+    readonly roomCooldownRemaining: number;
+    /** Máximo de mobis (chão + parede) que o quarto de origem pode ter. Padrão: `3000`. */
+    readonly maxItems: number;
+}
+
+/**
+ * Clonagem do quarto atual para um jogador, a partir do script.
+ *
+ * Só existe quando o quarto tem o escopo `roomclone` (`:scriptscope roomclone`).
+ *
+ * @remarks
+ * **Regras e limites**
+ *
+ * - Por padrão clona o próprio quarto do script. Com {@link RoomCloneOptions.roomId} clona qualquer
+ *   outro quarto do hotel.
+ * - Nunca clona um quarto com blockroom ativo (`room_blocked`). O estado de blockroom do quarto de
+ *   origem é preservado depois da clonagem.
+ * - O dono do quarto novo é o {@link ScriptPlayerEntity} informado, que precisa estar **neste quarto**.
+ * - O jogador precisa ter vaga de quartos (`max_rooms_creations` do hotel).
+ * - Cooldown por jogador (padrão 30 s), compartilhado com o `:cloneroom` e a criação normal de quartos.
+ * - Cooldown por quarto de origem (padrão 60 s), contado pelo ID do quarto clonado.
+ * - O quarto de origem pode ter no máximo `maxItems` mobis (padrão 3000).
+ * - **Janela global**: no máximo `windowMax` clonagens a cada `windowSeconds` no emulador inteiro
+ *   (padrão 10 a cada 10 min), somando todos os quartos com script.
+ * - **Total global**: no máximo `totalMax` clonagens (padrão 1000), salvo no banco
+ *   (`script_room_clones`). Sobrevive a reinícios. Zera só com `:scriptclone reset`.
+ * - Fila: no máximo `queueMax` clonagens ao mesmo tempo (padrão 3). Elas rodam uma por vez, em
+ *   segundo plano, para não travar o quarto.
+ * - Durante a clonagem o quarto de origem fica bloqueado (como no `:cloneroom`).
+ * - A vaga (janela, total, cooldowns) é reservada no momento da chamada. Se a clonagem falhar, a vaga
+ *   da janela e do total é devolvida. O cooldown do jogador não.
+ * - Todos os limites ficam na `server_configuration` (`script_clone_*`) e são relidos quando a
+ *   configuração do servidor é recarregada.
+ *
+ * **Comando de staff** — `:scriptclone status | reset | resetwindow | pause | resume`
+ * (permissão `script_clone_command`).
+ *
+ * @example
+ * ```ts
+ * Commands.register("clonar", (player: ScriptPlayerEntity) => {
+ *     const code = RoomClone.clone(player, { name: `Quarto de ${player.getUsername()}`, forward: true }, (result) => {
+ *         if (result.success) Debug.log(`Quarto ${result.roomId} criado`);
+ *         else Debug.log(`Falhou: ${result.error}`);
+ *     });
+ *
+ *     if (code !== "ok") Debug.log(`Recusado: ${code}`);
+ * });
+ *
+ * Commands.register("modelo", (player: ScriptPlayerEntity) => {
+ *     if (RoomClone.canClone(player, 12345) !== "ok") return;
+ *     RoomClone.clone(player, { roomId: 12345, forward: true });
+ * });
+ * ```
+ */
+interface RoomCloneComponent {
+    /**
+     * Verifica se o jogador poderia clonar o quarto agora, sem reservar nada.
+     *
+     * @param player - Jogador que seria o dono do quarto novo. Precisa estar neste quarto.
+     * @returns `ok` se pode, ou o motivo de recusa.
+     */
+    canClone(player: ScriptPlayerEntity): RoomCloneCode;
+
+    /**
+     * Verifica se o jogador poderia clonar o quarto `roomId` agora, sem reservar nada.
+     *
+     * Se o quarto não estiver carregado, existência, blockroom e limite de mobis não são verificados aqui
+     * (para não consultar o banco a cada chamada). Eles são verificados durante a clonagem.
+     *
+     * @param player - Jogador que seria o dono do quarto novo. Precisa estar neste quarto.
+     * @param roomId - ID do quarto de origem.
+     * @returns `ok` se pode, ou o motivo de recusa.
+     */
+    canClone(player: ScriptPlayerEntity, roomId: number): RoomCloneCode;
+
+    /**
+     * Pede a clonagem deste quarto (ou do `options.roomId`) para o jogador.
+     *
+     * A clonagem é assíncrona: o retorno diz só se o pedido foi aceito. O resultado final chega no
+     * `callback`, executado no próximo short tick do quarto. Se o script for recarregado ou o quarto
+     * descarregado antes disso, o quarto ainda é criado, mas o callback não é chamado.
+     *
+     * @param player - Jogador que será o dono do quarto novo. Precisa estar neste quarto.
+     * @param options - Quarto de origem, nome, cópia do script e redirecionamento. Ver {@link RoomCloneOptions}.
+     * @param callback - Chamado com o {@link RoomCloneResult} quando terminar.
+     * @returns `ok` se o pedido entrou na fila, ou o motivo de recusa (nada é reservado nesse caso).
+     */
+    clone(player: ScriptPlayerEntity, options?: RoomCloneOptions, callback?: (result: RoomCloneResult) => void): RoomCloneCode;
+
+    /**
+     * Mesmo que {@link RoomCloneComponent.clone}, sem opções.
+     *
+     * @param player - Jogador que será o dono do quarto novo. Precisa estar neste quarto.
+     * @param callback - Chamado com o {@link RoomCloneResult} quando terminar.
+     */
+    clone(player: ScriptPlayerEntity, callback: (result: RoomCloneResult) => void): RoomCloneCode;
+
+    /**
+     * Situação atual dos limites (globais e deste quarto). Útil para mostrar na UI quantas vagas restam.
+     */
+    getStatus(): RoomCloneStatus;
 }
