@@ -15,9 +15,13 @@ declare const Pathfinder: Pathfinder;
 declare const Sound: Sound;
 declare const Variables: Variables;
 declare const Database: ScriptDatabaseController;
+/** Disponível só quando o quarto tem o escopo "currency". */
 declare const Currency: Currency;
+/** Disponível só quando o quarto tem o escopo "trade". */
 declare const Trade: Trade;
+/** Disponível só quando o quarto tem o escopo "furnis". */
 declare const Furnis: Furnis;
+/** Disponível só quando o quarto tem o escopo "campaign". */
 declare const Campaign: Campaign;
 declare const HubbeIA: HubbeIA;
 declare const CustomEvent: CustomEvent;
@@ -28,6 +32,8 @@ declare const Global: Global;
 declare const Purchase: PurchaseComponent;
 /** Clonagem de quartos. Requer o escopo `roomclone`. @see RoomCloneComponent */
 declare const RoomClone: RoomCloneComponent;
+/** Tarefas diárias do quarto. Não precisa de escopo. @see RoomDailyTaskComponent */
+declare const DailyTasks: RoomDailyTaskComponent;
 
 /**
  * @interface Room
@@ -3210,7 +3216,6 @@ interface ScriptEventHandlers {
     "interact": (entity: ScriptEntity, furni: ScriptFurni) => void;
     "furniSelected": (player: ScriptPlayerEntity, furni: ScriptFurni) => void;
     "playerSelected": (selector: ScriptPlayerEntity, target: ScriptPlayerEntity) => void;
-    "fakePlayerSelected": (selector: ScriptPlayerEntity, target: FakeScriptPlayerEntity) => void;
     "botSelected": (selector: ScriptPlayerEntity, target: ScriptBotEntity) => void;
     "floorClicked": (player: ScriptPlayerEntity, position: ScriptPosition) => void;
     "floorItemPlaced": (player: ScriptPlayerEntity, furni: ScriptFurni) => void;
@@ -3228,6 +3233,78 @@ interface ScriptEventHandlers {
     "dispose": () => void;
     "purchaseAccepted": (player: ScriptPlayerEntity, product: PurchaseProduct) => void;
     "purchaseDenied": (player: ScriptPlayerEntity, product: PurchaseProduct, reason: PurchaseDeniedReason) => void;
+
+    /**
+     * O banco do script conectou: no carregamento do script ou quando o MongoDB volta.
+     * @param database - Conexão pronta para uso (a mesma de `Database.getConnection()`).
+     */
+    "databaseConnected": (database: ScriptDatabase) => void;
+
+    /**
+     * O banco do script não conectou ou caiu.
+     * @param reason - `"MongoDB offline"` ou `"Não foi possível conectar ao banco"`.
+     */
+    "databaseFailed": (reason: string) => void;
+
+    /**
+     * Jogador deu respeito em outro jogador neste quarto. Dispara depois que o respeito foi descontado.
+     * @param player - Quem deu o respeito.
+     * @param target - Quem recebeu o respeito.
+     * @example
+     * Events.on('respect', (player, target) => {
+     *     DailyTasks.progress(player, 'gentileza');
+     * });
+     */
+    "respect": (player: ScriptPlayerEntity, target: ScriptPlayerEntity) => void;
+
+    /**
+     * Jogador beijou outro jogador neste quarto. Dispara depois que o beijo foi descontado.
+     * @param player - Quem deu o beijo.
+     * @param target - Quem recebeu o beijo.
+     * @example
+     * Events.on('kiss', (player, target) => {
+     *     target.say('Obrigado, ' + player.getUsername() + '!');
+     * });
+     */
+    "kiss": (player: ScriptPlayerEntity, target: ScriptPlayerEntity) => void;
+
+    /**
+     * Jogador usou um comando do hotel neste quarto (ex: `:sit`), depois das checagens de permissão e de
+     * comando desativado. Retorne `false` para bloquear o comando.
+     *
+     * Não dispara para comandos de staff nem para comandos do próprio script (`Commands.register`).
+     * @param player - Quem usou o comando.
+     * @param command - Nome do comando, sem os dois pontos (ex: `"sit"`).
+     * @param params - Argumentos digitados depois do comando.
+     * @returns `false` cancela o comando. Qualquer outro valor deixa executar.
+     * @example
+     * Events.on('command', (player, command, params) => {
+     *     if (command === 'sit') {
+     *         player.say('Aqui não dá pra sentar!');
+     *         return false;
+     *     }
+     * });
+     */
+    "command": (player: ScriptPlayerEntity, command: string, params: string[]) => boolean | void;
+
+    /**
+     * Jogador atingiu a meta de uma tarefa diária do quarto. Ver {@link RoomDailyTaskComponent}.
+     * @param player - Quem concluiu.
+     * @param taskId - Identificador da tarefa.
+     */
+    "dailyTaskCompleted": (player: ScriptPlayerEntity, taskId: string) => void;
+
+    /**
+     * Jogador resgatou uma tarefa diária do quarto. Entregue a recompensa aqui. Dispara uma única vez por
+     * tarefa por dia. Ver {@link RoomDailyTaskComponent}.
+     * @param player - Quem resgatou.
+     * @param taskId - Identificador da tarefa.
+     * @example
+     * Events.on('dailyTaskClaimed', (player, taskId) => {
+     *     if (taskId === 'pescador') Currency.giveDucketsById(player.getPlayerId(), 50);
+     * });
+     */
+    "dailyTaskClaimed": (player: ScriptPlayerEntity, taskId: string) => void;
 }
 
 type ScriptEventType = keyof ScriptEventHandlers;
@@ -5190,6 +5267,75 @@ type ScriptVariableOperation =
  * @description Dados de um quarto (carregado ou não).
  */
 interface ScriptRoomData {
+    /** ID do quarto. */
+    getId(): number;
+    /** Nome do quarto. */
+    getName(): string;
+    /** Descrição do quarto. */
+    getDescription(): string;
+    /** ID do dono. */
+    getOwnerId(): number;
+    /** Nome do dono. */
+    getOwner(): string;
+    /** ID da categoria do navegador. */
+    getCategoryId(): number;
+    /** Máximo de usuários. */
+    getMaxUsers(): number;
+    /** Pontuação (curtidas) do quarto. */
+    getScore(): number;
+    /**
+     * Tags do quarto.
+     * @remarks Retorna um array Java; o script não consegue ler por índice. Prefira não depender disso.
+     */
+    getTags(): string[];
+    /** Se é um quarto público. */
+    isPublic(): boolean;
+    /** Se é um quarto privado (de jogador). */
+    isPrivate(): boolean;
+    /** Se a troca está desativada. */
+    isTradeDisabled(): boolean;
+    /** Se a troca está liberada para todos. */
+    isTradeEnabled(): boolean;
+    /** Se só o dono pode trocar. */
+    isTradeOwnerOnly(): boolean;
+    /** Se os usuários podem atravessar uns aos outros. */
+    isAllowWalkthrough(): boolean;
+    /** Se pets são permitidos. */
+    isAllowPets(): boolean;
+    /** Se o andar na diagonal está ligado. */
+    getDiagonal(): boolean;
+    /** Nível de velocidade dos rollers. */
+    getRollerSpeedLevel(): number;
+    /** Se as paredes estão escondidas. */
+    getHideWalls(): boolean;
+    /** Espessura da parede. */
+    getWallThickness(): number;
+    /** Espessura do piso. */
+    getFloorThickness(): number;
+    /** Se áudio é permitido no quarto. */
+    getAllowAudio(): boolean;
+    /** Se GIFs são permitidos no quarto. */
+    getAllowGif(): boolean;
+    /** Se o quarto é só para maiores. */
+    getAdultOnly(): boolean;
+    /** Se os wireds estão escondidos. */
+    isWiredHidden(): boolean;
+    /** Se os goals estão escondidos. */
+    isGoalsHidden(): boolean;
+    /** Se qualquer um pode abrir os wireds. */
+    isEveryoneOpenWireds(): boolean;
+    /** Se o quarto está com `:blockroom` ativo. */
+    isBlockedRoom(): boolean;
+    /** Se comandos de gimmick/roleplay são permitidos. */
+    allowRoomCommands(): boolean;
+    /** Se qualquer um pode adicionar vídeos. */
+    isEveryoneInsertVideo(): boolean;
+    /** Se o HubbeDJ abre sozinho ao entrar. */
+    isOpenHubbeDJAuto(): boolean;
+    /** Se os vídeos têm limite de duração. */
+    isLimitVideo(): boolean;
+    /** Duração máxima dos vídeos em minutos, quando {@link ScriptRoomData.isLimitVideo} está ligado. */
+    getLimitMinutesVideo(): number;
     /** Verifica se o quarto está aberto (sem campainha e sem senha). */
     isOpen(): boolean;
     /** Verifica se o quarto pede campainha para entrar. */
@@ -5272,6 +5418,29 @@ interface ScriptColorableFurni extends ScriptFurniFloor {
      * @description Muda as duas cores, salva e atualiza no quarto. Cores inválidas são ignoradas.
      * @example
      * furni.setColor('ff0000', '0000ff');
+     */
+    setColor(colorA: string, colorB: string): void;
+}
+
+/**
+ * @interface ScriptColorableWallFurni
+ * @description Mobi de parede com cor configurável (cores em hexadecimal sem "#", ex.: "ff0000").
+ */
+interface ScriptColorableWallFurni extends ScriptFurniWall {
+    /** Cor primária (padrão "ffffff"). */
+    getColorA(): string;
+    /** Cor secundária (padrão "ffffff"). */
+    getColorB(): string;
+    /** @param colorA - Cor primária em hex. */
+    setColorA(colorA: string): void;
+    /** @param colorB - Cor secundária em hex. */
+    setColorB(colorB: string): void;
+    /**
+     * @param colorA - Cor primária em hex (6 dígitos).
+     * @param colorB - Cor secundária em hex (6 dígitos).
+     * @description Muda as duas cores, salva e atualiza no quarto. Cores inválidas são ignoradas.
+     * @example
+     * wallFurni.setColor('ff0000', '0000ff');
      */
     setColor(colorA: string, colorB: string): void;
 }
@@ -5877,4 +6046,211 @@ interface RoomCloneComponent {
      * Situação atual dos limites (globais e deste quarto). Útil para mostrar na UI quantas vagas restam.
      */
     getStatus(): RoomCloneStatus;
+}
+
+/**
+ * Status de uma tarefa diária do quarto para um jogador.
+ *
+ * - `0` — em andamento.
+ * - `1` — concluída, aguardando o jogador clicar em Resgatar.
+ * - `2` — resgatada.
+ */
+type RoomDailyTaskStatus = 0 | 1 | 2;
+
+/**
+ * Tipo do ícone de uma {@link RoomDailyTaskReward}. Aceita o nome ou o código numérico.
+ *
+ * - `floor` (0) / `wall` (1) — mobi de chão/parede. `id` = classname ou ID do mobi.
+ * - `effect` (2) — efeito.
+ * - `badge` (3) — emblema. `id` = código do emblema.
+ * - `currency` (4) — moeda. `id` = tipo da moeda (`"0"` duckets, `"5"` diamantes...).
+ * - `habbicon` (5) — habbicon. `id` = ID do habbicon.
+ * - `hc` (6) — assinatura HC.
+ * - `pet` (7) — pet. `params` = figura do pet.
+ * - `figure` (8) — visual. `params` = figura do avatar.
+ * - `bubble` (9) — balão de digitação. `id` = ID do balão.
+ * - `cosmetic` (10) — cosmético de perfil. `params` = código do cosmético.
+ */
+type RoomDailyTaskRewardType =
+    | "floor"
+    | "wall"
+    | "effect"
+    | "badge"
+    | "currency"
+    | "habbicon"
+    | "hc"
+    | "pet"
+    | "figure"
+    | "bubble"
+    | "cosmetic"
+    | number;
+
+/**
+ * Recompensa mostrada no card da tarefa. É só visual: quem entrega o prêmio é o script, no evento
+ * `dailyTaskClaimed`.
+ */
+interface RoomDailyTaskReward {
+    /** Tipo do ícone. Ver {@link RoomDailyTaskRewardType}. */
+    type: RoomDailyTaskRewardType;
+    /** Identificador do item, conforme o tipo. Até 100 caracteres. Padrão: `""`. */
+    id?: string;
+    /** Parâmetros extras, conforme o tipo. Até 100 caracteres. Padrão: `""`. */
+    params?: string;
+    /** Quantidade mostrada no card. Menor que 1 vira 1. Padrão: 1. */
+    amount?: number;
+}
+
+/**
+ * Tarefa cadastrada em {@link RoomDailyTaskComponent.register}. Caracteres de controle são removidos e textos
+ * maiores que o limite são cortados.
+ */
+interface RoomDailyTaskDefinition {
+    /**
+     * Identificador da tarefa neste quarto. Até 32 caracteres: letras, números, `_` e `-`.
+     * Registrar de novo o mesmo id atualiza a tarefa sem perder o progresso dos jogadores.
+     */
+    id: string;
+    /** Título do card. Obrigatório, até 40 caracteres. */
+    name: string;
+    /** Texto ao lado da imagem. Até 150 caracteres. */
+    description?: string;
+    /** Dica do `?` ao lado do título. Até 150 caracteres. Sem dica, o `?` não aparece. */
+    hint?: string;
+    /**
+     * URL http(s) da imagem do card (76x76). O servidor não gera imagem: mostra exatamente a URL enviada.
+     * Sem imagem, a descrição ocupa o card todo.
+     */
+    image?: string;
+    /** Progresso necessário para concluir. Inteiro de 1 a 1.000.000. Padrão: 1. */
+    goal?: number;
+    /** Recompensas mostradas no card. Até 4. Ver {@link RoomDailyTaskReward}. */
+    rewards?: RoomDailyTaskReward[];
+}
+
+/**
+ * Tarefas diárias do quarto.
+ *
+ * As tarefas aparecem na janela de tarefas diárias do jogador, depois das tarefas do hotel, **somente enquanto
+ * ele estiver neste quarto**. O progresso é salvo por jogador e reinicia junto com as tarefas diárias do hotel.
+ *
+ * - Até 10 tarefas por quarto.
+ * - O script decide quando somar progresso, com {@link RoomDailyTaskComponent.progress}.
+ * - Ao atingir a meta, dispara `dailyTaskCompleted(player, taskId)`.
+ * - Ao clicar em Resgatar, dispara `dailyTaskClaimed(player, taskId)` uma única vez por dia. **A recompensa é
+ *   entregue pelo script nesse evento**; os `rewards` do cadastro são só visuais.
+ * - Tarefa concluída e não resgatada até o reset é perdida.
+ * - Ao recarregar o script, as tarefas somem da tela até serem registradas de novo. O progresso continua salvo.
+ * - O progresso não conta para os emblemas de tarefas diárias do hotel.
+ *
+ * @example
+ * ```js
+ * DailyTasks.register({
+ *     id: "pescador",
+ *     name: "Pescador",
+ *     description: "Pesque 5 peixes no lago do quarto.",
+ *     hint: "Clique na vara de pesca perto da água.",
+ *     image: "https://exemplo.com/peixe.png",
+ *     goal: 5,
+ *     rewards: [{ type: "currency", id: "0", amount: 50 }]
+ * });
+ *
+ * Events.on("interact", (entity, furni) => {
+ *     if (furni.getSprite() === 1234) DailyTasks.progress(entity, "pescador");
+ * });
+ *
+ * Events.on("dailyTaskCompleted", (player, taskId) => {
+ *     player.say("Completei a tarefa " + taskId + "!");
+ * });
+ *
+ * Events.on("dailyTaskClaimed", (player, taskId) => {
+ *     // entregue a recompensa aqui
+ *     if (taskId === "pescador") Currency.giveDucketsById(player.getPlayerId(), 50);
+ * });
+ * ```
+ */
+interface RoomDailyTaskComponent {
+    /**
+     * Cadastra uma tarefa, ou atualiza a que tiver o mesmo `id`. Os jogadores no quarto recebem a lista
+     * atualizada no próximo tick.
+     *
+     * @param task - Dados da tarefa. Ver {@link RoomDailyTaskDefinition}.
+     * @returns `true` se cadastrou. `false` se os dados forem inválidos ou o quarto já tiver 10 tarefas;
+     * o motivo vai para o log do script.
+     */
+    register(task: RoomDailyTaskDefinition): boolean;
+
+    /**
+     * Remove uma tarefa. O progresso dos jogadores fica salvo até o reset: registrar a tarefa de novo no
+     * mesmo dia recupera o progresso.
+     *
+     * @param id - Identificador da tarefa.
+     * @returns `true` se a tarefa existia.
+     */
+    unregister(id: string): boolean;
+
+    /**
+     * Remove todas as tarefas do quarto.
+     */
+    clear(): void;
+
+    /**
+     * Ids das tarefas cadastradas, na ordem de cadastro.
+     */
+    getTasks(): string[];
+
+    /**
+     * Soma 1 de progresso para o jogador. Ao atingir a meta, dispara `dailyTaskCompleted`.
+     * Tarefas concluídas ou resgatadas não recebem mais progresso.
+     *
+     * @param player - Jogador que vai progredir. Precisa estar neste quarto.
+     * @param id - Identificador da tarefa.
+     * @returns O progresso atual, ou `-1` se o jogador não estiver no quarto ou a tarefa não existir.
+     */
+    progress(player: ScriptPlayerEntity, id: string): number;
+
+    /**
+     * Soma `amount` de progresso para o jogador. O progresso nunca passa da meta.
+     * Ao atingir a meta, dispara `dailyTaskCompleted`.
+     *
+     * @param player - Jogador que vai progredir. Precisa estar neste quarto.
+     * @param id - Identificador da tarefa.
+     * @param amount - Quantidade a somar. Precisa ser maior que 0.
+     * @returns O progresso atual, ou `-1` se o jogador não estiver no quarto, a tarefa não existir ou
+     * `amount` for inválido.
+     */
+    progress(player: ScriptPlayerEntity, id: string, amount: number): number;
+
+    /**
+     * Progresso atual do jogador na tarefa.
+     *
+     * @param player - Jogador. Precisa estar neste quarto.
+     * @param id - Identificador da tarefa.
+     * @returns O progresso, ou `0` se não houver.
+     */
+    getProgress(player: ScriptPlayerEntity, id: string): number;
+
+    /**
+     * Status da tarefa para o jogador.
+     *
+     * @param player - Jogador. Precisa estar neste quarto.
+     * @param id - Identificador da tarefa.
+     * @returns Ver {@link RoomDailyTaskStatus}. `0` se não houver progresso.
+     */
+    getStatus(player: ScriptPlayerEntity, id: string): RoomDailyTaskStatus;
+
+    /**
+     * Se o jogador já concluiu a tarefa hoje, tendo resgatado ou não.
+     *
+     * @param player - Jogador. Precisa estar neste quarto.
+     * @param id - Identificador da tarefa.
+     */
+    isCompleted(player: ScriptPlayerEntity, id: string): boolean;
+
+    /**
+     * Se o jogador já resgatou a recompensa da tarefa hoje.
+     *
+     * @param player - Jogador. Precisa estar neste quarto.
+     * @param id - Identificador da tarefa.
+     */
+    isClaimed(player: ScriptPlayerEntity, id: string): boolean;
 }
